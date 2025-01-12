@@ -290,7 +290,8 @@ def create_avg_ovr_change():
         hue='Category',
         markers=True,
         style='Category',
-        palette='cividis'
+        palette='cividis', 
+        markersize=12
     )
 
     # Add a zero baseline
