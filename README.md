@@ -74,11 +74,7 @@ Once you have installed and set up the quantified-self-app, you can start using 
      ```
    - The data will be appended to the `strava_activities` table in your database.
 
-4. **Analyzing Data:**
-   - Use the Jupyter notebooks provided in the `Notebooks` directory to perform custom analyses.
-   - For example, open `Notebooks/aggregate_time_allocation_data_OG.ipynb` to see how time allocation data is processed and visualized.
-
-5. **Customizing Visualizations:**
+4. **Customizing Visualizations:**
    - You can modify the scripts in the `Scripts` directory to customize the data visualizations according to your needs.
    - For instance, adjust the plots in `Scripts/app.py` to change how data is displayed on the dashboard.
 
