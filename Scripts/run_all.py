@@ -23,6 +23,10 @@ except Exception as e:
 print("\n\nRunning strava extraction...")
 run_script('strava_data_pull.py')
 
+# Run Whoop data extract
+print("\n\nRunning whoop extraction...")
+run_script('get_whoop_data.py')
+
 # Run the dashboard script
 print("\n\nRunning dashboard creation...")
 run_script('app.py')
