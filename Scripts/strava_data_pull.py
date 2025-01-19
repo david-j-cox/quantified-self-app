@@ -14,11 +14,7 @@ STRAVA_SECRET = os.getenv('STRAVA_SECRET')
 STRAVA_ACCESS = os.getenv('STRAVA_ACCESS')
 STRAVA_REFRESH = os.getenv('STRAVA_REFRESH')
 STRAVA_AUTHORIZATION_CODE = os.getenv('STRAVA_AUTHORIZATION_CODE')
-DATABASE_URL = os.getenv('DATABASE_URL')
-TABLE_NAME = os.getenv('TABLE_NAME')
-
-# Database connection details
-DATABASE_URL = 'postgresql://davidjcox:password@localhost:5432/behavior_tracking'
+DATABASE_URL = os.getenv('DB_URL')
 TABLE_NAME = 'strava_activities'
 
 def refresh_access_token():
