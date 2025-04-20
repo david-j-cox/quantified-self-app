@@ -30,6 +30,10 @@ import webbrowser
 from threading import Timer
 from dash.dependencies import Input, Output
 
+# Machine Learning
+from sklearn.manifold import TSNE
+from sklearn.preprocessing import MinMaxScaler
+
 # Preferences
 pd.options.display.max_columns = None
 display(HTML("<style>.container { width:100% !important; }</style>"))
@@ -38,32 +42,53 @@ warnings.filterwarnings('ignore')
 # Load environment variables from .env file
 load_dotenv()
 
-# PostgreSQL database credentials from .env
+# PostgreSQL database connection
 DB_NAME = os.getenv("DB_NAME")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_HOST = os.getenv("DB_HOST")
 DB_PORT = os.getenv("DB_PORT")
 
-# Create a database engine
-DATABASE_URL = f'postgresql://{DB_USER}:{
-    DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
+DATABASE_URL = f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 engine = create_engine(DATABASE_URL)
 
 # Function to read data from a table
 def read_table(table_name):
-    query = f"SELECT * FROM {table_name}"
-    return pd.read_sql(query, engine)
+    print(f"Reading table {table_name}...")
+    try:
+        query = f"SELECT * FROM {table_name}"
+        df = pd.read_sql(query, engine)
+        print(f"Successfully read {len(df)} rows from {table_name}")
+        return df
+    except Exception as e:
+        print(f"Error reading table {table_name}: {str(e)}")
+        return pd.DataFrame()
 
 
 # Read in the raw data from the database
-all_df = read_table('raw_data')
-books = read_table('books_read')
-baseball = read_table('baseball_watched')
-cv_adds = read_table('cv_additions')
-pubs = read_table('publication_stats')
-phys_act = read_table('strava_activities')
-model_df = read_table('modeling_ready_data')
+print("\n=== Debug: Loading Data ===")
+try:
+    print("Loading raw_data...")
+    all_df = read_table('raw_data')
+    print("Loading books_read...")
+    books = read_table('books_read')
+    print("Loading baseball_watched_long...")
+    baseball = read_table('baseball_watched_long')
+    print("Loading cv_additions...")
+    cv_adds = read_table('cv_additions')
+    print("Loading publication_stats...")
+    pubs = read_table('publication_stats')
+    print("Loading strava_activities...")
+    phys_act = read_table('strava_activities')
+    print("Loading modeling_ready_data...")
+    model_df = read_table('modeling_ready_data')
+    print("model_df shape:", model_df.shape if not model_df.empty else "Empty")
+    print("model_df columns:", model_df.columns.tolist() if not model_df.empty else "Empty DataFrame")
+except Exception as e:
+    print("Error loading data:", str(e))
+    import traceback
+    traceback.print_exc()
+    model_df = pd.DataFrame()  # Initialize as empty DataFrame if loading fails
 
 # OVR TIME SPENT PLOTS
 def calculate_yearly_trendlines(df, column):
@@ -83,7 +108,7 @@ def extract_slopes(trends):
 
 def calculate_weekly_trendlines(all_data, column):
     trends = {}
-    all_data['Week'] = all_data['Date'].dt.to_period(
+    all_data['Week'] = all_data['date_column'].dt.to_period(
         'W').apply(lambda r: r.start_time)
     for week in all_data['Week'].unique():
         weekly_data = all_data[all_data['Week'] == week]
@@ -105,16 +130,16 @@ def thousands_formatter(x, pos):
 
 # Prep the data
 # Add in some info we'll use for analyses
-all_data = all_df.set_index('Date').reset_index()
-all_data['Date'] = pd.to_datetime(all_data['Date'])
-all_data['Year'] = all_data['Date'].dt.year
-all_data['Month_Num'] = all_data['Date'].dt.month
-all_data['Month'] = all_data['Date'].dt.month_name()
-all_data['Day'] = all_data['Date'].dt.day_name()
-all_data['DayOfYear'] = all_data['Date'].dt.dayofyear
+all_data = all_df.set_index('date_column').reset_index()
+all_data['date_column'] = pd.to_datetime(all_data['date_column'])
+all_data['Year'] = all_data['date_column'].dt.year
+all_data['Month_Num'] = all_data['date_column'].dt.month
+all_data['Month'] = all_data['date_column'].dt.month_name()
+all_data['Day'] = all_data['date_column'].dt.day_name()
+all_data['DayOfYear'] = all_data['date_column'].dt.dayofyear
 all_data = all_data.sort_values(by=['Year', 'DayOfYear'])
 for col in list(all_data):
-    if col in ['Date', 'Year', 'Month_Num', 'Month', 'Day', 'DayOfYear']:
+    if col in ['date_column', 'Year', 'Month_Num', 'Month', 'Day', 'DayOfYear']:
         continue
     else:
         try:
@@ -200,21 +225,21 @@ def create_cr_all_plot():
     def annotate_slopes(trends, data, column_name, color):
         for year, trend in trends.items():
             slope = trend[1]
-            last_date_of_year = data[data['Year'] == year]['Date'].max()
-            plt.annotate(f'{slope:.2f}', xy=(last_date_of_year, data.loc[data['Date'] == last_date_of_year, column_name].values[0]),
+            last_date_of_year = data[data['Year'] == year]['date_column'].max()
+            plt.annotate(f'{slope:.2f}', xy=(last_date_of_year, data.loc[data['date_column'] == last_date_of_year, column_name].values[0]),
                          xytext=(-10, 0), textcoords='offset points', ha='right', color=color)
 
     # Actual Plot
     fig, ax = plt.subplots(figsize=(18, 10))
 
     # Plot each category
-    plt.plot(all_data['Date'], all_data['CR ALL'],
+    plt.plot(all_data['date_column'], all_data['CR ALL'],
              label='CR ALL', color='blue')
-    plt.plot(all_data['Date'], all_data['CR w/o Job'],
+    plt.plot(all_data['date_column'], all_data['CR w/o Job'],
              label='CR w/o Job', color='red')
-    plt.plot(all_data['Date'], all_data['Family'],
+    plt.plot(all_data['date_column'], all_data['Family'],
              label='Relationship', color='orange')
-    plt.plot(all_data['Date'], all_data['Writing'],
+    plt.plot(all_data['date_column'], all_data['Writing'],
              label='Writing', color='green')
 
     # Annotate the slopes using the function
@@ -321,7 +346,7 @@ def create_avg_ovr_change():
 def create_leisure_plot():
     # prep the data
     leisure_df = all_data[[
-        'Date',
+        'date_column',
         'Journal Articles',
         'Philosophy',
         'Reading Books',
@@ -345,13 +370,13 @@ def create_leisure_plot():
         'Week'
     ]]
     leisure_df_plot = leisure_df.melt(
-        id_vars=['Date', 'Year', 'Month_Num', 'Month', 'Day', 'DayOfYear', 'Week'])
+        id_vars=['date_column', 'Year', 'Month_Num', 'Month', 'Day', 'DayOfYear', 'Week'])
     leisure_df_plot = leisure_df_plot.sort_values(
-        by=['Date'], ascending=True).reset_index(drop=True)
+        by=['date_column'], ascending=True).reset_index(drop=True)
 
     # Function to calculate the slope for each category
     def calculate_slope(df, category):
-        x = (df['Date'] - df['Date'].min()).dt.days
+        x = (df['date_column'] - df['date_column'].min()).dt.days
         y = df[category]
         slope, intercept = np.polyfit(x, y, 1)
         return slope
@@ -359,7 +384,7 @@ def create_leisure_plot():
     # Plot
     fig, ax = plt.subplots(figsize=(18, 10))
     sns.lineplot(
-        leisure_df_plot['Date'], leisure_df_plot['value'], hue=leisure_df_plot['variable'])
+        leisure_df_plot['date_column'], leisure_df_plot['value'], hue=leisure_df_plot['variable'])
 
     # Calculate slopes for each category
     slopes = {}
@@ -372,8 +397,11 @@ def create_leisure_plot():
 
     # Create custom legend
     handles, labels = ax.get_legend_handles_labels()
-    new_labels = [f'{label} (AVG Mins per day = {
-        slopes[label]:.2f})' if slopes[label] is not np.nan else label for label in labels]
+    new_labels = [
+        f'{label} (AVG Mins per day = {slopes[label]:.2f})' 
+        if slopes[label] is not np.nan else label 
+        for label in labels
+    ]
     ax.legend(handles, new_labels, fontsize=12,
               frameon=False, loc='upper left')
 
@@ -384,7 +412,7 @@ def create_leisure_plot():
         ).reset_index(drop=True)
         slope = calculate_slope(df_category, 'value')
         max_value = df_category['value'].max()
-        max_date = df_category['Date'].max()
+        max_date = df_category['date_column'].max()
         ax.annotate(f'{slope:.2f}', xy=(max_date, max_value),
                     xytext=(10, 0), textcoords='offset points', ha='left', fontsize=12, color='black')
 
@@ -412,7 +440,7 @@ def create_leisure_plot():
 def create_journal_plot():
     # prep the data
     article_df = all_data[[
-        'Date',
+        'date_column',
         'EAB',
         'ABA',
         'OBM',
@@ -435,20 +463,20 @@ def create_journal_plot():
         'Week'
     ]]
     article_df_plot = article_df.melt(
-        id_vars=['Date', 'Year', 'Month_Num', 'Month', 'Day', 'DayOfYear', 'Week'])
+        id_vars=['date_column', 'Year', 'Month_Num', 'Month', 'Day', 'DayOfYear', 'Week'])
     article_df_plot = article_df_plot.sort_values(
-        by=['Date'], ascending=True).reset_index(drop=True)
+        by=['date_column'], ascending=True).reset_index(drop=True)
 
     # Function to calculate the slope for each category
     def calculate_slope(df, value_col):
-        x = (df['Date'] - df['Date'].min()).dt.days
+        x = (df['date_column'] - df['date_column'].min()).dt.days
         y = df[value_col]
         slope, intercept = np.polyfit(x, y, 1)
         return slope
 
     # Plot
     fig, ax = plt.subplots(figsize=(18, 10))
-    sns.lineplot(data=article_df_plot, x='Date', y='value', hue='variable')
+    sns.lineplot(data=article_df_plot, x='date_column', y='value', hue='variable')
 
     # Calculate slopes for each category
     slopes = {}
@@ -461,8 +489,11 @@ def create_journal_plot():
 
     # Create custom legend
     handles, labels = ax.get_legend_handles_labels()
-    new_labels = [f'{label} (AVG Mins per day = {
-        slopes[label]:.2f})' if slopes[label] is not np.nan else label for label in labels]
+    new_labels = [
+        f'{label} (AVG Mins per day = {slopes[label]:.2f})' 
+        if slopes[label] is not np.nan else label 
+        for label in labels
+    ]
     ax.legend(handles, new_labels, fontsize=12,
               frameon=False, loc='upper left')
 
@@ -473,7 +504,7 @@ def create_journal_plot():
         ).reset_index(drop=True)
         slope = calculate_slope(df_category, 'value')
         max_value = df_category['value'].max()
-        max_date = df_category['Date'].max()
+        max_date = df_category['date_column'].max()
         ax.annotate(f'{slope:.2f}', xy=(max_date, max_value),
                     xytext=(10, 0), textcoords='offset points', ha='left', fontsize=12, color='black')
 
@@ -500,9 +531,9 @@ def create_journal_plot():
 # PHYSICAL ACTIVITY TRACKING
 def plot_phys_act_counts():
     # Prep the data
-    phys_act['Activity Date'] = pd.to_datetime(phys_act['Activity Date'])
+    phys_act['activitydate'] = pd.to_datetime(phys_act['activitydate'])
     plot_df = phys_act.groupby([pd.Grouper(
-        key='Activity Date', freq='M'), 'Activity Type']).size().reset_index(name='Counts')
+        key='activitydate', freq='M'), 'activitytype']).size().reset_index(name='Counts')
     plot_df = plot_df.replace({
         "Run": "Run",
         "Yoga": "Yoga",
@@ -514,12 +545,12 @@ def plot_phys_act_counts():
 
     fig, ax = plt.subplots(figsize=(10, 8))
     sns.lineplot(
-        x=plot_df['Activity Date'],
+        x=plot_df['activitydate'],
         y=plot_df['Counts'],
-        hue=plot_df['Activity Type'],
+        hue=plot_df['activitytype'],
         markers=True,
         markersize=8,
-        style=plot_df['Activity Type'],
+        style=plot_df['activitytype'],
         palette='cividis'
     )
     plt.xlabel("Month", fontsize=26, labelpad=12)
@@ -543,38 +574,38 @@ def plot_phys_act_counts():
 
 def plot_yoga():
     # Prep the data
-    phys_act['Activity Date'] = pd.to_datetime(phys_act['Activity Date'])
-    plot_df = phys_act[['Activity Date', 'Activity Type', 'Elapsed Time',]]
-    plot_df = plot_df[plot_df['Activity Type'].isin(['Yoga'])]
-    plot_df = plot_df.pivot_table(index='Activity Date', columns='Activity Type', values=[
-                                  'Elapsed Time'], aggfunc='sum').reset_index().fillna(0)
+    phys_act['activitydate'] = pd.to_datetime(phys_act['activitydate'])
+    plot_df = phys_act[['activitydate', 'activitytype', 'elapsedtime',]]
+    plot_df = plot_df[plot_df['activitytype'].isin(['Yoga'])]
+    plot_df = plot_df.pivot_table(index='activitydate', columns='activitytype', values=[
+                                  'elapsedtime'], aggfunc='sum').reset_index().fillna(0)
     plot_df.columns = ['_'.join(col).strip() if col[1] else col[0]
                        for col in plot_df.columns.values]
-    plot_df['Elapsed Time_Yoga'] = (plot_df['Elapsed Time_Yoga']/60).cumsum()
+    plot_df['elapsedtime_Yoga'] = (plot_df['elapsedtime_Yoga']/60).cumsum()
 
     def calculate_slope_runs(x, y):
         slope, intercept = np.polyfit(x, y, 1)
         return slope, intercept
 
     # Calculate overall slope
-    x = (plot_df['Activity Date'] - plot_df['Activity Date'].min()).dt.days
-    y = plot_df['Elapsed Time_Yoga']
+    x = (plot_df['activitydate'] - plot_df['activitydate'].min()).dt.days
+    y = plot_df['elapsedtime_Yoga']
     overall_slope, intercept = calculate_slope_runs(x, y)
 
     # Calculate yearly slopes
-    plot_df['Year'] = plot_df['Activity Date'].dt.year
+    plot_df['Year'] = plot_df['activitydate'].dt.year
     yearly_slopes = {}
     for year in plot_df['Year'].unique():
         df_year = plot_df[plot_df['Year'] == year]
-        x_year = (df_year['Activity Date'] -
-                  df_year['Activity Date'].min()).dt.days
-        y_year = df_year['Elapsed Time_Yoga']
+        x_year = (df_year['activitydate'] -
+                  df_year['activitydate'].min()).dt.days
+        y_year = df_year['elapsedtime_Yoga']
         slope_year, _ = calculate_slope_runs(x_year, y_year)
         yearly_slopes[year] = slope_year
 
     # Plotting
     fig, ax = plt.subplots(figsize=(10, 8))
-    sns.lineplot(x=plot_df['Activity Date'], y=plot_df['Elapsed Time_Yoga'],
+    sns.lineplot(x=plot_df['activitydate'], y=plot_df['elapsedtime_Yoga'],
                  marker='o', markersize=8, color='k')
     plt.xlabel("Year", fontsize=26, labelpad=12)
     plt.xticks(fontsize=16, rotation=45)
@@ -584,15 +615,15 @@ def plot_yoga():
     sns.despine(top=True, right=True)
 
     # Annotate overall slope
-    plt.text(0.05, 0.95, f'Overall slope: {
-             overall_slope:.2f} mins/day', transform=ax.transAxes, fontsize=16, verticalalignment='top')
+    plt.text(0.05, 0.95, f'Overall slope: {overall_slope:.2f} mins/day', 
+             transform=ax.transAxes, fontsize=16, verticalalignment='top')
 
     # Annotate yearly slopes
     for year, slope in yearly_slopes.items():
         last_date_of_year = plot_df[plot_df['Year']
-                                    == year]['Activity Date'].max()
-        y_value = plot_df.loc[plot_df['Activity Date'] ==
-                              last_date_of_year, 'Elapsed Time_Yoga'].values[0]
+                                    == year]['activitydate'].max()
+        y_value = plot_df.loc[plot_df['activitydate'] ==
+                              last_date_of_year, 'elapsedtime_Yoga'].values[0]
         plt.annotate(f'{slope:.2f}', xy=(last_date_of_year, y_value),
                      xytext=(10, 0), textcoords='offset points', ha='left', fontsize=16, color='black')
 
@@ -609,41 +640,41 @@ def plot_yoga():
 
 def plot_run_miles():
     # Prep the data
-    phys_act['Activity Date'] = pd.to_datetime(phys_act['Activity Date'])
-    plot_df = phys_act[['Activity Date', 'Activity Type', 'Distance']]
-    plot_df = plot_df[plot_df['Activity Type'].isin(['Run'])]
-    plot_df = plot_df.pivot_table(index='Activity Date', columns='Activity Type',
-                                  values='Distance', aggfunc='sum').reset_index().fillna(0)
+    phys_act['activitydate'] = pd.to_datetime(phys_act['activitydate'])
+    plot_df = phys_act[['activitydate', 'activitytype', 'distance']]
+    plot_df = plot_df[plot_df['activitytype'].isin(['Run'])]
+    plot_df = plot_df.pivot_table(index='activitydate', columns='activitytype',
+                                  values='distance', aggfunc='sum').reset_index().fillna(0)
 
     # Ensure the correct column name is used
-    if 'Distance_Run' in plot_df.columns:
-        plot_df['Distance_Run'] = plot_df['Distance_Run']
+    if 'distance_Run' in plot_df.columns:
+        plot_df['distance_Run'] = plot_df['distance_Run']
     else:
-        plot_df['Distance_Run'] = plot_df['Run'].cumsum()
+        plot_df['distance_Run'] = plot_df['Run'].cumsum()
 
     def calculate_slope_runs(x, y):
         slope, intercept = np.polyfit(x, y, 1)
         return slope, intercept
 
     # Calculate overall slope
-    x = (plot_df['Activity Date'] - plot_df['Activity Date'].min()).dt.days
-    y = plot_df['Distance_Run']
+    x = (plot_df['activitydate'] - plot_df['activitydate'].min()).dt.days
+    y = plot_df['distance_Run']
     overall_slope, intercept = calculate_slope_runs(x, y)
 
     # Calculate yearly slopes
-    plot_df['Year'] = plot_df['Activity Date'].dt.year
+    plot_df['Year'] = plot_df['activitydate'].dt.year
     yearly_slopes = {}
     for year in plot_df['Year'].unique():
         df_year = plot_df[plot_df['Year'] == year]
-        x_year = (df_year['Activity Date'] -
-                  df_year['Activity Date'].min()).dt.days
-        y_year = df_year['Distance_Run']
+        x_year = (df_year['activitydate'] -
+                  df_year['activitydate'].min()).dt.days
+        y_year = df_year['distance_Run']
         slope_year, _ = calculate_slope_runs(x_year, y_year)
         yearly_slopes[year] = slope_year
 
     # Plotting
     fig, ax = plt.subplots(figsize=(10, 8))
-    sns.lineplot(x=plot_df['Activity Date'], y=plot_df['Distance_Run'],
+    sns.lineplot(x=plot_df['activitydate'], y=plot_df['distance_Run'],
                  marker='o', markersize=8, color='k')
     plt.xlabel("Year", fontsize=26, labelpad=12)
     plt.xticks(fontsize=16)
@@ -653,15 +684,15 @@ def plot_run_miles():
     sns.despine(top=True, right=True)
 
     # Annotate overall slope
-    plt.text(0.05, 0.95, f'Overall slope: {
-             overall_slope:.2f} miles/day', transform=ax.transAxes, fontsize=16, verticalalignment='top')
+    plt.text(0.05, 0.95, f'Overall slope: {overall_slope:.2f} miles/day', 
+             transform=ax.transAxes, fontsize=16, verticalalignment='top')
 
     # Annotate yearly slopes
     for year, slope in yearly_slopes.items():
         last_date_of_year = plot_df[plot_df['Year']
-                                    == year]['Activity Date'].max()
-        y_value = plot_df.loc[plot_df['Activity Date'] ==
-                              last_date_of_year, 'Distance_Run'].values[0]
+                                    == year]['activitydate'].max()
+        y_value = plot_df.loc[plot_df['activitydate'] ==
+                              last_date_of_year, 'distance_Run'].values[0]
         plt.annotate(f'{slope:.2f}', xy=(last_date_of_year, y_value),
                      xytext=(10, 0), textcoords='offset points', ha='left', fontsize=16, color='black')
 
@@ -679,39 +710,39 @@ def plot_run_miles():
 
 def plot_run_mins():
     # Prep the data
-    phys_act['Activity Date'] = pd.to_datetime(phys_act['Activity Date'])
-    plot_df = phys_act[['Activity Date',
-                        'Activity Type', 'Elapsed Time', 'Distance']]
-    plot_df = plot_df[plot_df['Activity Type'].isin(['Run'])]
-    plot_df = plot_df.pivot_table(index='Activity Date', columns='Activity Type', values=[
-                                  'Elapsed Time', 'Distance'], aggfunc='sum').reset_index().fillna(0)
+    phys_act['activitydate'] = pd.to_datetime(phys_act['activitydate'])
+    plot_df = phys_act[['activitydate',
+                        'activitytype', 'elapsedtime', 'distance']]
+    plot_df = plot_df[plot_df['activitytype'].isin(['Run'])]
+    plot_df = plot_df.pivot_table(index='activitydate', columns='activitytype', values=[
+                                  'elapsedtime', 'distance'], aggfunc='sum').reset_index().fillna(0)
     plot_df.columns = ['_'.join(col).strip() if col[1] else col[0]
                        for col in plot_df.columns.values]
-    plot_df['Elapsed Time_Run'] = (plot_df['Elapsed Time_Run']/60).cumsum()
+    plot_df['elapsedtime_Run'] = (plot_df['elapsedtime_Run']/60).cumsum()
 
     def calculate_slope_runs(x, y):
         slope, intercept = np.polyfit(x, y, 1)
         return slope, intercept
 
     # Calculate overall slope
-    x = (plot_df['Activity Date'] - plot_df['Activity Date'].min()).dt.days
-    y = plot_df['Elapsed Time_Run']
+    x = (plot_df['activitydate'] - plot_df['activitydate'].min()).dt.days
+    y = plot_df['elapsedtime_Run']
     overall_slope, intercept = calculate_slope_runs(x, y)
 
     # Calculate yearly slopes
-    plot_df['Year'] = plot_df['Activity Date'].dt.year
+    plot_df['Year'] = plot_df['activitydate'].dt.year
     yearly_slopes = {}
     for year in plot_df['Year'].unique():
         df_year = plot_df[plot_df['Year'] == year]
-        x_year = (df_year['Activity Date'] -
-                  df_year['Activity Date'].min()).dt.days
-        y_year = df_year['Elapsed Time_Run']
+        x_year = (df_year['activitydate'] -
+                  df_year['activitydate'].min()).dt.days
+        y_year = df_year['elapsedtime_Run']
         slope_year, _ = calculate_slope_runs(x_year, y_year)
         yearly_slopes[year] = slope_year
 
     # Plotting
     fig, ax = plt.subplots(figsize=(10, 8))
-    sns.lineplot(x=plot_df['Activity Date'], y=plot_df['Elapsed Time_Run'],
+    sns.lineplot(x=plot_df['activitydate'], y=plot_df['elapsedtime_Run'],
                  marker='o', markersize=8, color='k')
     plt.xlabel("Year", fontsize=26, labelpad=12)
     plt.xticks(fontsize=16)
@@ -721,15 +752,15 @@ def plot_run_mins():
     sns.despine(top=True, right=True)
 
     # Annotate overall slope
-    plt.text(0.05, 0.95, f'Overall slope: {
-             overall_slope:.2f} mins/day', transform=ax.transAxes, fontsize=16, verticalalignment='top')
+    plt.text(0.05, 0.95, f'Overall slope: {overall_slope:.2f} mins/day', 
+             transform=ax.transAxes, fontsize=16, verticalalignment='top')
 
     # Annotate yearly slopes
     for year, slope in yearly_slopes.items():
         last_date_of_year = plot_df[plot_df['Year']
-                                    == year]['Activity Date'].max()
-        y_value = plot_df.loc[plot_df['Activity Date'] ==
-                              last_date_of_year, 'Elapsed Time_Run'].values[0]
+                                    == year]['activitydate'].max()
+        y_value = plot_df.loc[plot_df['activitydate'] ==
+                              last_date_of_year, 'elapsedtime_Run'].values[0]
         plt.annotate(f'{slope:.2f}', xy=(last_date_of_year, y_value),
                      xytext=(10, 0), textcoords='offset points', ha='left', fontsize=16, color='black')
 
@@ -747,20 +778,20 @@ def plot_run_mins():
 
 def plot_run_mins_mile():
     # Prep the data
-    phys_act['Activity Date'] = pd.to_datetime(phys_act['Activity Date'])
-    plot_df = phys_act[['Activity Date',
-                        'Activity Type', 'Elapsed Time', 'Distance']]
-    plot_df = plot_df[plot_df['Activity Type'].isin(['Run'])]
-    plot_df['Elapsed Time_Run'] = (plot_df['Elapsed Time']/60)
-    plot_df['Distance_Run'] = (plot_df['Distance'])
+    phys_act['activitydate'] = pd.to_datetime(phys_act['activitydate'])
+    plot_df = phys_act[['activitydate',
+                        'activitytype', 'elapsedtime', 'distance']]
+    plot_df = plot_df[plot_df['activitytype'].isin(['Run'])]
+    plot_df['elapsedtime_Run'] = (plot_df['elapsedtime']/60)
+    plot_df['distance_Run'] = (plot_df['distance'])
     plot_df['Min per Mile'] = (
-        plot_df['Elapsed Time_Run'] / plot_df['Distance_Run'])
+        plot_df['elapsedtime_Run'] / plot_df['distance_Run'])
     plot_df = plot_df[(plot_df['Min per Mile'] <= 12) &
                       (plot_df['Min per Mile'] >= 3.5)]
 
     # Plotting
     fig, ax = plt.subplots(figsize=(10, 8))
-    sns.lineplot(x=plot_df['Activity Date'], y=plot_df['Min per Mile'],
+    sns.lineplot(x=plot_df['activitydate'], y=plot_df['Min per Mile'],
                  marker='o', markersize=8, color='k')
     plt.xlabel("Year", fontsize=26, labelpad=12)
     plt.xticks(fontsize=16)
@@ -784,16 +815,16 @@ def plot_run_mins_mile():
 
 def plot_run_mins_mile_month():
     # Prep the data
-    phys_act['Activity Date'] = pd.to_datetime(phys_act['Activity Date'])
-    plot_df = phys_act[['Activity Date',
-                        'Activity Type', 'Elapsed Time', 'Distance']]
-    plot_df = plot_df[plot_df['Activity Type'].isin(['Run'])]
-    plot_df['Year'] = phys_act['Activity Date'].dt.year
-    plot_df['Month'] = phys_act['Activity Date'].dt.month
-    plot_df['Elapsed Time_Run'] = (plot_df['Elapsed Time']/60)
-    plot_df['Distance_Run'] = (plot_df['Distance'])
+    phys_act['activitydate'] = pd.to_datetime(phys_act['activitydate'])
+    plot_df = phys_act[['activitydate',
+                        'activitytype', 'elapsedtime', 'distance']]
+    plot_df = plot_df[plot_df['activitytype'].isin(['Run'])]
+    plot_df['Year'] = phys_act['activitydate'].dt.year
+    plot_df['Month'] = phys_act['activitydate'].dt.month
+    plot_df['elapsedtime_Run'] = (plot_df['elapsedtime']/60)
+    plot_df['distance_Run'] = (plot_df['distance'])
     plot_df['Min per Mile'] = (
-        plot_df['Elapsed Time_Run'] / plot_df['Distance_Run'])
+        plot_df['elapsedtime_Run'] / plot_df['distance_Run'])
     plot_df = plot_df[(plot_df['Min per Mile'] <= 12) &
                       (plot_df['Min per Mile'] >= 3.5)]
 
@@ -960,7 +991,7 @@ def total_cv_adds():
                     textcoords="offset points", xytext=(0, 10), ha='center', fontsize=16)
 
     plt.xlabel("Year", fontsize=26, labelpad=12)
-    ticks = list(range(cv_adds['year'].min(), cv_adds['year'].max(), 2))
+    ticks = list(range(cv_adds['year'].min(), cv_adds['year'].max()+1, 2))
     plt.xticks(ticks=ticks, labels=ticks, fontsize=16)
     plt.ylabel("Total Additions", fontsize=26, labelpad=12)
     plt.yticks(fontsize=16)
@@ -994,7 +1025,7 @@ def plot_research_cv():
         palette='cividis'
     )
     plt.xlabel("Year", fontsize=26, labelpad=12)
-    ticks = list(range(cv_adds['year'].min(), cv_adds['year'].max(), 2))
+    ticks = list(range(cv_adds['year'].min(), cv_adds['year'].max()+1, 2))
     plt.xticks(ticks=ticks, labels=ticks, fontsize=16)
     plt.ylabel("Number of Additions", fontsize=26, labelpad=12)
     plt.yticks(fontsize=16)
@@ -1032,7 +1063,7 @@ def plot_dissem_cv():
     )
     plt.xlabel("Year", fontsize=26, labelpad=12)
 
-    ticks = list(range(cv_adds['year'].min(), cv_adds['year'].max(), 2))
+    ticks = list(range(cv_adds['year'].min(), cv_adds['year'].max()+1, 2))
     plt.xticks(ticks=ticks, labels=ticks, fontsize=16)
     plt.ylabel("Number of Additions", fontsize=26, labelpad=12)
 
@@ -1068,7 +1099,7 @@ def plot_service_cv():
         palette='cividis'
     )
     plt.xlabel("Year", fontsize=26, labelpad=12)
-    ticks = list(range(cv_adds['year'].min(), cv_adds['year'].max(), 2))
+    ticks = list(range(cv_adds['year'].min(), cv_adds['year'].max()+1, 2))
     plt.xticks(ticks=ticks, labels=ticks, fontsize=16)
     plt.ylabel("Number of Additions", fontsize=26, labelpad=12)
     plt.yticks(fontsize=16)
@@ -1122,8 +1153,8 @@ def plot_cum_pages():
                     textcoords="offset points", xytext=(0, 10), ha='center', fontsize=16)
 
     # Annotate overall slope
-    plt.text(0.05, 0.95, f'Overall slope: {
-             overall_slope:,.2f} Pages/Year', transform=ax.transAxes, fontsize=16, verticalalignment='top')
+    plt.text(0.05, 0.95, f'Overall slope: {overall_slope:.2f} Pages/Year', 
+             transform=ax.transAxes, fontsize=16, verticalalignment='top')
 
     # Save the plot to a bytes buffer
     buffer = BytesIO()
@@ -1168,8 +1199,8 @@ def plot_cum_words():
                     textcoords="offset points", xytext=(0, 10), ha='center', fontsize=16)
 
     # Annotate overall slope
-    plt.text(0.05, 0.95, f'Overall slope: {
-             overall_slope:,.2f} Words/Year', transform=ax.transAxes, fontsize=16, verticalalignment='top')
+    plt.text(0.05, 0.95, f'Overall slope: {overall_slope:.2f} Words/Year', 
+             transform=ax.transAxes, fontsize=16, verticalalignment='top')
 
     # Save the plot to a bytes buffer
     buffer = BytesIO()
@@ -1278,8 +1309,8 @@ def plot_cum_journals():
                     textcoords="offset points", xytext=(0, 10), ha='center', fontsize=16)
 
     # Annotate overall slope
-    plt.text(0.05, 0.95, f'Overall slope: {
-             overall_slope:,.2f} New Journals/Year', transform=ax.transAxes, fontsize=16, verticalalignment='top')
+    plt.text(0.05, 0.95, f'Overall slope: {overall_slope:.2f} New Journals/Year', 
+             transform=ax.transAxes, fontsize=16, verticalalignment='top')
 
     # Save the plot to a bytes buffer
     buffer = BytesIO()
@@ -1294,30 +1325,26 @@ def plot_cum_journals():
 
 # BASEBALL WATCHED
 def create_cr_baseball():
-    # Prep the data
+    # Prep the data and ensure it's sorted by date
     plot_df = baseball[pd.to_datetime(baseball['date']) <= pd.to_datetime(
-        datetime.date.today())].reset_index(drop=True)
+        datetime.date.today())].copy()
+    plot_df['date'] = pd.to_datetime(plot_df['date'])
+    plot_df = plot_df.sort_values('date').reset_index(drop=True)
     plot_df['Year'] = plot_df['date'].dt.year
 
-    # Ensure 'Total' column exists in the DataFrame
-    plot_df['Total'] = plot_df[['ovr_pirates',
-                                'ovr_guardians', 'ovr_other']].sum(axis=1)
-
-    # Function to split data by year and filter by months
-    def split_and_filter_by_year(df, start_month, end_month):
-        segments = {}
-        for year in df['Year'].unique():
-            yearly_data = df[(df['Year'] == year) & (
-                df['date'].dt.month >= start_month) & (df['date'].dt.month <= end_month)]
-            segments[year] = yearly_data
-        return segments
-
-    # Split data by year and filter to include only February through October
-    segments = split_and_filter_by_year(plot_df, 2, 11)
+    # Create cumulative counts for each team
+    teams = ['pirates', 'guardians', 'braves', 'other']
+    for team in teams:
+        # Calculate cumulative sum of boolean values (already sorted by date)
+        plot_df[team.capitalize()] = plot_df[team].cumsum()
+    
+    # Calculate total games watched (sum of all team games)
+    plot_df['Total'] = plot_df[['Pirates', 'Guardians', 'Braves', 'Other']].sum(axis=1)
 
     def calculate_yearly_trendlines(df, column):
         trends = {}
-        for year, yearly_data in df.items():
+        for year in df['Year'].unique():
+            yearly_data = df[df['Year'] == year]
             yearly_data['DayOfYear'] = yearly_data['date'].dt.dayofyear
             z = np.polyfit(yearly_data['DayOfYear'], yearly_data[column], 1)
             p = np.poly1d(z)
@@ -1333,18 +1360,21 @@ def create_cr_baseball():
         for year, trend in trends.items():
             slope = trend[1]
             last_date_of_year = data[data['Year'] == year]['date'].max()
-            plt.annotate(f'{slope:.2f}', xy=(last_date_of_year, data.loc[data['date'] == last_date_of_year, column_name].values[0]),
+            y_value = data.loc[data['date'] == last_date_of_year, column_name].values[0]
+            plt.annotate(f'{slope:.2f}', xy=(last_date_of_year, y_value),
                          xytext=(-10, 0), textcoords='offset points', ha='right', color=color, fontsize=14)
 
     # Calculate trendlines
-    trends_pirates = calculate_yearly_trendlines(segments, 'ovr_pirates')
-    trends_guardians = calculate_yearly_trendlines(segments, 'ovr_guardians')
-    trends_other = calculate_yearly_trendlines(segments, 'ovr_other')
-    trends_total = calculate_yearly_trendlines(segments, 'Total')
+    trends_pirates = calculate_yearly_trendlines(plot_df, 'Pirates')
+    trends_guardians = calculate_yearly_trendlines(plot_df, 'Guardians')
+    trends_braves = calculate_yearly_trendlines(plot_df, 'Braves')
+    trends_other = calculate_yearly_trendlines(plot_df, 'Other')
+    trends_total = calculate_yearly_trendlines(plot_df, 'Total')
 
     # Extract slopes
     slopes_pirates = extract_slopes(trends_pirates)
     slopes_guardians = extract_slopes(trends_guardians)
+    slopes_braves = extract_slopes(trends_braves)
     slopes_other = extract_slopes(trends_other)
     slopes_total = extract_slopes(trends_total)
 
@@ -1354,27 +1384,25 @@ def create_cr_baseball():
         'Year': slopes_pirates.keys(),
         'Pirates': slopes_pirates.values(),
         'Guardians': slopes_guardians.values(),
+        'Braves': slopes_braves.values(),
         'Other': slopes_other.values(),
     })
     slopes_df = slopes_df.melt(id_vars=['Year'])
 
     fig, ax = plt.subplots(figsize=(18, 10))
 
-    # Plot each category for each year segment
-    for year, segment in segments.items():
-        plt.plot(segment['date'], segment['Total'], label='Total' if year == list(
-            segments.keys())[0] else "", color='green')
-        plt.plot(segment['date'], segment['ovr_pirates'], label='Pirates' if year == list(
-            segments.keys())[0] else "", color='black')
-        plt.plot(segment['date'], segment['ovr_other'], label='Other' if year == list(
-            segments.keys())[0] else "", color='blue')
-        plt.plot(segment['date'], segment['ovr_guardians'], label='Guardians' if year == list(
-            segments.keys())[0] else "", color='red')
+    # Plot each category (data is already sorted by date)
+    plt.plot(plot_df['date'], plot_df['Total'], label='Total', color='green')
+    plt.plot(plot_df['date'], plot_df['Pirates'], label='Pirates', color='black')
+    plt.plot(plot_df['date'], plot_df['Guardians'], label='Guardians', color='red')
+    plt.plot(plot_df['date'], plot_df['Braves'], label='Braves', color='blue')
+    plt.plot(plot_df['date'], plot_df['Other'], label='Other', color='purple')
 
     # Annotate the slopes using the function
-    annotate_slopes(trends_pirates, plot_df, 'ovr_pirates', 'black')
-    annotate_slopes(trends_guardians, plot_df, 'ovr_guardians', 'red')
-    annotate_slopes(trends_other, plot_df, 'ovr_other', 'blue')
+    annotate_slopes(trends_pirates, plot_df, 'Pirates', 'black')
+    annotate_slopes(trends_guardians, plot_df, 'Guardians', 'red')
+    annotate_slopes(trends_braves, plot_df, 'Braves', 'blue')
+    annotate_slopes(trends_other, plot_df, 'Other', 'purple')
     annotate_slopes(trends_total, plot_df, 'Total', 'green')
 
     plt.xlabel("Date", fontsize=26, labelpad=12)
@@ -1383,8 +1411,7 @@ def create_cr_baseball():
     plt.yticks(fontsize=16)
 
     ax.ticklabel_format(style='plain', axis='y')
-    ax.yaxis.set_major_formatter(FuncFormatter(
-        lambda x, pos: '{:,.0f}'.format(x)))
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '{:,.0f}'.format(x)))
     sns.despine(top=True, right=True)
     plt.legend(loc="upper center", fontsize=20, frameon=False)
 
@@ -1399,15 +1426,24 @@ def create_cr_baseball():
     return image_base64
 
 
-baseball['date'] = pd.to_datetime(baseball['date'])
-baseball['Year'] = baseball['date'].dt.year
-
-
 def plot_games_year():
-    plot_df = baseball[['Year', 'pirates', 'guardians', 'other']].groupby(
-        by=['Year']).sum().reset_index()
-    plot_df['Total'] = plot_df[['pirates', 'guardians', 'other']].sum(axis=1)
-    plot_df = plot_df.melt(id_vars=['Year'])
+    # Prep the data
+    plot_df = baseball.copy()
+    plot_df['Year'] = pd.to_datetime(plot_df['date']).dt.year
+    
+    # Sum boolean values for each team by year
+    yearly_totals = plot_df.groupby('Year').agg({
+        'pirates': 'sum',
+        'guardians': 'sum',
+        'braves': 'sum',
+        'other': 'sum'
+    }).reset_index()
+    
+    # Calculate total games
+    yearly_totals['Total'] = yearly_totals[['pirates', 'guardians', 'braves', 'other']].sum(axis=1)
+    
+    # Melt the data for plotting
+    plot_df = yearly_totals.melt(id_vars=['Year'])
 
     # Plotting
     fig, ax = plt.subplots(figsize=(13, 8))
@@ -1454,9 +1490,9 @@ def plot_games_year():
 app = Dash(__name__)
 
 app.layout = html.Div(children=[
-    dcc.Tabs([
+    dcc.Tabs(id='tabs', value='OVR Data', children=[
         # OVR Charts
-        dcc.Tab(label='OVR Data', children=[
+        dcc.Tab(label='OVR Data', value='OVR Data', children=[
             # OVR Data
             html.Div(children='', style={'textAlign': 'center'}),
             html.Img(
@@ -1489,7 +1525,7 @@ app.layout = html.Div(children=[
         ]),
 
         # Physical Activity
-        dcc.Tab(label="Physical Activity", children=[
+        dcc.Tab(label="Physical Activity", value="Physical Activity", children=[
             # Run and Yoga Data
             html.Div(children=[
                 html.Img(
@@ -1530,8 +1566,21 @@ app.layout = html.Div(children=[
         ]),
 
         # Clustering data
-        dcc.Tab(label='Data Clustering', children=[
-            dcc.Graph(id='clustering-graph')
+        dcc.Tab(label='Data Clustering', value='Data Clustering', children=[
+            html.Div(children=[
+                html.Img(
+                    id='clustering-graph-xy',
+                    style={'display': 'inline-block', 'width': '30%', 'margin': '1%'}
+                ),
+                html.Img(
+                    id='clustering-graph-xz',
+                    style={'display': 'inline-block', 'width': '30%', 'margin': '1%'}
+                ),
+                html.Img(
+                    id='clustering-graph-yz',
+                    style={'display': 'inline-block', 'width': '30%', 'margin': '1%'}
+                )
+            ], style={'textAlign': 'center', 'display': 'flex', 'justify-content': 'center'})
         ]),
 
         # Book Reading
@@ -1649,104 +1698,178 @@ app.layout = html.Div(children=[
 ])
 
 @app.callback(
-    Output('clustering-graph', 'figure'),
-    Input('tabs', 'value')  # Assuming you have a tabs component with id='tabs'
+    [Output('clustering-graph-xy', 'src'),
+     Output('clustering-graph-xz', 'src'),
+     Output('clustering-graph-yz', 'src')],
+    Input('tabs', 'value')
 )
-def update_clustering_graph(selected_tab):
+def update_clustering_graphs(selected_tab):
+    print("\n=== Debug: Clustering Tab ===")
+    print("Selected tab:", selected_tab)
+    
     if selected_tab == 'Data Clustering':
+        print("Entering clustering tab section")
+        
+        # Debug model_df
+        print("model_df exists:", 'model_df' in globals())
+        print("model_df type:", type(model_df))
+        print("model_df columns:", model_df.columns.tolist() if not model_df.empty else "Empty DataFrame")
+        print("model_df shape:", model_df.shape if not model_df.empty else "Empty")
+        
         # Check if model_df is populated
         if model_df.empty:
             print("model_df is empty")
-            return {}
+            return '', '', ''
         
-        # Prep the data
-        df_numeric = model_df.drop(columns='Date', errors='ignore')
-        df_numeric = df_numeric.fillna(0)
+        try:
+            # Prep the data - use only numeric columns and exclude derived/redundant columns
+            exclude_columns = ['date_column', 'Year', 'Month_Num', 'Day', 'DayOfYear']
+            numeric_columns = model_df.select_dtypes(include=['float64', 'int64']).columns
+            print("Numeric columns:", numeric_columns.tolist())
+            
+            df_numeric = model_df[numeric_columns].drop(columns=exclude_columns, errors='ignore')
+            print("df_numeric shape after exclusions:", df_numeric.shape)
+            
+            # Remove columns with all zeros or NaN
+            df_numeric = df_numeric.loc[:, (df_numeric != 0).any(axis=0)]
+            df_numeric = df_numeric.loc[:, df_numeric.notna().any(axis=0)]
+            print("df_numeric shape after cleaning:", df_numeric.shape)
+            print("Final features:", df_numeric.columns.tolist())
 
-        # Standardize using Min-Max Scaling
-        scaler = MinMaxScaler()
-        df_scaled = pd.DataFrame(scaler.fit_transform(df_numeric), columns=df_numeric.columns)
+            # Fill NaN values with 0 (or you could use mean/median imputation)
+            df_numeric = df_numeric.fillna(0)
+            print("Shape after NaN handling:", df_numeric.shape)
 
-        # t-SNE dimensionality reduction
-        tsne = TSNE(n_components=3, random_state=2225, perplexity=20, n_iter=1000)
-        tsne_results = tsne.fit_transform(df_scaled)
+            # Standardize using Min-Max Scaling
+            scaler = MinMaxScaler()
+            df_scaled = pd.DataFrame(scaler.fit_transform(df_numeric), columns=df_numeric.columns)
+            print("Scaling completed")
 
-        # Add t-SNE results back to the DataFrame
-        df_scaled['t-SNE1'] = tsne_results[:, 0]
-        df_scaled['t-SNE2'] = tsne_results[:, 1]
-        df_scaled['t-SNE3'] = tsne_results[:, 2]
-
-        # Label which days the data come from
-        df_scaled['Label'] = 'All Others'
-        df_scaled.loc[df_scaled.tail(7).index, 'Label'] = 'Last 7 Days'
-        df_scaled.loc[df_scaled.tail(30).head(23).index, 'Label'] = 'Last 30 Days'
-
-        # Add back in a date col for coloring
-        df_scaled['date'] = pd.to_datetime(model_df['Date'])
-
-        # Create a new column for year to use as gradient coloring
-        df_scaled['Year'] = df_scaled['date'].dt.year
-
-        # Interactive Plotly visualization
-        fig = px.scatter_3d(
-            df_scaled, 
-            x='t-SNE1', 
-            y='t-SNE2', 
-            z='t-SNE3', 
-            color='Year',
-            labels={'Year': 'Year'},
-            color_continuous_scale=px.colors.sequential.Viridis,
-        )
-
-        # Adjust marker size and opacity for the main plot
-        fig.update_traces(marker=dict(size=3, opacity=0.5))
-
-        # Add markers for "Last 30 Days"
-        last_30_days = df_scaled[df_scaled['Label'] == 'Last 30 Days']
-        fig.add_trace(
-            px.scatter_3d(
-                last_30_days,
-                x='t-SNE1',
-                y='t-SNE2',
-                z='t-SNE3',
-            ).data[0].update(
-                marker=dict(size=5, color='blue', symbol='square-open', opacity=0.8)
+            # t-SNE dimensionality reduction (3D)
+            print("Starting t-SNE computation...")
+            tsne = TSNE(
+                n_components=3,
+                random_state=2225,
+                perplexity=30,
+                n_iter=500,  # Reduced from 1000
+                method='barnes_hut',  # Using the faster Barnes-Hut approximation
+                angle=0.5,  # Default value for Barnes-Hut, higher values = faster but less accurate
+                verbose=1
             )
-        )
+            tsne_results = tsne.fit_transform(df_scaled)
+            print("t-SNE computation completed")
 
-        # Add markers for "Last 7 Days"
-        last_7_days = df_scaled[df_scaled['Label'] == 'Last 7 Days']
-        fig.add_trace(
-            px.scatter_3d(
-                last_7_days,
-                x='t-SNE1',
-                y='t-SNE2',
-                z='t-SNE3',
-            ).data[0].update(
-                marker=dict(size=5, color='red', symbol='square-open', opacity=0.8)
+            # Add t-SNE results back to the DataFrame
+            df_scaled['t-SNE1'] = tsne_results[:, 0]
+            df_scaled['t-SNE2'] = tsne_results[:, 1]
+            df_scaled['t-SNE3'] = tsne_results[:, 2]
+
+            # Label which days the data come from
+            df_scaled['Label'] = 'All Others'
+            df_scaled.loc[df_scaled.tail(7).index, 'Label'] = 'Last 7 Days'
+            df_scaled.loc[df_scaled.tail(30).head(23).index, 'Label'] = 'Last 30 Days'
+
+            # Add back in a date col for coloring
+            df_scaled['date_column'] = pd.to_datetime(model_df['date_column'])
+            df_scaled['Year'] = df_scaled['date_column'].dt.year
+
+            def create_2d_projection(x, y, xlabel, ylabel, title):
+                try:
+                    fig, ax = plt.subplots(figsize=(10, 8))
+
+                    # Plot main scatter points colored by year
+                    scatter = ax.scatter(
+                        df_scaled[x],
+                        df_scaled[y],
+                        c=df_scaled['Year'],
+                        cmap='viridis',
+                        alpha=0.5,
+                        s=50
+                    )
+
+                    # Add colorbar
+                    plt.colorbar(scatter, label='Year')
+
+                    # Plot last 30 days
+                    last_30_days = df_scaled[df_scaled['Label'] == 'Last 30 Days']
+                    if not last_30_days.empty:
+                        ax.scatter(
+                            last_30_days[x],
+                            last_30_days[y],
+                            color='blue',
+                            alpha=0.8,
+                            s=100,
+                            marker='s',
+                            label='Last 30 Days'
+                        )
+
+                    # Plot last 7 days
+                    last_7_days = df_scaled[df_scaled['Label'] == 'Last 7 Days']
+                    if not last_7_days.empty:
+                        ax.scatter(
+                            last_7_days[x],
+                            last_7_days[y],
+                            color='red',
+                            alpha=0.8,
+                            s=100,
+                            marker='s',
+                            label='Last 7 Days'
+                        )
+
+                    plt.title(title, fontsize=20, pad=20)
+                    plt.xlabel(xlabel, fontsize=16)
+                    plt.ylabel(ylabel, fontsize=16)
+                    plt.legend(fontsize=12, frameon=False)
+                    sns.despine(top=True, right=True)
+
+                    # Save the plot to a bytes buffer
+                    buffer = BytesIO()
+                    plt.savefig(buffer, format='png', bbox_inches='tight', dpi=300)
+                    buffer.seek(0)
+                    image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+                    plt.close()
+
+                    return f'data:image/png;base64,{image_base64}'
+                except Exception as e:
+                    print(f"Error creating {title}:", str(e))
+                    return ''
+
+            print("Creating projections...")
+            # Create three 2D projections
+            xy_projection = create_2d_projection(
+                't-SNE1', 't-SNE2', 
+                't-SNE Dimension 1', 't-SNE Dimension 2',
+                'XY Projection of Daily Activities'
             )
-        )
+            print("XY projection created")
+            
+            xz_projection = create_2d_projection(
+                't-SNE1', 't-SNE3',
+                't-SNE Dimension 1', 't-SNE Dimension 3',
+                'XZ Projection of Daily Activities'
+            )
+            print("XZ projection created")
+            
+            yz_projection = create_2d_projection(
+                't-SNE2', 't-SNE3',
+                't-SNE Dimension 2', 't-SNE Dimension 3',
+                'YZ Projection of Daily Activities'
+            )
+            print("YZ projection created")
 
-        # Adjust figure layout height
-        fig.update_layout(
-            height=800, 
-            template="plotly_dark",
-            scene=dict(
-                aspectmode='cube',
-                bgcolor="black", 
-                xaxis=dict(showgrid=False, showticklabels=False),
-                yaxis=dict(showgrid=False, showticklabels=False),
-                zaxis=dict(showgrid=False, showticklabels=False),
-            ),
-        )
+            return xy_projection, xz_projection, yz_projection
+        
+        except Exception as e:
+            print("Error in clustering:", str(e))
+            import traceback
+            traceback.print_exc()
+            return '', '', ''
 
-        return fig
-
-    return {}  # Return an empty figure if the tab is not selected
+    return '', '', ''
 
 def open_browser():
     webbrowser.open_new("http://localhost:8051/")
 
 if __name__ == '__main__':
     Timer(1, open_browser).start()  # Open the browser after 1 second
-    app.run_server(debug=False, port=8051)
+    app.run(debug=False, port=8051)
