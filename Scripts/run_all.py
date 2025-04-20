@@ -42,7 +42,7 @@ except Exception as e:
 # Prep the data for unsupervised learning
 print("\n\Prepping data for unsupervised learning...")
 try:
-    run_script('unsupervised_learning_ml_data_prep.py')
+    run_script('unsupervised_ml_data_prep.py')
     print("Data prepped for unsupervised learning")
 except subprocess.CalledProcessError as e:
     print(f"Error running {e.cmd}: {e}")

@@ -3,11 +3,43 @@
 
 # Data manipulation
 from dotenv import load_dotenv
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 import os
+import warnings
+from IPython.display import display, HTML
 import pandas as pd
 import numpy as np
+from sklearn.cluster import AgglomerativeClustering
+from scipy.cluster.hierarchy import dendrogram, linkage
+from sklearn.manifold import TSNE
+import umap
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import IterativeImputer
+from sklearn.preprocessing import MinMaxScaler
+
+# System
+import base64
+from io import BytesIO
 import datetime
+import random
+
+# Data viz
+import matplotlib.pyplot as plt
+import seaborn as sns
+import plotly.express as px
+import plotly.graph_objs as go
+from matplotlib.ticker import FuncFormatter
+
+# Dashboard
+from dash import Dash, dcc, html
+from dash import dash_table
+import webbrowser
+from threading import Timer
+
+# Preferences
+pd.options.display.max_columns = None
+warnings.filterwarnings('ignore')
+
 # Load environment variables from .env file
 load_dotenv()
 
@@ -25,44 +57,23 @@ engine = create_engine(DATABASE_URL)
 # Function to read data from a table
 def read_table(table_name):
     query = f"SELECT * FROM {table_name}"
-    return pd.read_sql(query, engine)
+    return pd.read_sql_query(query, con=engine)
 
-# Function to get the latest date from the modeling_ready_data table
-def get_latest_date():
-    try:
-        query = "SELECT MAX(date_column) AS latest_date FROM modeling_ready_data"
-        result = pd.read_sql(query, engine)
-        return result['latest_date'].iloc[0]
-    except:
-        return '2012-04-01'
-
-# Function to read new data from a table
-def read_new_data(table_name, date_column, latest_date):
-    if (table_name!='books_read') & (table_name!='cv_additions') & (table_name!='publication_stats'):
-        query = f"SELECT * FROM {table_name} WHERE {date_column} > '{latest_date}'"
-    else:
-        query = f"SELECT * FROM {table_name} WHERE {date_column} > '{latest_date[:4]}'"
-    return pd.read_sql(query, engine)
-
-# Get the latest date from the modeling_ready_data table
-latest_date = get_latest_date()
-print(latest_date)
-
-# Read in the new data from the database
-baseball = read_new_data('baseball_watched', 'date', latest_date)
-books = read_new_data('books_read', 'year_read', latest_date)
-cv_adds = read_new_data('cv_additions', 'year', latest_date)
-pubs = read_new_data('publication_stats', 'year', latest_date)
-all_df = read_new_data('raw_data', 'date_column', latest_date)
+# Read in the raw data from the database
+baseball = read_table('baseball_watched')
+books = read_table('books_read')
+cv_adds = read_table('cv_additions')
+pubs = read_table('publication_stats')
+all_df = read_table('raw_data')
 
 # Whoop
-cycle_collection = read_new_data('whoop_cycle_collection', 'created_at', latest_date)
-recoveries = read_new_data('whoop_recoveries', 'created_at', latest_date)
-sleep_collection = read_new_data('whoop_sleep', 'created_at', latest_date)
-workouts = read_new_data('whoop_workouts', 'created_at', latest_date)
+cycle_collection = read_table('whoop_cycle_collection')
+recoveries = read_table('whoop_recoveries')
+sleep_collection = read_table('whoop_sleep')
+workouts = read_table('whoop_workouts')
 
 # Strava
-phys_act = read_new_data('strava_activities', 'activitydate', latest_date)
+phys_act = read_table('strava_activities')
 phys_act = phys_act[['activitydate', 'activitytype', 'elapsedtime', 'distance']]
 
 # Keep only numeric baseball cols
@@ -99,22 +110,26 @@ def convert_to_minutes(df, datetime_cols):
 datetime_cols = ['updated_at', 'cycle_start', 'cycle_end']
 cycle_collection = convert_to_minutes(cycle_collection, datetime_cols)
 cycle_collection = cycle_collection.drop(datetime_cols + ['id', 'user_id', 'timezone_offset', 'score_state'], axis=1)
+cycle_collection['created_at'] = pd.to_datetime(cycle_collection['created_at']).dt.date
 
 # Recoveries
 datetime_cols = ['updated_at']
 recoveries = convert_to_minutes(recoveries, datetime_cols)
 recoveries = recoveries.drop(datetime_cols + ['cycle_id', 'sleep_id', 'user_id', 'score_state', 'score_user_calibrating'], axis=1)
+recoveries['created_at'] = pd.to_datetime(recoveries['created_at']).dt.date
 
 # Sleep Collections
 datetime_cols = ['updated_at', 'sleep_start', 'sleep_end', ]
 sleep_collection = convert_to_minutes(sleep_collection, datetime_cols)
 sleep_collection = sleep_collection.drop(datetime_cols + ['id', 'user_id', 'timezone_offset', 'score_state'], axis=1)
 sleep_collection['nap'] = [0 if val=="false" else 1 for val in sleep_collection['nap']]
+sleep_collection['created_at'] = pd.to_datetime(sleep_collection['created_at']).dt.date
 
 # Workouts
 datetime_cols = ['updated_at', 'workout_start', 'workout_end', ]
 workouts = convert_to_minutes(workouts, datetime_cols)
 workouts = workouts.drop(datetime_cols + ['id', 'user_id', 'timezone_offset', 'score_state'], axis=1)
+workouts['created_at'] = pd.to_datetime(workouts['created_at']).dt.date
 
 # Normalize date to remove varied time listings
 phys_act = phys_act.drop_duplicates().reset_index(drop=True)
@@ -133,7 +148,7 @@ wide_phys_act = (
     phys_act
     .pivot_table(
         index='date',                  # Use 'date' as the index
-        columns='activitytype',        # Pivot on 'Activity Type'
+        columns='activitytype',       # Pivot on 'Activity Type'
         aggfunc='sum',                 # Aggregate by summing values
     )
 )
@@ -157,14 +172,6 @@ all_data['Month'] = all_data['date_column'].dt.month_name()
 all_data['Day'] = all_data['date_column'].dt.day_name()
 all_data['DayOfYear'] = all_data['date_column'].dt.dayofyear
 all_data = all_data.sort_values(by=['Year', 'DayOfYear'])
-for col in list(all_data):
-    if col in ['date_column', 'Year', 'Month_Num', 'Month', 'Day', 'DayOfYear']:
-        continue
-    else:
-        try:
-            all_data[col] = all_data[col].cumsum()
-        except:
-            continue
 
 # Only include data from new year if it is at least three weeks into it
 if (datetime.date.today().month == 1) & (datetime.date.today().day < 21):
@@ -188,7 +195,7 @@ date_cols = {
 cleaned_dfs = pd.DataFrame()
 for name, (date_col, df) in date_cols.items():
     temp_df = df.copy()
-    temp_df['date_column'] = pd.to_datetime(temp_df[date_col]).dt.normalize()
+    temp_df['date_column'] = pd.to_datetime(temp_df[date_col]).dt.normalize()  # Ensure consistent day-month-year format
     temp_df['date_column'] = temp_df['date_column'].astype(str)
     temp_df = temp_df.drop(date_col, axis=1)
     if len(cleaned_dfs)==0:
@@ -227,5 +234,11 @@ day_to_number = {
 }
 model_df['Day'] = model_df['Day'].map(day_to_number)
 
-# Append the final model-ready DataFrame to the database
+# Drop duplicates
+model_df = model_df.drop_duplicates(subset=['date_column'], keep="first").reset_index(drop=True)
+
+# Push to Database
 model_df.to_sql('modeling_ready_data', engine, if_exists='append', index=False)
+
+# Save to local csv
+model_df.to_csv('./Data/modeling_ready_data.csv', index=False)
