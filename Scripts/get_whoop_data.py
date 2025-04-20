@@ -7,32 +7,34 @@ import requests
 import psycopg2
 import json
 from datetime import datetime
-
 load_dotenv()
 
 # Retrieve variables from environment
 WHOOP_EMAIL = os.getenv("WHOOP_EMAIL")
 WHOOP_PASSWORD = os.getenv("WHOOP_PASSWORD")
-DATABASE_URL = os.getenv('DATABASE_URL')
+DATABASE_URL = os.getenv('DB_URL')
 
 # Initialize database connection
 engine = create_engine(DATABASE_URL)
 
 # Function to get the latest `created_at` from a table
 def get_latest_created_at(table_name):
-    query = f"SELECT MAX(created_at) AS latest_date FROM {table_name}"
-    with engine.connect() as conn:
-        result = conn.execute(text(query)).fetchone()
-        return result["latest_date"]
+    try:
+        query = f"SELECT MAX(created_at) AS latest_date FROM {table_name}"
+        with engine.connect() as conn:
+            result = conn.execute(text(query)).fetchone()
+            return result[0]
+    except:
+        return '2024-09-01'
 
 # Function to remove duplicates from a table
-def remove_duplicates(table_name, unique_columns):
+def remove_duplicates(table_name, unique_column):
     query = f"""
     DELETE FROM {table_name}
-    WHERE id IN (
-        SELECT id FROM (
-            SELECT id, ROW_NUMBER() OVER (
-                PARTITION BY {', '.join(unique_columns)} 
+    WHERE {unique_column} IN (
+        SELECT {unique_column} FROM (
+            SELECT {unique_column}, ROW_NUMBER() OVER (
+                PARTITION BY {unique_column} 
                 ORDER BY created_at DESC
             ) AS row_num
             FROM {table_name}
@@ -43,6 +45,14 @@ def remove_duplicates(table_name, unique_columns):
     with engine.connect() as conn:
         conn.execute(text(query))
 
+# List of table names to get latest `created_at` dates from
+table_names = {
+    'workouts': 'whoop_workouts',
+    'sleep_collection': 'whoop_sleep',
+    'recoveries': 'whoop_recoveries',
+    'cycle_collection': 'whoop_cycle_collection'
+}
+
 # Get latest `created_at` dates from the tables
 latest_dates = {
     name: get_latest_created_at(table_name)
@@ -51,17 +61,20 @@ latest_dates = {
 
 # Set default start_date if no data exists
 default_start_date = "2024-09-01"
+
+# Convert latest_dates[name] to a datetime object if it's a string
 start_dates = {
-    name: (latest_dates[name].strftime("%Y-%m-%d") if latest_dates[name] else default_start_date)
+    name: (pd.to_datetime(latest_dates[name]).strftime("%Y-%m-%d") if latest_dates[name] else default_start_date)
     for name in table_names.keys()
 }
 
 # Initialize WhoopClient and fetch data since the latest `created_at`
 with WhoopClient(WHOOP_EMAIL, WHOOP_PASSWORD) as client:
-    workouts = client.get_workout_collection(start_date=start_dates[workouts])
-    sleep_collection = client.get_sleep_collection(start_date=start_dates[sleep_collection])
-    recoveries = client.get_recovery_collection(start_date=start_dates[recoveries])
-    cycle_collection = client.get_cycle_collection(start_date=start_dates[cycle_collection])
+    print(f"\n\n{client}\n\n")
+    workouts = client.get_workout_collection(start_date=start_dates['workouts'])
+    sleep_collection = client.get_sleep_collection(start_date=start_dates['sleep_collection'])
+    recoveries = client.get_recovery_collection(start_date=start_dates['recoveries'])
+    cycle_collection = client.get_cycle_collection(start_date=start_dates['cycle_collection'])
 
 # Tweak cols to match SQL DB field names
 for i, df in enumerate([workouts, sleep_collection, recoveries, cycle_collection]):
@@ -206,145 +219,26 @@ cycle_collection = cycle_collection.astype({
 
 # LOAD DATA INTO THE SQL DATABASE
 table_names = {
-    workouts : 'whoop_workouts', 
-    sleep_collection: 'whoop_sleep', 
-    recoveries: 'whoop_recoveries', 
-    cycle_collection: 'whoop_cycle_collection'
+    'whoop_workouts': workouts, 
+    'whoop_sleep': sleep_collection, 
+    'whoop_recoveries': recoveries, 
+    'whoop_cycle_collection': cycle_collection
 }
 
-for df, table_name in table_names.items():
+for name, df in table_names.items():
     # Append data to the table
-    df.to_sql(table_name, engine, if_exists="append", index=False)
+    df.to_sql(name, engine, if_exists="append", index=False)
     
+    # Define unique columns for each table
+    if name == 'whoop_workouts':
+        unique_columns = 'id'
+    elif name == 'whoop_sleep':
+        unique_columns = 'created_at'  
+    elif name == 'whoop_recoveries':
+        unique_columns = 'cycle_id'  
+    elif name == 'whoop_cycle_collection':
+        unique_columns = 'id'  
+
     # Remove duplicates from the table after insertion
-    unique_columns = ["id", "id", "cycle_id", "id"]
-    remove_duplicates(table_name, unique_columns)
-
-class WhoopDataPuller:
-    def __init__(self):
-        # Load environment variables from .env file
-        load_dotenv()
-        
-        # WHOOP API credentials
-        self.whoop_email = os.getenv("WHOOP_EMAIL")
-        self.whoop_password = os.getenv("WHOOP_PASSWORD")
-        
-        # PostgreSQL database credentials
-        self.db_name = os.getenv("DB_NAME")
-        self.db_user = os.getenv("DB_USER")
-        self.db_password = os.getenv("DB_PASSWORD")
-        self.db_host = os.getenv("DB_HOST")
-        self.db_port = os.getenv("DB_PORT")
-
-    def authenticate_with_whoop(self):
-        """
-        Authenticate with the WHOOP API and return the passport token.
-        """
-        url = "https://api.whoop.com/oauth/token"
-        payload = {
-            "grant_type": "password",
-            "username": self.whoop_email,
-            "password": self.whoop_password
-        }
-        headers = {"Content-Type": "application/json"}
-        response = requests.post(url, data=json.dumps(payload), headers=headers)
-
-        if response.status_code == 200:
-            access_token = response.json()["access_token"]
-            
-            # Use the access token to get the passport token
-            passport_url = "https://api.whoop.com/developer/v1/oauth/passport"
-            passport_headers = {"Authorization": f"Bearer {access_token}"}
-            passport_response = requests.get(passport_url, headers=passport_headers)
-            
-            if passport_response.status_code == 200:
-                return passport_response.json()["passport_token"]
-            else:
-                print("Failed to obtain passport token:", passport_response.json())
-                return None
-        else:
-            print("Failed to authenticate with WHOOP API:", response.json())
-            return None
-
-    def fetch_daily_data(self, passport_token):
-        """
-        Fetch daily data from the WHOOP API using the passport token.
-        """
-        url = "https://api.prod.whoop.com/users/me/daily"
-        headers = {"Authorization": f"Bearer {passport_token}"}
-        response = requests.get(url, headers=headers)
-
-        if response.status_code == 200:
-            return response.json()
-        else:
-            print("Failed to fetch daily data:", response.json())
-            return None
-
-    def save_to_postgresql(self, data):
-        """
-        Save WHOOP data to a PostgreSQL table.
-        """
-        conn = psycopg2.connect(
-            dbname=self.db_name, user=self.db_user, password=self.db_password, host=self.db_host, port=self.db_port
-        )
-        cur = conn.cursor()
-
-        # Create table if it doesn't exist
-        create_table_query = """
-        CREATE TABLE IF NOT EXISTS whoop_daily_data (
-            date DATE PRIMARY KEY,
-            strain FLOAT,
-            recovery INT,
-            sleep_performance FLOAT,
-            total_sleep_hours FLOAT,
-            resting_heart_rate INT,
-            heart_rate_variability FLOAT
-        );
-        """
-        cur.execute(create_table_query)
-
-        # Insert or update the data
-        insert_query = """
-        INSERT INTO whoop_daily_data (date, strain, recovery, sleep_performance, total_sleep_hours, resting_heart_rate, heart_rate_variability)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
-        ON CONFLICT (date) DO UPDATE SET
-            strain = EXCLUDED.strain,
-            recovery = EXCLUDED.recovery,
-            sleep_performance = EXCLUDED.sleep_performance,
-            total_sleep_hours = EXCLUDED.total_sleep_hours,
-            resting_heart_rate = EXCLUDED.resting_heart_rate,
-            heart_rate_variability = EXCLUDED.heart_rate_variability;
-        """
-        for day in data:
-            cur.execute(insert_query, (
-                day["days"][0]["date"],
-                day["strain"],
-                day["recovery"],
-                day["sleepPerformance"],
-                day["totalSleepHours"],
-                day["restingHeartRate"],
-                day["heartRateVariability"]
-            ))
-
-        conn.commit()
-        cur.close()
-        conn.close()
-        print("Data successfully saved to PostgreSQL.")
-
-    def run(self):
-        # Step 1: Authenticate with WHOOP
-        passport_token = self.authenticate_with_whoop()
-        if not passport_token:
-            return
-
-        # Step 2: Fetch daily data
-        daily_data = self.fetch_daily_data(passport_token)
-        if not daily_data:
-            return
-
-        # Step 3: Save data to PostgreSQL
-        self.save_to_postgresql(daily_data)
-
-if __name__ == "__main__":
-    whoop_data_puller = WhoopDataPuller()
-    whoop_data_puller.run()
+    remove_duplicates(name, unique_columns)
+    print(f"Duplicates removed from {name}")

@@ -28,6 +28,7 @@ from dash import Dash, dcc, html
 from dash import dash_table
 import webbrowser
 from threading import Timer
+from dash.dependencies import Input, Output
 
 # Preferences
 pd.options.display.max_columns = None
@@ -62,10 +63,9 @@ baseball = read_table('baseball_watched')
 cv_adds = read_table('cv_additions')
 pubs = read_table('publication_stats')
 phys_act = read_table('strava_activities')
+model_df = read_table('modeling_ready_data')
 
 # OVR TIME SPENT PLOTS
-
-
 def calculate_yearly_trendlines(df, column):
     trends = {}
     for year in df.Year.unique():
@@ -1529,6 +1529,11 @@ app.layout = html.Div(children=[
             ], style={'textAlign': 'center', 'display': 'flex', 'justify-content': 'center'}),
         ]),
 
+        # Clustering data
+        dcc.Tab(label='Data Clustering', children=[
+            dcc.Graph(id='clustering-graph')
+        ]),
+
         # Book Reading
         dcc.Tab(label="Books Read", children=[
             html.Div(children=[
@@ -1639,14 +1644,108 @@ app.layout = html.Div(children=[
                 style={'display': 'block', 'width': '60%',
                        'margin-right': 'auto', 'margin-left': 'auto'}
             ),
-        ])
+        ]),
     ])
 ])
 
+@app.callback(
+    Output('clustering-graph', 'figure'),
+    Input('tabs', 'value')  # Assuming you have a tabs component with id='tabs'
+)
+def update_clustering_graph(selected_tab):
+    if selected_tab == 'Data Clustering':
+        # Check if model_df is populated
+        if model_df.empty:
+            print("model_df is empty")
+            return {}
+        
+        # Prep the data
+        df_numeric = model_df.drop(columns='Date', errors='ignore')
+        df_numeric = df_numeric.fillna(0)
+
+        # Standardize using Min-Max Scaling
+        scaler = MinMaxScaler()
+        df_scaled = pd.DataFrame(scaler.fit_transform(df_numeric), columns=df_numeric.columns)
+
+        # t-SNE dimensionality reduction
+        tsne = TSNE(n_components=3, random_state=2225, perplexity=20, n_iter=1000)
+        tsne_results = tsne.fit_transform(df_scaled)
+
+        # Add t-SNE results back to the DataFrame
+        df_scaled['t-SNE1'] = tsne_results[:, 0]
+        df_scaled['t-SNE2'] = tsne_results[:, 1]
+        df_scaled['t-SNE3'] = tsne_results[:, 2]
+
+        # Label which days the data come from
+        df_scaled['Label'] = 'All Others'
+        df_scaled.loc[df_scaled.tail(7).index, 'Label'] = 'Last 7 Days'
+        df_scaled.loc[df_scaled.tail(30).head(23).index, 'Label'] = 'Last 30 Days'
+
+        # Add back in a date col for coloring
+        df_scaled['date'] = pd.to_datetime(model_df['Date'])
+
+        # Create a new column for year to use as gradient coloring
+        df_scaled['Year'] = df_scaled['date'].dt.year
+
+        # Interactive Plotly visualization
+        fig = px.scatter_3d(
+            df_scaled, 
+            x='t-SNE1', 
+            y='t-SNE2', 
+            z='t-SNE3', 
+            color='Year',
+            labels={'Year': 'Year'},
+            color_continuous_scale=px.colors.sequential.Viridis,
+        )
+
+        # Adjust marker size and opacity for the main plot
+        fig.update_traces(marker=dict(size=3, opacity=0.5))
+
+        # Add markers for "Last 30 Days"
+        last_30_days = df_scaled[df_scaled['Label'] == 'Last 30 Days']
+        fig.add_trace(
+            px.scatter_3d(
+                last_30_days,
+                x='t-SNE1',
+                y='t-SNE2',
+                z='t-SNE3',
+            ).data[0].update(
+                marker=dict(size=5, color='blue', symbol='square-open', opacity=0.8)
+            )
+        )
+
+        # Add markers for "Last 7 Days"
+        last_7_days = df_scaled[df_scaled['Label'] == 'Last 7 Days']
+        fig.add_trace(
+            px.scatter_3d(
+                last_7_days,
+                x='t-SNE1',
+                y='t-SNE2',
+                z='t-SNE3',
+            ).data[0].update(
+                marker=dict(size=5, color='red', symbol='square-open', opacity=0.8)
+            )
+        )
+
+        # Adjust figure layout height
+        fig.update_layout(
+            height=800, 
+            template="plotly_dark",
+            scene=dict(
+                aspectmode='cube',
+                bgcolor="black", 
+                xaxis=dict(showgrid=False, showticklabels=False),
+                yaxis=dict(showgrid=False, showticklabels=False),
+                zaxis=dict(showgrid=False, showticklabels=False),
+            ),
+        )
+
+        return fig
+
+    return {}  # Return an empty figure if the tab is not selected
 
 def open_browser():
     webbrowser.open_new("http://localhost:8051/")
-
 
 if __name__ == '__main__':
     Timer(1, open_browser).start()  # Open the browser after 1 second
