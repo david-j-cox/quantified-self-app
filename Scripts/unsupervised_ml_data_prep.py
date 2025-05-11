@@ -239,6 +239,4 @@ model_df = model_df.drop_duplicates(subset=['date_column'], keep="first").reset_
 
 # Push to Database
 model_df.to_sql('modeling_ready_data', engine, if_exists='append', index=False)
-
-# Save to local csv
-model_df.to_csv('./Data/modeling_ready_data.csv', index=False)
+model_df.to_csv('../../Data/modeling_data.csv', index=False)
