@@ -33,6 +33,8 @@ from dash.dependencies import Input, Output
 # Machine Learning
 from sklearn.manifold import TSNE
 from sklearn.preprocessing import MinMaxScaler
+import umap
+from sklearn.decomposition import PCA
 
 # Preferences
 pd.options.display.max_columns = None
@@ -67,28 +69,160 @@ def read_table(table_name):
 
 # Read in the raw data from the database
 print("\n=== Debug: Loading Data ===")
+print("Loading raw_data...")
+all_df = read_table('raw_data')
+print("Loading books_read...")
+books = read_table('books_read')
+print("Loading baseball_watched_long...")
+baseball = read_table('baseball_watched_long')
+print("Loading cv_additions...")
+cv_adds = read_table('cv_additions')
+print("Loading publication_stats...")
+pubs = read_table('publication_stats')
+print("Loading strava_activities...")
+phys_act = read_table('strava_activities')
+print("Loading modeling_ready_data...")
+model_df = read_table('modeling_ready_data')
+print("Loading whoop_recoveries...")
+whoop_recoveries = read_table('whoop_recoveries')
+whoop_recoveries['created_at'] = pd.to_datetime(whoop_recoveries['created_at'], errors='coerce', utc=True)
+whoop_recoveries = whoop_recoveries.sort_values('created_at').reset_index(drop=True)
+
 try:
-    print("Loading raw_data...")
-    all_df = read_table('raw_data')
-    print("Loading books_read...")
-    books = read_table('books_read')
-    print("Loading baseball_watched_long...")
-    baseball = read_table('baseball_watched_long')
-    print("Loading cv_additions...")
-    cv_adds = read_table('cv_additions')
-    print("Loading publication_stats...")
-    pubs = read_table('publication_stats')
-    print("Loading strava_activities...")
-    phys_act = read_table('strava_activities')
-    print("Loading modeling_ready_data...")
-    model_df = read_table('modeling_ready_data')
-    print("model_df shape:", model_df.shape if not model_df.empty else "Empty")
-    print("model_df columns:", model_df.columns.tolist() if not model_df.empty else "Empty DataFrame")
+    print("Loading Whoop sleep data...")
+    whoop_sleep = read_table('whoop_sleep')
+    whoop_sleep['sleep_start'] = pd.to_datetime(whoop_sleep['sleep_start'], utc=True)
+    whoop_sleep = whoop_sleep.sort_values('sleep_start').reset_index(drop=True)
+    
+    # Preprocess WHOOP sleep data
+    time_columns = [
+        'score_stage_summary_total_in_bed_time_milli',
+        'score_stage_summary_total_awake_time_milli',
+        'score_stage_summary_total_light_sleep_time_milli',
+        'score_stage_summary_total_slow_wave_sleep_time_milli',
+        'score_stage_summary_total_rem_sleep_time_milli'
+    ]
+    
+    # Convert milliseconds to hours
+    for col in time_columns:
+        whoop_sleep[col] = whoop_sleep[col] / (1000 * 60 * 60)
+    
+    # Calculate total time in bed
+    whoop_sleep['total_in_bed'] = whoop_sleep['score_stage_summary_total_in_bed_time_milli']
+    
+    # Calculate proportions for each stage
+    stage_columns = [
+        'score_stage_summary_total_awake_time_milli',
+        'score_stage_summary_total_light_sleep_time_milli',
+        'score_stage_summary_total_slow_wave_sleep_time_milli',
+        'score_stage_summary_total_rem_sleep_time_milli'
+    ]
+    
+    for col in stage_columns:
+        whoop_sleep[f'{col}_proportion'] = whoop_sleep[col] / whoop_sleep['total_in_bed']
+    
+    # Create consistent color mapping
+    sleep_stages = ['Awake Time', 'Light Sleep Time', 'Slow Wave Sleep Time', 'Rem Sleep Time']
+    sleep_colors = sns.color_palette('bright', n_colors=len(sleep_stages))
+    sleep_color_dict = dict(zip(sleep_stages, sleep_colors))
+
 except Exception as e:
     print("Error loading data:", str(e))
     import traceback
     traceback.print_exc()
-    model_df = pd.DataFrame()  # Initialize as empty DataFrame if loading fails
+
+# Load whoop_cycle_collection data
+try:
+    print("Loading whoop_cycle_collection...")
+    whoop_cycle = read_table('whoop_cycle_collection')
+    whoop_cycle['cycle_start'] = pd.to_datetime(whoop_cycle['cycle_start'], utc=True)
+    whoop_cycle = whoop_cycle.sort_values('cycle_start').reset_index(drop=True)
+except Exception as e:
+    print("Error loading whoop_cycle_collection:", str(e))
+    whoop_cycle = pd.DataFrame()
+
+# Plotting functions for whoop_cycle_collection
+def plot_whoop_cycle_strain():
+    if whoop_cycle.empty:
+        return ''
+    fig, ax = plt.subplots(figsize=(12, 6))
+    sns.lineplot(data=whoop_cycle, x='cycle_start', y='score_strain', color='black', marker='o', ax=ax)
+    # Trendline
+    import matplotlib.dates as mdates
+    x = whoop_cycle['cycle_start'].map(mdates.date2num)
+    y = whoop_cycle['score_strain']
+    if len(whoop_cycle) > 1:
+        z = np.polyfit(x, y, 4)
+        p = np.poly1d(z)
+        ax.plot(whoop_cycle['cycle_start'], p(x), linestyle='--', linewidth=2, alpha=0.7, color='black')
+    ax.set_xlabel('Date', fontsize=18)
+    ax.set_ylabel('Strain', fontsize=18)
+    ax.tick_params(axis='x', labelsize=14, rotation=45)
+    ax.tick_params(axis='y', labelsize=14)
+    sns.despine(ax=ax)
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
+    image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+    plt.close()
+    return image_base64
+
+def plot_whoop_cycle_kilojoule():
+    if whoop_cycle.empty:
+        return ''
+    fig, ax = plt.subplots(figsize=(12, 6))
+    sns.lineplot(data=whoop_cycle, x='cycle_start', y='score_kilojoule', color='black', marker='o', ax=ax)
+    # Trendline
+    import matplotlib.dates as mdates
+    x = whoop_cycle['cycle_start'].map(mdates.date2num)
+    y = whoop_cycle['score_kilojoule']
+    if len(whoop_cycle) > 1:
+        z = np.polyfit(x, y, 4)
+        p = np.poly1d(z)
+        ax.plot(whoop_cycle['cycle_start'], p(x), linestyle='--', linewidth=2, alpha=0.7, color='black')
+    ax.set_xlabel('Date', fontsize=18)
+    ax.set_ylabel('Kilojoules', fontsize=18)
+    ax.tick_params(axis='x', labelsize=14, rotation=45)
+    ax.tick_params(axis='y', labelsize=14)
+    sns.despine(ax=ax)
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
+    image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+    plt.close()
+    return image_base64
+
+def plot_whoop_cycle_heartrates():
+    if whoop_cycle.empty:
+        return ''
+    fig, ax = plt.subplots(figsize=(12, 6))
+    sns.lineplot(data=whoop_cycle, x='cycle_start', y='score_average_heart_rate', color='black', marker='o', label='Avg HR', ax=ax)
+    sns.lineplot(data=whoop_cycle, x='cycle_start', y='score_max_heart_rate', color='red', marker='o', label='Max HR', ax=ax)
+    # Trendlines
+    import matplotlib.dates as mdates
+    x = whoop_cycle['cycle_start'].map(mdates.date2num)
+    y_avg = whoop_cycle['score_average_heart_rate']
+    y_max = whoop_cycle['score_max_heart_rate']
+    if len(whoop_cycle) > 1:
+        z_avg = np.polyfit(x, y_avg, 4)
+        p_avg = np.poly1d(z_avg)
+        ax.plot(whoop_cycle['cycle_start'], p_avg(x), linestyle='--', linewidth=2, alpha=0.7, color='black')
+        z_max = np.polyfit(x, y_max, 4)
+        p_max = np.poly1d(z_max)
+        ax.plot(whoop_cycle['cycle_start'], p_max(x), linestyle='--', linewidth=2, alpha=0.7, color='red')
+    ax.set_xlabel('Date', fontsize=18)
+    ax.set_ylabel('Heart Rate (bpm)', fontsize=18)
+    ax.set_yscale('log')
+    ax.tick_params(axis='x', labelsize=14, rotation=45)
+    ax.tick_params(axis='y', labelsize=14)
+    ax.legend(fontsize=16)
+    sns.despine(ax=ax)
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
+    image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+    plt.close()
+    return image_base64
 
 # OVR TIME SPENT PLOTS
 def calculate_yearly_trendlines(df, column):
@@ -1485,9 +1619,499 @@ def plot_games_year():
 
     return image_base64
 
+# Plot whoop sleep stages
+def plot_whoop_sleep_stages():
+    if whoop_sleep.empty:
+        return ''
+        
+    plot_df = whoop_sleep.melt(
+        id_vars=['sleep_start'],
+        value_vars=time_columns,  # Include total_in_bed_time
+        var_name='Sleep Stage',
+        value_name='Hours'
+    )
+    plot_df['Sleep Stage'] = plot_df['Sleep Stage'].str.replace('score_stage_summary_total_', '').str.replace('_milli', '').str.replace('_', ' ').str.title()
+    
+    # Create a separate color for total time in bed
+    total_color = 'black'
+    sleep_color_dict_with_total = sleep_color_dict.copy()
+    sleep_color_dict_with_total['In Bed Time'] = total_color
+    
+    fig, ax = plt.subplots(figsize=(18, 10))
+    sns.lineplot(
+        data=plot_df,
+        x='sleep_start',
+        y='Hours',
+        hue='Sleep Stage',
+        style='Sleep Stage',
+        markers='o',
+        markersize=10,
+        palette=sleep_color_dict_with_total,
+        ax=ax
+    )
+    
+    import matplotlib.dates as mdates
+    for stage in plot_df['Sleep Stage'].unique():
+        stage_df = plot_df[plot_df['Sleep Stage'] == stage].dropna()
+        if len(stage_df) > 1:
+            x = stage_df['sleep_start'].map(mdates.date2num)
+            y = stage_df['Hours']
+            z = np.polyfit(x, y, 4)  # degree 4 polynomial for smooth trend
+            p = np.poly1d(z)
+            color = total_color if stage == 'In Bed Time' else sleep_color_dict[stage]
+            ax.plot(stage_df['sleep_start'], p(x), linestyle='--', linewidth=2, alpha=0.7, color=color)
+    
+    plt.xlabel("Date", fontsize=26, labelpad=12)
+    plt.xticks(fontsize=16)
+    plt.ylabel("Hours in Stage", fontsize=30, labelpad=12)
+    plt.yticks(fontsize=16)
+    sns.despine(top=True, right=True)
+    legend = plt.legend(loc="upper center", bbox_to_anchor=(0.5, 1.15), fontsize=24, ncol=3)
+    legend.get_frame().set_facecolor('white')
+    legend.get_frame().set_alpha(0.5)
+    
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
+    image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+    plt.close()
+    return image_base64
+
+def plot_whoop_sleep_proportions():
+    if whoop_sleep.empty:
+        return ''
+        
+    plot_df = whoop_sleep.melt(
+        id_vars=['sleep_start'],
+        value_vars=[f'{col}_proportion' for col in stage_columns],
+        var_name='Sleep Stage',
+        value_name='Percentage'
+    )
+    plot_df['Sleep Stage'] = plot_df['Sleep Stage'].str.replace('score_stage_summary_total_', '').str.replace('_milli_proportion', '').str.replace('_', ' ').str.title()
+    
+    fig, ax = plt.subplots(figsize=(18, 10))
+    sns.lineplot(
+        data=plot_df,
+        x='sleep_start',
+        y='Percentage',
+        hue='Sleep Stage',
+        style='Sleep Stage',
+        markers='o',
+        markersize=10,
+        palette=sleep_color_dict,
+        ax=ax
+    )
+    
+    import matplotlib.dates as mdates
+    for stage in plot_df['Sleep Stage'].unique():
+        stage_df = plot_df[plot_df['Sleep Stage'] == stage].dropna()
+        if len(stage_df) > 1:
+            x = stage_df['sleep_start'].map(mdates.date2num)
+            y = stage_df['Percentage']
+            z = np.polyfit(x, y, 4)  # degree 4 polynomial for smooth trend
+            p = np.poly1d(z)
+            ax.plot(stage_df['sleep_start'], p(x), linestyle='--', linewidth=2, alpha=0.7, color=sleep_color_dict[stage])
+    
+    plt.xlabel("Date", fontsize=26, labelpad=12)
+    plt.xticks(fontsize=16)
+    plt.ylabel("Percentage of Time in Bed", fontsize=30, labelpad=12)
+    plt.yticks(fontsize=16)
+    
+    # Format y-axis ticks as percentages
+    from matplotlib.ticker import FuncFormatter
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, p: f'{x:.0%}'))
+    
+    sns.despine(top=True, right=True)
+    legend = plt.legend(loc="upper center", bbox_to_anchor=(0.5, 1.15), fontsize=24, ncol=2)
+    legend.get_frame().set_facecolor('white')
+    legend.get_frame().set_alpha(0.5)
+    
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
+    image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+    plt.close()
+    return image_base64
+
+def plot_whoop_sleep_needs():
+    if whoop_sleep.empty:
+        return ''
+        
+    need_columns = [
+        'score_sleep_needed_need_from_sleep_debt_milli',
+        'score_sleep_needed_need_from_recent_strain_milli',
+    ]
+    
+    # Convert milliseconds to hours
+    for col in need_columns:
+        whoop_sleep[col] = whoop_sleep[col] / (1000 * 60 * 60)
+    plot_df = whoop_sleep.melt(
+        id_vars=['sleep_start'],
+        value_vars=need_columns,
+        var_name='Sleep Need',
+        value_name='Hours'
+    )
+    plot_df['Sleep Need'] = plot_df['Sleep Need'].str.replace('score_sleep_needed_', '').str.replace('_milli', '').str.replace('_', ' ').str.title()
+    fig, ax = plt.subplots(figsize=(18, 10))
+    palette = sns.color_palette('bright', n_colors=plot_df['Sleep Need'].nunique())
+    color_dict = dict(zip(plot_df['Sleep Need'].unique(), palette))
+    sns.lineplot(
+        data=plot_df,
+        x='sleep_start',
+        y='Hours',
+        hue='Sleep Need',
+        style='Sleep Need',
+        markers='o',
+        markersize=10,
+        palette=color_dict,
+        ax=ax
+    )
+    import matplotlib.dates as mdates
+    for need in plot_df['Sleep Need'].unique():
+        need_df = plot_df[plot_df['Sleep Need'] == need].dropna()
+        if len(need_df) > 1:
+            x = need_df['sleep_start'].map(mdates.date2num)
+            y = need_df['Hours']
+            z = np.polyfit(x, y, 4)  # degree 4 polynomial for smooth trend
+            p = np.poly1d(z)
+            ax.plot(need_df['sleep_start'], p(x), linestyle='--', linewidth=2, alpha=0.7, color=color_dict[need])
+    plt.xlabel("Date", fontsize=26, labelpad=12)
+    plt.xticks(fontsize=16)
+    plt.ylabel("Hours Needed", fontsize=30, labelpad=12)
+    plt.yticks(fontsize=16)
+    sns.despine(top=True, right=True)
+    legend = plt.legend(loc="upper center", bbox_to_anchor=(0.5, 1.15), fontsize=24, ncol=2)
+    legend.get_frame().set_facecolor('white')
+    legend.get_frame().set_alpha(0.5)
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
+    image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+    plt.close()
+    return image_base64
+
+def plot_whoop_sleep_percentages():
+    if whoop_sleep.empty:
+        return ''
+        
+    percent_columns = [
+        'score_sleep_performance_percentage',
+        'score_sleep_consistency_percentage',
+        'score_sleep_efficiency_percentage'
+    ]
+    plot_df = whoop_sleep[['sleep_start'] + percent_columns].melt(
+        id_vars=['sleep_start'],
+        value_vars=percent_columns,
+        var_name='Metric',
+        value_name='Percentage'
+    )
+    plot_df['Metric'] = plot_df['Metric'].str.replace('score_sleep_', '').str.replace('_percentage', '').str.replace('_', ' ').str.title()
+    fig, ax = plt.subplots(figsize=(18, 10))
+    palette = sns.color_palette('bright', n_colors=plot_df['Metric'].nunique())
+    color_dict = dict(zip(plot_df['Metric'].unique(), palette))
+    sns.lineplot(
+        data=plot_df,
+        x='sleep_start',
+        y='Percentage',
+        hue='Metric',
+        style='Metric',
+        markers='o',
+        markersize=10,
+        palette=color_dict,
+        ax=ax
+    )
+    import matplotlib.dates as mdates
+    for metric in plot_df['Metric'].unique():
+        metric_df = plot_df[plot_df['Metric'] == metric].dropna()
+        if len(metric_df) > 1:
+            x = metric_df['sleep_start'].map(mdates.date2num)
+            y = metric_df['Percentage']
+            z = np.polyfit(x, y, 4)  # degree 4 polynomial for smooth trend
+            p = np.poly1d(z)
+            ax.plot(metric_df['sleep_start'], p(x), linestyle='--', linewidth=2, alpha=0.7, color=color_dict[metric])
+    plt.xlabel("Date", fontsize=26, labelpad=12)
+    plt.xticks(fontsize=16)
+    plt.ylabel("Sleep Percentage Scores", fontsize=26, labelpad=12)
+    plt.yticks(fontsize=16)
+    sns.despine(top=True, right=True)
+    legend = plt.legend(loc="upper center", bbox_to_anchor=(0.5, 1.15), fontsize=24, ncol=3)
+    legend.get_frame().set_facecolor('white')
+    legend.get_frame().set_alpha(0.5)
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
+    image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+    plt.close()
+    return image_base64
+
+def plot_whoop_respiratory_rate():
+    if whoop_sleep.empty:
+        return ''
+        
+    fig, ax = plt.subplots(figsize=(18, 10))
+    sns.lineplot(
+        data=whoop_sleep,
+        x='sleep_start',
+        y='score_respiratory_rate',
+        marker='o',
+        color='black',
+        ax=ax, 
+        markersize=10
+    )
+    # Add trendline
+    import matplotlib.dates as mdates
+    x = whoop_sleep['sleep_start'].map(mdates.date2num)
+    y = whoop_sleep['score_respiratory_rate']
+    if len(whoop_sleep) > 1:
+        z = np.polyfit(x, y, 4)  # degree 4 polynomial for smooth trend
+        p = np.poly1d(z)
+        ax.plot(whoop_sleep['sleep_start'], p(x), linestyle='--', linewidth=2, alpha=0.7, color='black')
+    plt.xlabel("Date", fontsize=26, labelpad=12)
+    plt.xticks(fontsize=16)
+    plt.ylabel("Respiratory Rate", fontsize=30, labelpad=12)
+    plt.yticks(fontsize=16)
+    sns.despine(top=True, right=True)
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
+    image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+    plt.close()
+    return image_base64
+
+def plot_whoop_recovery_timeseries():
+    cols = [
+        ('score_recovery_score', 'Recovery Score', 'Higher is better (0-100)'),
+        ('score_resting_heart_rate', 'Resting Heart Rate', 'Lower is better (bpm)'),
+        ('score_hrv_rmssd_milli', 'HRV (RMSSD)', 'Higher is better (ms)'),
+        ('score_spo2_percentage', 'SpO2 (%)', 'Higher is better (95-100%)'),
+        ('score_skin_temp_celsius', 'Skin Temp (°F)', 'Normal range: 91-95°F')
+    ]
+    
+    # Create a list to store the base64 encoded images
+    plot_images = []
+    
+    # Create individual plots for each metric
+    for col, label, subtitle in cols:
+        fig, ax = plt.subplots(figsize=(12, 6))
+        
+        # Convert temperature to Fahrenheit if needed
+        if col == 'score_skin_temp_celsius':
+            y_data = whoop_recoveries[col] * 9/5 + 32
+        else:
+            y_data = whoop_recoveries[col]
+            
+        sns.lineplot(
+            data=whoop_recoveries,
+            x='created_at',
+            y=y_data,
+            ax=ax,
+            color='black'
+        )
+        
+        # Add trendline
+        import matplotlib.dates as mdates
+        x = whoop_recoveries['created_at'].map(mdates.date2num)
+        y = y_data
+        if len(whoop_recoveries) > 1:
+            z = np.polyfit(x, y, 4)  # degree 4 polynomial for smooth trend
+            p = np.poly1d(z)
+            ax.plot(whoop_recoveries['created_at'], p(x), linestyle='--', linewidth=2, alpha=0.7, color='black')
+        
+        ax.set_ylabel(label, fontsize=20, labelpad=12)
+        ax.set_xlabel('Date', fontsize=20, labelpad=12)
+        ax.tick_params(axis='x', labelsize=12)
+        ax.tick_params(axis='y', labelsize=12)
+        ax.set_title(f'{label}\n{subtitle}', fontsize=20)
+        sns.despine(ax=ax)
+        
+        # Save the plot to a bytes buffer
+        buffer = BytesIO()
+        plt.savefig(buffer, format='png', bbox_inches='tight')
+        buffer.seek(0)
+        image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+        plot_images.append(image_base64)
+        plt.close()
+    
+    return plot_images
+
+
+def plot_2d_tsne_subplots(df, embedding_results, method_name='PCA'):
+    """
+    Creates six static 2D subplots showing different projections of the 3D embedding.
+    First row: standard XY, XZ, YZ projections.
+    Second row: same projections but with plotting order reversed to reveal hidden points.
+    """
+    temp_df = df.copy()
+    temp_df[f'{method_name}1'] = embedding_results[:, 0]
+    temp_df[f'{method_name}2'] = embedding_results[:, 1]
+    temp_df[f'{method_name}3'] = embedding_results[:, 2]
+
+    fig, axes = plt.subplots(2, 3, figsize=(24, 12))
+
+    # First row: standard projections
+    sns.scatterplot(
+        data=temp_df,
+        x=f'{method_name}1',
+        y=f'{method_name}2',
+        hue='Year',
+        palette='viridis',
+        alpha=0.7,
+        ax=axes[0, 0]
+    )
+    axes[0, 0].set_title('XY Projection', fontsize=24)
+    axes[0, 0].set_xlabel(f'{method_name} Dimension 1', fontsize=18)
+    axes[0, 0].set_ylabel(f'{method_name} Dimension 2', fontsize=18)
+
+    sns.scatterplot(
+        data=temp_df,
+        x=f'{method_name}1',
+        y=f'{method_name}3',
+        hue='Year',
+        palette='viridis',
+        alpha=0.7,
+        ax=axes[0, 1]
+    )
+    axes[0, 1].set_title('XZ Projection', fontsize=24)
+    axes[0, 1].set_xlabel(f'{method_name} Dimension 1', fontsize=18)
+    axes[0, 1].set_ylabel(f'{method_name} Dimension 3', fontsize=18)
+
+    sns.scatterplot(
+        data=temp_df,
+        x=f'{method_name}2',
+        y=f'{method_name}3',
+        hue='Year',
+        palette='viridis',
+        alpha=0.7,
+        ax=axes[0, 2]
+    )
+    axes[0, 2].set_title('YZ Projection', fontsize=24)
+    axes[0, 2].set_xlabel(f'{method_name} Dimension 2', fontsize=18)
+    axes[0, 2].set_ylabel(f'{method_name} Dimension 3', fontsize=18)
+
+    # Second row: reversed plotting order to reveal hidden points
+    for i, (x_dim, y_dim, title) in enumerate([
+        (f'{method_name}1', f'{method_name}2', 'XY Projection (Back View)'),
+        (f'{method_name}1', f'{method_name}3', 'XZ Projection (Back View)'),
+        (f'{method_name}2', f'{method_name}3', 'YZ Projection (Back View)'),
+    ]):
+        # Sort by x_dim in descending order to reverse plotting order
+        temp_df_sorted = temp_df.sort_values(by=x_dim, ascending=False).copy()
+        sns.scatterplot(
+            data=temp_df_sorted,
+            x=x_dim,
+            y=y_dim,
+            hue='Year',
+            palette='viridis',
+            alpha=0.7,
+            ax=axes[1, i]
+        )
+        axes[1, i].set_title(title, fontsize=24)
+        axes[1, i].set_xlabel(f'{x_dim} (Back View)', fontsize=18)
+        axes[1, i].set_ylabel(f'{y_dim} (Back View)', fontsize=18)
+
+    # Remove duplicate legends
+    for ax in axes.flatten():
+        ax.legend().remove()
+        sns.despine(ax=ax)
+
+    # Add a single legend for all plots
+    handles, labels = axes[0, 0].get_legend_handles_labels()
+    fig.legend(handles, labels, title='Year', bbox_to_anchor=(1.05, 0.5), loc='center left', fontsize=20, frameon=False)
+
+    plt.tight_layout()
+    plt.subplots_adjust(hspace=0.5)
+
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
+    image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+    plt.close()
+
+    return image_base64
+
+# Add this helper function near the top, after imports
+
+def generate_placeholder_image(message="No data available"):
+    fig, ax = plt.subplots(figsize=(8, 3))
+    ax.text(0.5, 0.5, message, fontsize=18, ha='center', va='center')
+    ax.axis('off')
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
+    image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+    plt.close()
+    return f'data:image/png;base64,{image_base64}'
+
+def plot_pca_feature_importance(pca, feature_names, n_components=3, loading_threshold=0.01):
+    import matplotlib.pyplot as plt
+    import numpy as np
+    from io import BytesIO
+    import base64
+    # Compute max abs loading across all selected PCs for each feature
+    loadings_matrix = np.abs(pca.components_[:n_components])
+    max_abs_loadings = loadings_matrix.max(axis=0)
+    # Filter features with at least one PC above threshold
+    keep_idx = np.where(max_abs_loadings >= loading_threshold)[0]
+    filtered_features = np.array(feature_names)[keep_idx]
+    filtered_loadings = pca.components_[:, keep_idx]
+    fig, axes = plt.subplots(n_components, 1, figsize=(max(14, len(filtered_features) * 0.5), 2.5 * n_components), sharex=True)
+    if n_components == 1:
+        axes = [axes]
+    for i in range(n_components):
+        loadings = filtered_loadings[i]
+        sorted_idx = np.argsort(np.abs(loadings))[::-1]
+        sorted_features = filtered_features[sorted_idx]
+        sorted_loadings = loadings[sorted_idx]
+        bar_colors = ['black' if val >= 0 else 'red' for val in sorted_loadings]
+        axes[i].bar(sorted_features, np.abs(sorted_loadings), color=bar_colors)
+        axes[i].set_title(f'PC{i+1} Feature Loadings', fontsize=22)
+        axes[i].set_ylabel('Abs(Loading)', fontsize=18)
+        axes[i].tick_params(axis='x', labelsize=18, rotation=90)
+        axes[i].tick_params(axis='y', labelsize=18)
+    plt.xlabel('Feature', fontsize=18)
+    plt.tight_layout()
+    plt.subplots_adjust(hspace=0.3)
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
+    image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+    plt.close()
+    return image_base64
 
 # CREATE DASH APP
 app = Dash(__name__)
+
+# After loading model_df, generate the clustering plot statically
+if not model_df.empty:
+    # Prep the data - use only numeric columns and exclude derived/redundant columns
+    exclude_columns = ['date_column', 'Year', 'Month_Num', 'Day', 'DayOfYear']
+    numeric_columns = model_df.select_dtypes(include=['float64', 'int64']).columns
+    df_numeric = model_df[numeric_columns].drop(columns=exclude_columns, errors='ignore')
+    df_numeric = df_numeric.loc[:, (df_numeric != 0).any(axis=0)]
+    df_numeric = df_numeric.loc[:, df_numeric.notna().any(axis=0)]
+    df_numeric = df_numeric.fillna(0)
+    scaler = MinMaxScaler()
+    df_scaled = pd.DataFrame(scaler.fit_transform(df_numeric), columns=df_numeric.columns)
+    # Use PCA instead of t-SNE or UMAP
+    pca = PCA(n_components=3, random_state=2225)
+    pca_results = pca.fit_transform(df_scaled)
+    df_scaled['PCA1'] = pca_results[:, 0]
+    df_scaled['PCA2'] = pca_results[:, 1]
+    df_scaled['PCA3'] = pca_results[:, 2]
+    df_scaled['Label'] = 'All Others'
+    df_scaled.loc[df_scaled.tail(7).index, 'Label'] = 'Last 7 Days'
+    df_scaled.loc[df_scaled.tail(30).head(23).index, 'Label'] = 'Last 30 Days'
+    df_scaled['date_column'] = pd.to_datetime(model_df['date_column'], errors='coerce', utc=True)
+    df_scaled['Year'] = df_scaled['date_column'].dt.year
+    clustering_image_base64 = plot_2d_tsne_subplots(df_scaled, pca_results, method_name='PCA')
+    # Add PCA feature importance plot
+    pca_feature_importance_image_base64 = plot_pca_feature_importance(pca, df_numeric.columns, n_components=3)
+    # Drop columns with more than 40% missing data
+    missing_fraction = df_numeric.isnull().mean()
+    df_numeric = df_numeric.loc[:, missing_fraction <= 0.4]
+else:
+    clustering_image_base64 = generate_placeholder_image("No clustering data available.")
+    pca_feature_importance_image_base64 = generate_placeholder_image("No PCA feature importance available.")
 
 app.layout = html.Div(children=[
     dcc.Tabs(id='tabs', value='OVR Data', children=[
@@ -1521,6 +2145,37 @@ app.layout = html.Div(children=[
                 src=f'data:image/png;base64,{create_journal_plot()}',
                 style={'display': 'block', 'width': '90%',
                        'margin-right': '2.5%', 'margin-left': '2.5%'}
+            ),
+        ]),
+
+        # Clustering data
+        dcc.Tab(label='Data Clustering', value='Data Clustering', children=[
+            html.Div(children=[
+                html.Img(
+                    src=f'data:image/png;base64,{clustering_image_base64}',
+                    style={'display': 'block', 'width': '90%', 'margin': '0 auto'}
+                ),
+                html.Img(
+                    src=f'data:image/png;base64,{pca_feature_importance_image_base64}',
+                    style={'display': 'block', 'width': '100%', 'margin': '0 auto'}
+                )
+            ], style={'textAlign': 'center'})
+        ]),
+
+        # Baseball Data
+        dcc.Tab(label="Baseball Watched", children=[
+            html.Div(children='', style={'textAlign': 'center'}),
+            html.Img(
+                src=f'data:image/png;base64,{create_cr_baseball()}',
+                style={'display': 'block', 'width': '90%',
+                       'margin-right': '2.5%', 'margin-left': '2.5%'}
+            ),
+
+            html.Div(children='', style={'textAlign': 'center'}),
+            html.Img(
+                src=f'data:image/png;base64,{plot_games_year()}',
+                style={'display': 'block', 'width': '60%',
+                       'margin-right': 'auto', 'margin-left': 'auto'}
             ),
         ]),
 
@@ -1565,22 +2220,93 @@ app.layout = html.Div(children=[
             ], style={'textAlign': 'center', 'display': 'flex', 'justify-content': 'center'}),
         ]),
 
-        # Clustering data
-        dcc.Tab(label='Data Clustering', value='Data Clustering', children=[
+        # Whoop Data
+        dcc.Tab(label="Sleep Data", children=[
             html.Div(children=[
                 html.Img(
-                    id='clustering-graph-xy',
-                    style={'display': 'inline-block', 'width': '30%', 'margin': '1%'}
+                    src=f'data:image/png;base64,{plot_whoop_sleep_stages()}',
+                    style={'display': 'inline-block', 'width': '45%', 'margin-right': '2.5%'}
                 ),
                 html.Img(
-                    id='clustering-graph-xz',
-                    style={'display': 'inline-block', 'width': '30%', 'margin': '1%'}
-                ),
-                html.Img(
-                    id='clustering-graph-yz',
-                    style={'display': 'inline-block', 'width': '30%', 'margin': '1%'}
+                    src=f'data:image/png;base64,{plot_whoop_sleep_proportions()}',
+                    style={'display': 'inline-block', 'width': '45%', 'margin-left': '2.5%'}
                 )
-            ], style={'textAlign': 'center', 'display': 'flex', 'justify-content': 'center'})
+            ], style={'textAlign': 'center', 'display': 'flex', 'justify-content': 'center', 'margin-bottom': '50px'}),
+            html.Div(children=[
+                html.Img(
+                    src=f'data:image/png;base64,{plot_whoop_sleep_needs()}',
+                    style={'display': 'inline-block', 'width': '45%', 'margin-right': '2.5%'}
+                ),
+                html.Img(
+                    src=f'data:image/png;base64,{plot_whoop_sleep_percentages()}',
+                    style={'display': 'inline-block', 'width': '45%', 'margin-left': '2.5%'}
+                )
+            ], style={'textAlign': 'center', 'display': 'flex', 'justify-content': 'center', 'margin-bottom': '50px'}),
+            html.Div(children=[
+                html.Img(
+                    src=f'data:image/png;base64,{plot_whoop_respiratory_rate()}',
+                    style={'display': 'block', 'width': '45%', 'margin': '0 auto'}
+                )
+            ], style={'textAlign': 'center'}),
+        ]),
+
+        # Recovery Data
+        dcc.Tab(label="Recovery Data", children=[
+            html.Div(children=[
+                # First row with two plots
+                html.Div(children=[
+                    html.Img(
+                        src=f'data:image/png;base64,{plot_whoop_recovery_timeseries()[0]}',
+                        style={'display': 'inline-block', 'width': '45%', 'margin-right': '2.5%'}
+                    ),
+                    html.Img(
+                        src=f'data:image/png;base64,{plot_whoop_recovery_timeseries()[1]}',
+                        style={'display': 'inline-block', 'width': '45%', 'margin-left': '2.5%'}
+                    )
+                ], style={'textAlign': 'center', 'display': 'flex', 'justify-content': 'center', 'margin-bottom': '20px'}),
+                
+                # Second row with two plots
+                html.Div(children=[
+                    html.Img(
+                        src=f'data:image/png;base64,{plot_whoop_recovery_timeseries()[2]}',
+                        style={'display': 'inline-block', 'width': '45%', 'margin-right': '2.5%'}
+                    ),
+                    html.Img(
+                        src=f'data:image/png;base64,{plot_whoop_recovery_timeseries()[3]}',
+                        style={'display': 'inline-block', 'width': '45%', 'margin-left': '2.5%'}
+                    )
+                ], style={'textAlign': 'center', 'display': 'flex', 'justify-content': 'center', 'margin-bottom': '20px'}),
+                
+                # Third row with one plot
+                html.Div(children=[
+                    html.Img(
+                        src=f'data:image/png;base64,{plot_whoop_recovery_timeseries()[4]}',
+                        style={'display': 'block', 'width': '45%', 'margin': '0 auto'}
+                    )
+                ], style={'textAlign': 'center'})
+            ])
+        ]),
+        dcc.Tab(label="Cycle Data", children=[
+            html.Div(children=[
+                # First row: Strain and Kilojoules side by side
+                html.Div(children=[
+                    html.Img(
+                        src=f'data:image/png;base64,{plot_whoop_cycle_strain()}',
+                        style={'display': 'inline-block', 'width': '45%', 'margin-right': '2.5%'}
+                    ),
+                    html.Img(
+                        src=f'data:image/png;base64,{plot_whoop_cycle_kilojoule()}',
+                        style={'display': 'inline-block', 'width': '45%', 'margin-left': '2.5%'}
+                    ),
+                ], style={'textAlign': 'center', 'display': 'flex', 'justify-content': 'center', 'margin-bottom': '40px'}),
+                # Second row: Heart Rates centered
+                html.Div(children=[
+                    html.Img(
+                        src=f'data:image/png;base64,{plot_whoop_cycle_heartrates()}',
+                        style={'display': 'block', 'width': '45%', 'margin': '0 auto'}
+                    )
+                ], style={'textAlign': 'center'})
+            ], style={'textAlign': 'center'})
         ]),
 
         # Book Reading
@@ -1678,194 +2404,8 @@ app.layout = html.Div(children=[
             ),
         ]),
 
-        # Baseball Data
-        dcc.Tab(label="Baseball Watched", children=[
-            html.Div(children='', style={'textAlign': 'center'}),
-            html.Img(
-                src=f'data:image/png;base64,{create_cr_baseball()}',
-                style={'display': 'block', 'width': '90%',
-                       'margin-right': '2.5%', 'margin-left': '2.5%'}
-            ),
-
-            html.Div(children='', style={'textAlign': 'center'}),
-            html.Img(
-                src=f'data:image/png;base64,{plot_games_year()}',
-                style={'display': 'block', 'width': '60%',
-                       'margin-right': 'auto', 'margin-left': 'auto'}
-            ),
-        ]),
-    ])
+    ]),
 ])
-
-@app.callback(
-    [Output('clustering-graph-xy', 'src'),
-     Output('clustering-graph-xz', 'src'),
-     Output('clustering-graph-yz', 'src')],
-    Input('tabs', 'value')
-)
-def update_clustering_graphs(selected_tab):
-    print("\n=== Debug: Clustering Tab ===")
-    print("Selected tab:", selected_tab)
-    
-    if selected_tab == 'Data Clustering':
-        print("Entering clustering tab section")
-        
-        # Debug model_df
-        print("model_df exists:", 'model_df' in globals())
-        print("model_df type:", type(model_df))
-        print("model_df columns:", model_df.columns.tolist() if not model_df.empty else "Empty DataFrame")
-        print("model_df shape:", model_df.shape if not model_df.empty else "Empty")
-        
-        # Check if model_df is populated
-        if model_df.empty:
-            print("model_df is empty")
-            return '', '', ''
-        
-        try:
-            # Prep the data - use only numeric columns and exclude derived/redundant columns
-            exclude_columns = ['date_column', 'Year', 'Month_Num', 'Day', 'DayOfYear']
-            numeric_columns = model_df.select_dtypes(include=['float64', 'int64']).columns
-            print("Numeric columns:", numeric_columns.tolist())
-            
-            df_numeric = model_df[numeric_columns].drop(columns=exclude_columns, errors='ignore')
-            print("df_numeric shape after exclusions:", df_numeric.shape)
-            
-            # Remove columns with all zeros or NaN
-            df_numeric = df_numeric.loc[:, (df_numeric != 0).any(axis=0)]
-            df_numeric = df_numeric.loc[:, df_numeric.notna().any(axis=0)]
-            print("df_numeric shape after cleaning:", df_numeric.shape)
-            print("Final features:", df_numeric.columns.tolist())
-
-            # Fill NaN values with 0 (or you could use mean/median imputation)
-            df_numeric = df_numeric.fillna(0)
-            print("Shape after NaN handling:", df_numeric.shape)
-
-            # Standardize using Min-Max Scaling
-            scaler = MinMaxScaler()
-            df_scaled = pd.DataFrame(scaler.fit_transform(df_numeric), columns=df_numeric.columns)
-            print("Scaling completed")
-
-            # t-SNE dimensionality reduction (3D)
-            print("Starting t-SNE computation...")
-            tsne = TSNE(
-                n_components=3,
-                random_state=2225,
-                perplexity=30,
-                n_iter=500,  # Reduced from 1000
-                method='barnes_hut',  # Using the faster Barnes-Hut approximation
-                angle=0.5,  # Default value for Barnes-Hut, higher values = faster but less accurate
-                verbose=1
-            )
-            tsne_results = tsne.fit_transform(df_scaled)
-            print("t-SNE computation completed")
-
-            # Add t-SNE results back to the DataFrame
-            df_scaled['t-SNE1'] = tsne_results[:, 0]
-            df_scaled['t-SNE2'] = tsne_results[:, 1]
-            df_scaled['t-SNE3'] = tsne_results[:, 2]
-
-            # Label which days the data come from
-            df_scaled['Label'] = 'All Others'
-            df_scaled.loc[df_scaled.tail(7).index, 'Label'] = 'Last 7 Days'
-            df_scaled.loc[df_scaled.tail(30).head(23).index, 'Label'] = 'Last 30 Days'
-
-            # Add back in a date col for coloring
-            df_scaled['date_column'] = pd.to_datetime(model_df['date_column'])
-            df_scaled['Year'] = df_scaled['date_column'].dt.year
-
-            def create_2d_projection(x, y, xlabel, ylabel, title):
-                try:
-                    fig, ax = plt.subplots(figsize=(10, 8))
-
-                    # Plot main scatter points colored by year
-                    scatter = ax.scatter(
-                        df_scaled[x],
-                        df_scaled[y],
-                        c=df_scaled['Year'],
-                        cmap='viridis',
-                        alpha=0.5,
-                        s=50
-                    )
-
-                    # Add colorbar
-                    plt.colorbar(scatter, label='Year')
-
-                    # Plot last 30 days
-                    last_30_days = df_scaled[df_scaled['Label'] == 'Last 30 Days']
-                    if not last_30_days.empty:
-                        ax.scatter(
-                            last_30_days[x],
-                            last_30_days[y],
-                            color='blue',
-                            alpha=0.8,
-                            s=100,
-                            marker='s',
-                            label='Last 30 Days'
-                        )
-
-                    # Plot last 7 days
-                    last_7_days = df_scaled[df_scaled['Label'] == 'Last 7 Days']
-                    if not last_7_days.empty:
-                        ax.scatter(
-                            last_7_days[x],
-                            last_7_days[y],
-                            color='red',
-                            alpha=0.8,
-                            s=100,
-                            marker='s',
-                            label='Last 7 Days'
-                        )
-
-                    plt.title(title, fontsize=20, pad=20)
-                    plt.xlabel(xlabel, fontsize=16)
-                    plt.ylabel(ylabel, fontsize=16)
-                    plt.legend(fontsize=12, frameon=False)
-                    sns.despine(top=True, right=True)
-
-                    # Save the plot to a bytes buffer
-                    buffer = BytesIO()
-                    plt.savefig(buffer, format='png', bbox_inches='tight', dpi=300)
-                    buffer.seek(0)
-                    image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
-                    plt.close()
-
-                    return f'data:image/png;base64,{image_base64}'
-                except Exception as e:
-                    print(f"Error creating {title}:", str(e))
-                    return ''
-
-            print("Creating projections...")
-            # Create three 2D projections
-            xy_projection = create_2d_projection(
-                't-SNE1', 't-SNE2', 
-                't-SNE Dimension 1', 't-SNE Dimension 2',
-                'XY Projection of Daily Activities'
-            )
-            print("XY projection created")
-            
-            xz_projection = create_2d_projection(
-                't-SNE1', 't-SNE3',
-                't-SNE Dimension 1', 't-SNE Dimension 3',
-                'XZ Projection of Daily Activities'
-            )
-            print("XZ projection created")
-            
-            yz_projection = create_2d_projection(
-                't-SNE2', 't-SNE3',
-                't-SNE Dimension 2', 't-SNE Dimension 3',
-                'YZ Projection of Daily Activities'
-            )
-            print("YZ projection created")
-
-            return xy_projection, xz_projection, yz_projection
-        
-        except Exception as e:
-            print("Error in clustering:", str(e))
-            import traceback
-            traceback.print_exc()
-            return '', '', ''
-
-    return '', '', ''
 
 def open_browser():
     webbrowser.open_new("http://localhost:8051/")
