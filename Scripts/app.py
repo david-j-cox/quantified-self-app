@@ -13,7 +13,7 @@ import numpy as np
 # System
 import base64
 from io import BytesIO
-import datetime
+from datetime import datetime, date
 import random
 
 # Data viz
@@ -282,8 +282,8 @@ for col in list(all_data):
             continue
 
 # Only include data from new year if it is at least three weeks into it
-if (datetime.date.today().month == 1) & (datetime.date.today().day < 21):
-    all_data = all_data[all_data['Year'] < datetime.date.today().year]
+if (date.today().month == 1) & (date.today().day < 21):
+    all_data = all_data[all_data['Year'] < date.today().year]
 
 trends_all = calculate_yearly_trendlines(all_data, 'CR ALL')
 trends_wo_job = calculate_yearly_trendlines(all_data, 'CR w/o Job')
@@ -1062,7 +1062,17 @@ table_data = books[['year_read', 'title', 'author']]
 def plot_pages():
     # Prepare the data
     annual_pages = books.groupby('year_read')['pages'].sum().reset_index()
-    annual_pages['Monthly Pages'] = annual_pages['pages'] / 12
+    
+    # Calculate months passed for current year
+    current_year = date.today().year
+    current_month = date.today().month
+    
+    # Calculate monthly pages based on year-to-date for current year, full year for past years
+    annual_pages['Monthly Pages'] = annual_pages.apply(
+        lambda row: row['pages'] / current_month if row['year_read'] == current_year 
+        else row['pages'] / 12, 
+        axis=1
+    )
 
     # Create the plot
     fig, ax1 = plt.subplots(figsize=(10, 8))
@@ -1461,7 +1471,7 @@ def plot_cum_journals():
 def create_cr_baseball():
     # Prep the data and ensure it's sorted by date
     plot_df = baseball[pd.to_datetime(baseball['date']) <= pd.to_datetime(
-        datetime.date.today())].copy()
+        date.today())].copy()
     plot_df['date'] = pd.to_datetime(plot_df['date'])
     plot_df = plot_df.sort_values('date').reset_index(drop=True)
     plot_df['Year'] = plot_df['date'].dt.year
@@ -1833,6 +1843,7 @@ def plot_whoop_sleep_percentages():
     plt.xticks(fontsize=16)
     plt.ylabel("Sleep Percentage Scores", fontsize=26, labelpad=12)
     plt.yticks(fontsize=16)
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, p: f'{x:.0%}'))
     sns.despine(top=True, right=True)
     legend = plt.legend(loc="upper center", bbox_to_anchor=(0.5, 1.15), fontsize=24, ncol=3)
     legend.get_frame().set_facecolor('white')
@@ -2047,6 +2058,7 @@ def plot_pca_feature_importance(pca, feature_names, n_components=3, loading_thre
     import numpy as np
     from io import BytesIO
     import base64
+    from matplotlib.patches import Patch
     # Compute max abs loading across all selected PCs for each feature
     loadings_matrix = np.abs(pca.components_[:n_components])
     max_abs_loadings = loadings_matrix.max(axis=0)
@@ -2054,7 +2066,7 @@ def plot_pca_feature_importance(pca, feature_names, n_components=3, loading_thre
     keep_idx = np.where(max_abs_loadings >= loading_threshold)[0]
     filtered_features = np.array(feature_names)[keep_idx]
     filtered_loadings = pca.components_[:, keep_idx]
-    fig, axes = plt.subplots(n_components, 1, figsize=(max(14, len(filtered_features) * 0.5), 2.5 * n_components), sharex=True)
+    fig, axes = plt.subplots(n_components, 1, figsize=(max(14, len(filtered_features) * 0.4), 3.25 * n_components), sharex=True)
     if n_components == 1:
         axes = [axes]
     for i in range(n_components):
@@ -2062,15 +2074,21 @@ def plot_pca_feature_importance(pca, feature_names, n_components=3, loading_thre
         sorted_idx = np.argsort(np.abs(loadings))[::-1]
         sorted_features = filtered_features[sorted_idx]
         sorted_loadings = loadings[sorted_idx]
-        bar_colors = ['black' if val >= 0 else 'red' for val in sorted_loadings]
+        bar_colors = ['green' if val >= 0 else 'red' for val in sorted_loadings]
         axes[i].bar(sorted_features, np.abs(sorted_loadings), color=bar_colors)
         axes[i].set_title(f'PC{i+1} Feature Loadings', fontsize=22)
         axes[i].set_ylabel('Abs(Loading)', fontsize=18)
         axes[i].tick_params(axis='x', labelsize=18, rotation=90)
         axes[i].tick_params(axis='y', labelsize=18)
+        if i == 1:
+            legend_handles = [
+                Patch(color='green', label='Positive Loading'),
+                Patch(color='red', label='Negative Loading')
+            ]
+            axes[i].legend(handles=legend_handles, loc='upper right', fontsize=16)
     plt.xlabel('Feature', fontsize=18)
     plt.tight_layout()
-    plt.subplots_adjust(hspace=0.3)
+    plt.subplots_adjust(hspace=0.5)
     buffer = BytesIO()
     plt.savefig(buffer, format='png', bbox_inches='tight')
     buffer.seek(0)
@@ -2084,7 +2102,12 @@ app = Dash(__name__)
 # After loading model_df, generate the clustering plot statically
 if not model_df.empty:
     # Prep the data - use only numeric columns and exclude derived/redundant columns
-    exclude_columns = ['date_column', 'Year', 'Month_Num', 'Day', 'DayOfYear']
+    exclude_columns = ['date_column', 'Year', 'Month_Num', 'Day', 'DayOfYear', 'nap', 'total']
+    exclude_columns += [col for col in model_df.columns if col.startswith('score_')]
+    exclude_columns += [col for col in model_df.columns if col.startswith('cycle_')]
+    exclude_columns += [col for col in model_df.columns if col.startswith('sleep_')]
+    exclude_columns += [col for col in model_df.columns if col.startswith('updated_at_')]
+    exclude_columns += [col for col in model_df.columns if col.startswith('workout_')]
     numeric_columns = model_df.select_dtypes(include=['float64', 'int64']).columns
     df_numeric = model_df[numeric_columns].drop(columns=exclude_columns, errors='ignore')
     df_numeric = df_numeric.loc[:, (df_numeric != 0).any(axis=0)]
@@ -2153,11 +2176,11 @@ app.layout = html.Div(children=[
             html.Div(children=[
                 html.Img(
                     src=f'data:image/png;base64,{clustering_image_base64}',
-                    style={'display': 'block', 'width': '90%', 'margin': '0 auto'}
+                    style={'display': 'block', 'width': '90%', 'margin': '0 auto', 'margin-bottom': '6rem'}
                 ),
                 html.Img(
                     src=f'data:image/png;base64,{pca_feature_importance_image_base64}',
-                    style={'display': 'block', 'width': '100%', 'margin': '0 auto'}
+                    style={'display': 'block', 'width': '100%', 'margin': '0 auto', 'margin-top': '6rem'}
                 )
             ], style={'textAlign': 'center'})
         ]),
