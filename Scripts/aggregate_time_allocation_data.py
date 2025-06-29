@@ -45,11 +45,16 @@ for filename in os.listdir(folder_path):
 
         # Read the .csv file into a DataFrame, skipping the first two rows
         new_data = pd.read_csv(file_path, skiprows=3)
+        if len(new_data.columns) == 3:
+            new_data = new_data.reset_index()
+        else:
+            continue
+        new_data.columns = ['time_category', 'Seconds', 'Formatted Time', 'Status']
 
         # Use the "Seconds" column, converting it to total minutes
-        new_data['Minutes'] = new_data['Lap']/60
+        new_data['Minutes'] = new_data['Seconds'].astype(float)/60
         new_data = new_data.reset_index()
-        new_data = new_data[['index', 'Minutes']].T
+        new_data = new_data[['time_category', 'Minutes']].T
         new_data.columns = new_data.iloc[0]
         new_data = new_data.reset_index(drop=True)
         new_data = new_data[1:].reset_index(drop=True)
