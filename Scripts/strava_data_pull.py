@@ -69,7 +69,7 @@ def append_to_csv(file_path, df):
     if os.path.exists(file_path):
         existing_df = pd.read_csv(file_path)
         combined_df = pd.concat([existing_df, df]).drop_duplicates(
-            subset=['Activity Date', 'Activity Type', 'Elapsed Time']
+            subset=['activitydate', 'activitytype', 'elapsedtime']
         ).reset_index(drop=True)
     else:
         combined_df = df
@@ -86,7 +86,7 @@ def append_to_database(df, engine):
 def format_date(date_str):
     try:
         original_date = pd.to_datetime(date_str)
-        return original_date.strftime('%B %d, %Y, %I:%M:%S %p')
+        return original_date.strftime('%Y-%m-%d %H:%M:%S')
     except Exception as e:
         print(f"Error formatting date: {e}")
         return None
@@ -99,8 +99,8 @@ if __name__ == "__main__":
     csv_file_path = '../Data/activities.csv'
     if os.path.exists(csv_file_path):
         existing_df = pd.read_csv(csv_file_path)
-        if 'Activity Date' in existing_df.columns:
-            latest_date = pd.to_datetime(existing_df['Activity Date']).max()
+        if 'activitydate' in existing_df.columns:
+            latest_date = pd.to_datetime(existing_df['activitydate']).max()
             after_timestamp = int(latest_date.timestamp()) if not pd.isna(latest_date) else 0
         else:
             after_timestamp = 0
@@ -131,24 +131,24 @@ if __name__ == "__main__":
             'average_cadence'
         ]]
         df.columns = [
-            'Activity Date', 
-            'Activity Type',
-            'Elapsed Time', 
-            'Distance', 
-            'Max Speed', 
-            'Average Speed', 
-            'Elevation Gain', 
-            'Elevation Low',
-            'Elevation High', 
-            'Average Cadence'
+            'activitydate', 
+            'activitytype',
+            'elapsedtime', 
+            'distance', 
+            'maxspeed', 
+            'averagespeed', 
+            'elevationgain', 
+            'elevationlow',
+            'elevationhigh', 
+            'averagecadence'
         ]
 
         # Setup the df so it matches the activities data
-        df = df.sort_values(by=['Activity Date'], ascending=True)
-        df['Activity Date'] = df['Activity Date'].apply(format_date)
+        df = df.sort_values(by=['activitydate'], ascending=True)
+        df['activitydate'] = df['activitydate'].apply(format_date)
 
         # Convert distance to miles if the activity type is 'Run'
-        df.loc[df['Activity Type'] == 'Run', 'Distance'] = df['Distance'] / 1609.34
+        df.loc[df['activitytype'] == 'Run', 'distance'] = df['distance'] / 1609.34
 
         # Save to CSV
         append_to_csv(csv_file_path, df)
@@ -163,8 +163,8 @@ if __name__ == "__main__":
             SELECT 
                 ctid AS row_id,
                 ROW_NUMBER() OVER (
-                    PARTITION BY "Activity Date", "Activity Type", "Elapsed Time" 
-                    ORDER BY "Activity Date"
+                    PARTITION BY "activitydate", "activitytype", "elapsedtime" 
+                    ORDER BY "activitydate"
                 ) AS row_num
             FROM strava_activities
         )
