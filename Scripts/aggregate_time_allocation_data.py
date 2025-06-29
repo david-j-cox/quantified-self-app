@@ -15,6 +15,7 @@ DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_HOST = os.getenv("DB_HOST")
 DB_PORT = os.getenv("DB_PORT")
+DB_URL = os.getenv("DB_URL")
 
 # Paths
 folder_path = '../Data/Time Tracking/'  # Folder with the data files
@@ -44,11 +45,16 @@ for filename in os.listdir(folder_path):
 
         # Read the .csv file into a DataFrame, skipping the first two rows
         new_data = pd.read_csv(file_path, skiprows=3)
+        if len(new_data.columns) == 3:
+            new_data = new_data.reset_index()
+        else:
+            continue
+        new_data.columns = ['time_category', 'Seconds', 'Formatted Time', 'Status']
 
         # Use the "Seconds" column, converting it to total minutes
-        new_data['Minutes'] = new_data['Lap']/60
+        new_data['Minutes'] = new_data['Seconds'].astype(float)/60
         new_data = new_data.reset_index()
-        new_data = new_data[['index', 'Minutes']].T
+        new_data = new_data[['time_category', 'Minutes']].T
         new_data.columns = new_data.iloc[0]
         new_data = new_data.reset_index(drop=True)
         new_data = new_data[1:].reset_index(drop=True)
@@ -87,42 +93,39 @@ for filename in os.listdir(folder_path):
         ]].copy()
 
         # Add the date column
-        new_data['Date'] = date
+        new_data['date_column'] = date
 
         # Append the new data to the new_df DataFrame
         new_df = pd.concat([new_df, new_data], ignore_index=True)
 
 # Ensure new_df has unique rows and reset the index
 new_df = new_df.drop_duplicates().sort_values(
-    by=['Date'], ascending=True).reset_index(drop=True)
+    by=['date_column'], ascending=True).reset_index(drop=True)
 
 # Add new data to the existing raw_data.csv data
-all_data['Date'] = pd.to_datetime(all_data['Date'])
+all_data['date_column'] = pd.to_datetime(all_data['date_column'])
 all_data = pd.concat([all_data, new_df]).drop_duplicates(
-    subset='Date', keep='first').reset_index(drop=True)
+    subset='date_column', keep='first').reset_index(drop=True)
 
-# Sort by date and calculate additional columns
-all_data['Date'] = pd.to_datetime(all_data['Date'])
+# Sort by date
+all_data['date_column'] = pd.to_datetime(all_data['date_column'])
 all_data = all_data.sort_values(
-    by=['Date'], ascending=True).reset_index(drop=True)
+    by=['date_column'], ascending=True).reset_index(drop=True)
 
 # Save the updated data back to raw_data.csv
-all_data = all_data.drop_duplicates(subset=['Date'], keep='last')
+all_data = all_data.drop_duplicates(subset=['date_column'], keep='last')
 all_data.to_csv(raw_data_path, index=False)
 print("Data has been successfully appended to the raw_data.csv file.")
 
 # Database connection details
-DATABASE_URL = f'postgresql://{DB_USER}:password@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 TABLE_NAME = 'raw_data'
-
-# Create a database engine
-engine = create_engine(DATABASE_URL)
+engine = create_engine(DB_URL)
 
 # Save the new data (new_df) to the PostgreSQL database
 try:
-    new_df.to_sql(TABLE_NAME, con=engine, if_exists='append', index=False)
-    print(f"New data has been successfully appended to the '{
-          TABLE_NAME}' table in the database.")
+    with engine.connect() as connection:
+        new_df.to_sql(TABLE_NAME, con=engine, if_exists='append', index=False, method='multi')
+    print(f"New data has been successfully appended to the '{TABLE_NAME}' table in the database.")
 except Exception as e:
     print(f"Error saving new data to the database: {e}")
 
@@ -150,18 +153,18 @@ for filename in os.listdir(folder_path):
 
 
 # Create a database engine
-engine = create_engine(DATABASE_URL)
+engine = create_engine(DB_URL)
 
 # SQL query to remove duplicates
 remove_duplicates_query = """
 WITH cte AS (
     SELECT 
         ctid AS row_id,
-        ROW_NUMBER() OVER (PARTITION BY "Date", "Journal Articles", "Philosophy", "Reading Books", "Learning",
+        ROW_NUMBER() OVER (PARTITION BY "date_column", "Journal Articles", "Philosophy", "Reading Books", "Learning",
                                        "Writing", "Research Projects", "Teaching", "Language",
                                        "Ethics Work", "Presentations", "Physical Exercise",
                                        "Human Experience", "Coding"
-                          ORDER BY "Date") AS row_num
+                          ORDER BY "date_column") AS row_num
     FROM raw_data
 )
 DELETE FROM raw_data
