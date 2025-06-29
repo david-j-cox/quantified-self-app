@@ -2113,6 +2113,9 @@ if not model_df.empty:
     df_numeric = df_numeric.loc[:, (df_numeric != 0).any(axis=0)]
     df_numeric = df_numeric.loc[:, df_numeric.notna().any(axis=0)]
     df_numeric = df_numeric.fillna(0)
+    save_df = df_numeric.copy()
+    save_df['date_column'] = model_df['date_column']
+    save_df.to_csv("../Data/df_numeric_for_clustering.csv")
     scaler = MinMaxScaler()
     df_scaled = pd.DataFrame(scaler.fit_transform(df_numeric), columns=df_numeric.columns)
     # Use PCA instead of t-SNE or UMAP
