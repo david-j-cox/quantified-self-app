@@ -1058,7 +1058,6 @@ def books_annually():
 # Define a sample DataFrame to display as a table
 table_data = books[['year_read', 'title', 'author']]
 
-
 def plot_pages():
     # Prepare the data
     annual_pages = books.groupby('year_read')['pages'].sum().reset_index()
@@ -2041,7 +2040,6 @@ def plot_2d_tsne_subplots(df, embedding_results, method_name='PCA'):
     return image_base64
 
 # Add this helper function near the top, after imports
-
 def generate_placeholder_image(message="No data available"):
     fig, ax = plt.subplots(figsize=(8, 3))
     ax.text(0.5, 0.5, message, fontsize=18, ha='center', va='center')
@@ -2102,7 +2100,8 @@ app = Dash(__name__)
 # After loading model_df, generate the clustering plot statically
 if not model_df.empty:
     # Prep the data - use only numeric columns and exclude derived/redundant columns
-    exclude_columns = ['date_column', 'Year', 'Month_Num', 'Day', 'DayOfYear', 'nap', 'total']
+    exclude_columns = ['date_column', 'Year', 'Month_Num', 'Day', 'DayOfYear', 'nap', 'total', 
+                       'ovr_pirates', 'ovr_guardians', 'ovr_other']
     exclude_columns += [col for col in model_df.columns if col.startswith('score_')]
     exclude_columns += [col for col in model_df.columns if col.startswith('cycle_')]
     exclude_columns += [col for col in model_df.columns if col.startswith('sleep_')]
