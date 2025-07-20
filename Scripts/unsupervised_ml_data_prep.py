@@ -81,6 +81,10 @@ baseball = baseball[
     [col for col in baseball.columns if "tv" not in col and "in_person" not in col]
 ]
 
+# Keep only current season data
+baseball = [col for col in baseball.columns if "ovr" not in col]
+print(baseball.columns)
+
 # Cleanup Whoop data
 def convert_to_minutes(df, datetime_cols):
     """
@@ -174,8 +178,8 @@ all_data['DayOfYear'] = all_data['date_column'].dt.dayofyear
 all_data = all_data.sort_values(by=['Year', 'DayOfYear'])
 
 # Only include data from new year if it is at least three weeks into it
-if (datetime.date.today().month == 1) & (datetime.date.today().day < 21):
-    all_data = all_data[all_data['Year'] < datetime.date.today().year]
+# if (datetime.date.today().month == 1) & (datetime.date.today().day < 21):
+#     all_data = all_data[all_data['Year'] < datetime.date.today().year]
 
 # Copy all_data into model_df
 model_df = all_data.copy()
