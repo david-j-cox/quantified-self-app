@@ -411,20 +411,48 @@ def create_cr_all_plot():
 
 def create_avg_ovr_slopes():
     # Display the DataFrame
-    fig, ax = plt.subplots(figsize=(10, 7))
+    fig, ax = plt.subplots(figsize=(8, 6))  # More compact figure for 45% width
     sns.lineplot(data=all_data_melted, x='Week', y='Value',
                  hue='Category')  # Corrected lineplot usage
-    plt.xlabel("Week", fontsize=26, labelpad=12)
-    plt.xticks(fontsize=16)
-    plt.ylabel("Weekly AVG of Mins Tracked Daily", fontsize=20, labelpad=12)
-    plt.yticks(fontsize=16)
-    plt.ylim(0, 1800)
-    sns.despine(top=True, right=True)
-    plt.legend(frameon=False, loc="best", fontsize=16)
+    
+    # Create twin axis for percentages
+    ax2 = ax.twinx()
+    
+    # Set up the percentage scale
+    # 100% = 960 minutes, so we need to calculate the percentage scale
+    max_minutes = 1800  # Current y-axis limit
+    max_percentage = (max_minutes / 960) * 100  # Calculate max percentage
+    
+    # Set the limits for both axes
+    ax.set_ylim(0, max_minutes)
+    ax2.set_ylim(0, max_percentage)
+    
+    # Set up percentage ticks on the right axis
+    percentage_ticks = [0, 25, 50, 75, 100, 125, 150, 175]
+    ax2.set_yticks(percentage_ticks)
+    ax2.set_yticklabels([f'{p}%' for p in percentage_ticks])
+    
+    # Style the axes
+    plt.xlabel("Week", fontsize=16, labelpad=8)
+    plt.xticks(fontsize=12)
+    ax.set_ylabel("Weekly AVG of Mins Tracked Daily", fontsize=14, labelpad=8)
+    ax.yaxis.set_tick_params(labelsize=12)
+    ax2.set_ylabel("Percentage of 16 Hr Day (960 min)", fontsize=14, labelpad=8)
+    ax2.yaxis.set_tick_params(labelsize=12)
+    
+    # Add a horizontal line at 100% (960 minutes)
+    ax.axhline(y=960, color='red', linestyle='--', alpha=0.7, linewidth=1)
+    ax2.axhline(y=100, color='red', linestyle='--', alpha=0.7, linewidth=1)
+    
+    sns.despine(top=True, right=False)  # Keep right spine for percentage axis
+    plt.legend(frameon=False, loc="best", fontsize=12)
+    
+    # Adjust layout to prevent right axis labels from being cut off
+    plt.tight_layout(pad=2.0)  # More padding for compact layout
 
     # Save the plot to a bytes buffer
     buffer = BytesIO()
-    plt.savefig(buffer, format='png')
+    plt.savefig(buffer, format='png', bbox_inches='tight', dpi=300)
     buffer.seek(0)
     image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
 
