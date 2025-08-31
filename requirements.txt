@@ -119,5 +119,5 @@ wcwidth==0.2.13
 webcolors==24.11.1
 webencodings==0.5.1
 websocket-client==1.8.0
-whoop==0.1.0
+# whoop==0.1.0  # Removed - using direct API calls for v2
 widgetsnbextension==4.0.14
