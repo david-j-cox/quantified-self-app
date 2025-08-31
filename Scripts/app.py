@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
 import plotly.graph_objs as go
-from matplotlib.ticker import FuncFormatter
+from matplotlib.ticker import FuncFormatter, ScalarFormatter, FixedFormatter
 
 # Dashboard
 from dash import Dash, dcc, html
@@ -213,8 +213,15 @@ def plot_whoop_cycle_heartrates():
     ax.set_xlabel('Date', fontsize=18)
     ax.set_ylabel('Heart Rate (bpm)', fontsize=18)
     ax.set_yscale('log')
-    ax.tick_params(axis='x', labelsize=14, rotation=45)
     ax.tick_params(axis='y', labelsize=14)
+    
+    # Set y-limits and format y-axis to show standard notation
+    ax.set_ylim(30, 250)
+    # Manually set nice tick locations for the heart rate range and force no scientific notation
+    ax.set_yticks([30, 50, 75, 100, 150, 200, 250])
+    ax.set_yticklabels(['30', '50', '75', '100', '150', '200', '250'])
+    # Force no minor ticks to prevent scientific notation
+    ax.yaxis.set_minor_locator(plt.NullLocator())
     ax.legend(fontsize=16)
     sns.despine(ax=ax)
     buffer = BytesIO()
@@ -952,7 +959,7 @@ def plot_run_mins_mile():
                       (plot_df['Min per Mile'] >= 3.5)]
 
     # Plotting
-    fig, ax = plt.subplots(figsize=(10, 8))
+    fig, ax = plt.subplots(figsize=(20, 8))
     sns.lineplot(x=plot_df['activitydate'], y=plot_df['Min per Mile'],
                  marker='o', markersize=8, color='k')
     plt.xlabel("Year", fontsize=26, labelpad=12)
@@ -991,7 +998,7 @@ def plot_run_mins_mile_month():
                       (plot_df['Min per Mile'] >= 3.5)]
 
     # Plotting
-    fig, ax = plt.subplots(figsize=(10, 8))
+    fig, ax = plt.subplots(figsize=(20, 8))
     sns.boxplot(
         x=plot_df['Month'],
         y=plot_df['Min per Mile'],
@@ -1637,7 +1644,7 @@ def plot_games_year():
     ticks = list(range(0, int(plot_df['value'].max())+1, 50))
     plt.yticks(ticks=ticks, labels=ticks, fontsize=16)
     sns.despine(top=True, right=True)
-    plt.legend(loc="best", fontsize=16, frameon=False)
+    plt.legend(loc=(1.05, 0.5), fontsize=16, frameon=False)
 
     # Add data labels
     for i in range(len(plot_df)):
@@ -1648,7 +1655,7 @@ def plot_games_year():
 
     # Save the plot to a bytes buffer
     buffer = BytesIO()
-    plt.savefig(buffer, format='png')
+    plt.savefig(buffer, format='png', bbox_inches='tight')
     buffer.seek(0)
     image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
 
@@ -1843,6 +1850,10 @@ def plot_whoop_sleep_percentages():
         value_name='Percentage'
     )
     plot_df['Metric'] = plot_df['Metric'].str.replace('score_sleep_', '').str.replace('_percentage', '').str.replace('_', ' ').str.title()
+    
+    # Convert percentages to decimal format (0-1) for consistent plotting
+    plot_df['Percentage'] = plot_df['Percentage'] / 100
+    
     fig, ax = plt.subplots(figsize=(18, 10))
     palette = sns.color_palette('bright', n_colors=plot_df['Metric'].nunique())
     color_dict = dict(zip(plot_df['Metric'].unique(), palette))
@@ -1862,7 +1873,7 @@ def plot_whoop_sleep_percentages():
         metric_df = plot_df[plot_df['Metric'] == metric].dropna()
         if len(metric_df) > 1:
             x = metric_df['sleep_start'].map(mdates.date2num)
-            y = metric_df['Percentage']
+            y = metric_df['Percentage']  # Already converted to decimal format above
             z = np.polyfit(x, y, 4)  # degree 4 polynomial for smooth trend
             p = np.poly1d(z)
             ax.plot(metric_df['sleep_start'], p(x), linestyle='--', linewidth=2, alpha=0.7, color=color_dict[metric])
@@ -2263,12 +2274,14 @@ app.layout = html.Div(children=[
                 html.Img(
                     src=f'data:image/png;base64,{plot_run_mins_mile()}',
                     style={'display': 'inline-block',
-                           'width': '45%', 'margin-right': '2.5%'}
+                           'width': '90%', 'margin-right': '2.5%'}
                 ),
+            ], style={'textAlign': 'center', 'display': 'flex', 'justify-content': 'center'}),
+            html.Div(children=[
                 html.Img(
                     src=f'data:image/png;base64,{plot_run_mins_mile_month()}',
                     style={'display': 'inline-block',
-                           'width': '45%', 'margin-left': '2.5%'}
+                           'width': '90%', 'margin-left': '2.5%'}
                 )
             ], style={'textAlign': 'center', 'display': 'flex', 'justify-content': 'center'}),
         ]),
