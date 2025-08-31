@@ -78,8 +78,37 @@ phys_act = phys_act[['activitydate', 'activitytype', 'elapsedtime', 'distance']]
 
 # Keep only numeric baseball cols
 baseball = baseball[
-    [col for col in baseball.columns if "tv" not in col and "in_person" not in col]
+    [col for col in baseball.columns if "tv" not in col and "in_person" not in col and "ovr" not in col and "season" not in col]
 ]
+baseball = baseball.sort_values(by='date', ascending=True).reset_index(drop=True)
+
+# Convert cumulative counts to binary indicators (1 if increased, 0 otherwise)
+def convert_cumulative_to_binary(df, columns_to_convert):
+    """
+    Convert cumulative columns to binary indicators showing when values increase.
+    
+    Parameters:
+        df (pd.DataFrame): Input DataFrame
+        columns_to_convert (list): List of column names to convert
+    
+    Returns:
+        pd.DataFrame: DataFrame with binary columns
+    """
+    df = df.copy()
+    
+    for col in columns_to_convert:
+        if col in df.columns:
+            # Create binary column: 1 if value increased from previous row, 0 otherwise
+            df[f'{col}'] = (df[col] > df[col].shift(1)).astype(int)
+            # First row will be NaN, set to 0
+            df[f'{col}'] = df[f'{col}'].fillna(0)
+    
+    return df
+
+# Convert the cumulative columns to binary
+columns_to_convert = ['total', 'pirates', 'guardians', 'other']
+baseball = convert_cumulative_to_binary(baseball, columns_to_convert)
+baseball['total'] = baseball[['pirates', 'guardians', 'other']].sum(axis=1)
 
 # Cleanup Whoop data
 def convert_to_minutes(df, datetime_cols):
@@ -97,7 +126,9 @@ def convert_to_minutes(df, datetime_cols):
     for col in datetime_cols:
         df = df.dropna(subset=[col]).reset_index(drop=True)
         try:
-            df[col] = pd.to_datetime(df[col], errors='coerce')  # Convert to datetime, coercing errors
+            # Handle timezone-aware datetime objects properly
+            df[col] = pd.to_datetime(df[col], utc=True, errors='coerce')  # Convert to datetime, coercing errors
+            df[col] = df[col].dt.tz_localize(None)  # Remove timezone info
             df = df.dropna(subset=[col])  # Drop rows where conversion failed
             df[f"{col}_minutes_into_day"] = df[col].dt.hour * 60 + df[col].dt.minute
             df[f"{col}_minutes_into_day"] = df[f"{col}_minutes_into_day"].astype(float).round(2)
@@ -110,26 +141,26 @@ def convert_to_minutes(df, datetime_cols):
 datetime_cols = ['updated_at', 'cycle_start', 'cycle_end']
 cycle_collection = convert_to_minutes(cycle_collection, datetime_cols)
 cycle_collection = cycle_collection.drop(datetime_cols + ['id', 'user_id', 'timezone_offset', 'score_state'], axis=1)
-cycle_collection['created_at'] = pd.to_datetime(cycle_collection['created_at']).dt.date
+cycle_collection['created_at'] = pd.to_datetime(cycle_collection['created_at'], utc=True).dt.tz_localize(None).dt.date
 
 # Recoveries
 datetime_cols = ['updated_at']
 recoveries = convert_to_minutes(recoveries, datetime_cols)
 recoveries = recoveries.drop(datetime_cols + ['cycle_id', 'sleep_id', 'user_id', 'score_state', 'score_user_calibrating'], axis=1)
-recoveries['created_at'] = pd.to_datetime(recoveries['created_at']).dt.date
+recoveries['created_at'] = pd.to_datetime(recoveries['created_at'], utc=True).dt.tz_localize(None).dt.date
 
 # Sleep Collections
 datetime_cols = ['updated_at', 'sleep_start', 'sleep_end', ]
 sleep_collection = convert_to_minutes(sleep_collection, datetime_cols)
 sleep_collection = sleep_collection.drop(datetime_cols + ['id', 'user_id', 'timezone_offset', 'score_state'], axis=1)
 sleep_collection['nap'] = [0 if val=="false" else 1 for val in sleep_collection['nap']]
-sleep_collection['created_at'] = pd.to_datetime(sleep_collection['created_at']).dt.date
+sleep_collection['created_at'] = pd.to_datetime(sleep_collection['created_at'], utc=True).dt.tz_localize(None).dt.date
 
 # Workouts
 datetime_cols = ['updated_at', 'workout_start', 'workout_end', ]
 workouts = convert_to_minutes(workouts, datetime_cols)
 workouts = workouts.drop(datetime_cols + ['id', 'user_id', 'timezone_offset', 'score_state'], axis=1)
-workouts['created_at'] = pd.to_datetime(workouts['created_at']).dt.date
+workouts['created_at'] = pd.to_datetime(workouts['created_at'], utc=True).dt.tz_localize(None).dt.date
 
 # Normalize date to remove varied time listings
 phys_act = phys_act.drop_duplicates().reset_index(drop=True)
@@ -174,8 +205,8 @@ all_data['DayOfYear'] = all_data['date_column'].dt.dayofyear
 all_data = all_data.sort_values(by=['Year', 'DayOfYear'])
 
 # Only include data from new year if it is at least three weeks into it
-if (datetime.date.today().month == 1) & (datetime.date.today().day < 21):
-    all_data = all_data[all_data['Year'] < datetime.date.today().year]
+# if (datetime.date.today().month == 1) & (datetime.date.today().day < 21):
+#     all_data = all_data[all_data['Year'] < datetime.date.today().year]
 
 # Copy all_data into model_df
 model_df = all_data.copy()
@@ -195,9 +226,18 @@ date_cols = {
 cleaned_dfs = pd.DataFrame()
 for name, (date_col, df) in date_cols.items():
     temp_df = df.copy()
-    temp_df['date_column'] = pd.to_datetime(temp_df[date_col]).dt.normalize()  # Ensure consistent day-month-year format
+    
+    # Handle timezone-aware datetime objects properly
+    if name in ['cycle_collection', 'recoveries', 'sleep_collection', 'workouts']:
+        # For Whoop data, convert to UTC first, then normalize
+        temp_df['date_column'] = pd.to_datetime(temp_df[date_col], utc=True).dt.tz_localize(None).dt.normalize()
+    else:
+        # For other data, convert normally
+        temp_df['date_column'] = pd.to_datetime(temp_df[date_col]).dt.normalize()
+    
     temp_df['date_column'] = temp_df['date_column'].astype(str)
     temp_df = temp_df.drop(date_col, axis=1)
+    
     if len(cleaned_dfs)==0:
         cleaned_dfs = pd.concat([cleaned_dfs, temp_df])
     else:
@@ -238,5 +278,5 @@ model_df['Day'] = model_df['Day'].map(day_to_number)
 model_df = model_df.drop_duplicates(subset=['date_column'], keep="first").reset_index(drop=True)
 
 # Push to Database
-model_df.to_sql('modeling_ready_data', engine, if_exists='append', index=False)
+model_df.to_sql('modeling_ready_data', engine, if_exists='replace', index=False)
 model_df.to_csv('../Data/modeling_data.csv', index=False)
