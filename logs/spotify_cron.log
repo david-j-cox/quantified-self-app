@@ -1,0 +1,1909 @@
+2025-09-20 12:00:12,910 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-20 12:00:14,766 - INFO - Last timestamp in CSV: 2025-01-01 15:22:22+00:00
+2025-09-20 12:00:14,791 - INFO - Fetching data from 2025-01-01 15:23:22 onwards...
+2025-09-20 12:00:14,977 - INFO - Successfully refreshed access token
+2025-09-20 12:00:15,779 - INFO - Retrieved 50 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-20 12:00:17,881 - INFO - Combined 187012 existing + 50 new = 187062 total records (after deduplication)
+2025-09-20 12:00:21,202 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-20 12:00:21,244 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250920_120021.json
+2025-09-20 12:00:21,246 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-20 12:00:21,250 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-20 12:00:21,250 - INFO - New data range: 2025-09-20 12:29:57.453000+00:00 to 2025-09-20 15:53:48.896000+00:00
+2025-09-20 12:00:21,251 - INFO - New tracks fetched: 50
+2025-09-20 12:00:21,251 - INFO - Records added to CSV: 50
+2025-09-20 12:00:21,251 - INFO - Unique new tracks: 50
+2025-09-20 12:00:21,251 - INFO - Unique new artists: 31
+2025-09-20 12:00:23,154 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-20 15:53:48.896000+00:00
+2025-09-20 12:00:23,154 - INFO - Total records in dataset: 187,062
+2025-09-20 12:00:23,178 - INFO - Incremental data collection completed successfully!
+2025-09-20 16:00:03,765 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-20 16:00:05,018 - INFO - Last timestamp in CSV: 2025-09-20 15:53:48.896000+00:00
+2025-09-20 16:00:05,037 - INFO - Fetching data from 2025-09-20 15:54:48 onwards...
+2025-09-20 16:00:05,207 - INFO - Successfully refreshed access token
+2025-09-20 16:00:06,171 - INFO - Retrieved 38 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-20 16:00:07,621 - INFO - Combined 187062 existing + 38 new = 187100 total records (after deduplication)
+2025-09-20 16:00:10,089 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-20 16:00:10,123 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250920_160010.json
+2025-09-20 16:00:10,124 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-20 16:00:10,126 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-20 16:00:10,127 - INFO - New data range: 2025-09-20 16:42:55.070000+00:00 to 2025-09-20 19:58:18.831000+00:00
+2025-09-20 16:00:10,127 - INFO - New tracks fetched: 38
+2025-09-20 16:00:10,127 - INFO - Records added to CSV: 38
+2025-09-20 16:00:10,128 - INFO - Unique new tracks: 36
+2025-09-20 16:00:10,128 - INFO - Unique new artists: 30
+2025-09-20 16:00:11,589 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-20 19:58:18.831000+00:00
+2025-09-20 16:00:11,590 - INFO - Total records in dataset: 187,100
+2025-09-20 16:00:11,607 - INFO - Incremental data collection completed successfully!
+2025-09-20 20:00:03,495 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-20 20:00:05,512 - INFO - Last timestamp in CSV: 2025-09-20 19:58:18.831000+00:00
+2025-09-20 20:00:05,539 - INFO - Fetching data from 2025-09-20 19:59:18 onwards...
+2025-09-20 20:00:05,749 - INFO - Successfully refreshed access token
+2025-09-20 20:00:06,561 - INFO - Retrieved 16 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-20 20:00:08,782 - INFO - Combined 187100 existing + 16 new = 187116 total records (after deduplication)
+2025-09-20 20:00:12,546 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-20 20:00:12,597 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250920_200012.json
+2025-09-20 20:00:12,599 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-20 20:00:12,602 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-20 20:00:12,602 - INFO - New data range: 2025-09-20 20:07:28.824000+00:00 to 2025-09-20 22:43:06.379000+00:00
+2025-09-20 20:00:12,602 - INFO - New tracks fetched: 16
+2025-09-20 20:00:12,602 - INFO - Records added to CSV: 16
+2025-09-20 20:00:12,603 - INFO - Unique new tracks: 14
+2025-09-20 20:00:12,603 - INFO - Unique new artists: 13
+2025-09-20 20:00:14,932 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-20 22:43:06.379000+00:00
+2025-09-20 20:00:14,932 - INFO - Total records in dataset: 187,116
+2025-09-20 20:00:14,968 - INFO - Incremental data collection completed successfully!
+2025-09-21 08:00:03,217 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-21 08:00:05,049 - INFO - Last timestamp in CSV: 2025-09-20 22:43:06.379000+00:00
+2025-09-21 08:00:05,074 - INFO - Fetching data from 2025-09-20 22:44:06 onwards...
+2025-09-21 08:00:05,256 - INFO - Successfully refreshed access token
+2025-09-21 08:00:05,994 - INFO - Retrieved 18 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-21 08:00:07,833 - INFO - Combined 187116 existing + 18 new = 187134 total records (after deduplication)
+2025-09-21 08:00:11,009 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-21 08:00:11,054 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250921_080011.json
+2025-09-21 08:00:11,059 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-21 08:00:11,061 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-21 08:00:11,062 - INFO - New data range: 2025-09-21 10:31:07.929000+00:00 to 2025-09-21 11:56:34.556000+00:00
+2025-09-21 08:00:11,062 - INFO - New tracks fetched: 18
+2025-09-21 08:00:11,062 - INFO - Records added to CSV: 18
+2025-09-21 08:00:11,062 - INFO - Unique new tracks: 1
+2025-09-21 08:00:11,062 - INFO - Unique new artists: 1
+2025-09-21 08:00:12,614 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-21 11:56:34.556000+00:00
+2025-09-21 08:00:12,614 - INFO - Total records in dataset: 187,134
+2025-09-21 08:00:12,639 - INFO - Incremental data collection completed successfully!
+2025-09-21 12:00:03,121 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-21 12:00:07,688 - INFO - Last timestamp in CSV: 2025-09-21 11:56:34.556000+00:00
+2025-09-21 12:00:07,733 - INFO - Fetching data from 2025-09-21 11:57:34 onwards...
+2025-09-21 12:00:07,979 - INFO - Successfully refreshed access token
+2025-09-21 12:00:08,117 - INFO - Retrieved 0 tracks
+2025-09-21 12:00:08,118 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-09-21 12:00:08,118 - INFO - Incremental data collection completed successfully!
+2025-09-21 16:00:02,592 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-21 16:00:03,928 - INFO - Last timestamp in CSV: 2025-09-21 11:56:34.556000+00:00
+2025-09-21 16:00:03,947 - INFO - Fetching data from 2025-09-21 11:57:34 onwards...
+2025-09-21 16:00:04,145 - INFO - Successfully refreshed access token
+2025-09-21 16:00:04,987 - INFO - Retrieved 14 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-21 16:00:06,537 - INFO - Combined 187134 existing + 14 new = 187148 total records (after deduplication)
+2025-09-21 16:00:09,034 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-21 16:00:09,067 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250921_160009.json
+2025-09-21 16:00:09,070 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-21 16:00:09,077 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-21 16:00:09,078 - INFO - New data range: 2025-09-21 19:06:02.877000+00:00 to 2025-09-21 19:59:15.102000+00:00
+2025-09-21 16:00:09,078 - INFO - New tracks fetched: 14
+2025-09-21 16:00:09,078 - INFO - Records added to CSV: 14
+2025-09-21 16:00:09,079 - INFO - Unique new tracks: 13
+2025-09-21 16:00:09,079 - INFO - Unique new artists: 12
+2025-09-21 16:00:10,560 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-21 19:59:15.102000+00:00
+2025-09-21 16:00:10,563 - INFO - Total records in dataset: 187,148
+2025-09-21 16:00:10,584 - INFO - Incremental data collection completed successfully!
+2025-09-21 20:00:02,642 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-21 20:00:04,088 - INFO - Last timestamp in CSV: 2025-09-21 19:59:15.102000+00:00
+2025-09-21 20:00:04,110 - INFO - Fetching data from 2025-09-21 20:00:15 onwards...
+2025-09-21 20:00:04,316 - INFO - Successfully refreshed access token
+2025-09-21 20:00:04,910 - INFO - Retrieved 7 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-21 20:00:06,566 - INFO - Combined 187148 existing + 7 new = 187155 total records (after deduplication)
+2025-09-21 20:00:09,382 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-21 20:00:09,413 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250921_200009.json
+2025-09-21 20:00:09,414 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-21 20:00:09,418 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-21 20:00:09,419 - INFO - New data range: 2025-09-21 20:03:51.017000+00:00 to 2025-09-21 20:28:02.957000+00:00
+2025-09-21 20:00:09,419 - INFO - New tracks fetched: 7
+2025-09-21 20:00:09,419 - INFO - Records added to CSV: 7
+2025-09-21 20:00:09,420 - INFO - Unique new tracks: 7
+2025-09-21 20:00:09,420 - INFO - Unique new artists: 7
+2025-09-21 20:00:10,831 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-21 20:28:02.957000+00:00
+2025-09-21 20:00:10,831 - INFO - Total records in dataset: 187,155
+2025-09-21 20:00:10,850 - INFO - Incremental data collection completed successfully!
+2025-09-22 00:00:02,619 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-22 00:00:03,930 - INFO - Last timestamp in CSV: 2025-09-21 20:28:02.957000+00:00
+2025-09-22 00:00:03,949 - INFO - Fetching data from 2025-09-21 20:29:02 onwards...
+2025-09-22 00:00:04,162 - INFO - Successfully refreshed access token
+2025-09-22 00:00:04,301 - INFO - Retrieved 0 tracks
+2025-09-22 00:00:04,301 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-09-22 00:00:04,301 - INFO - Incremental data collection completed successfully!
+2025-09-22 04:00:02,336 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-22 04:00:03,650 - INFO - Last timestamp in CSV: 2025-09-21 20:28:02.957000+00:00
+2025-09-22 04:00:03,669 - INFO - Fetching data from 2025-09-21 20:29:02 onwards...
+2025-09-22 04:00:03,863 - INFO - Successfully refreshed access token
+2025-09-22 04:00:04,003 - INFO - Retrieved 0 tracks
+2025-09-22 04:00:04,004 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-09-22 04:00:04,004 - INFO - Incremental data collection completed successfully!
+2025-09-22 08:00:04,448 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-22 08:00:05,718 - INFO - Last timestamp in CSV: 2025-09-21 20:28:02.957000+00:00
+2025-09-22 08:00:05,747 - INFO - Fetching data from 2025-09-21 20:29:02 onwards...
+2025-09-22 08:00:05,946 - INFO - Successfully refreshed access token
+2025-09-22 08:00:06,092 - INFO - Retrieved 0 tracks
+2025-09-22 08:00:06,093 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-09-22 08:00:06,093 - INFO - Incremental data collection completed successfully!
+2025-09-22 12:00:05,379 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-22 12:00:07,670 - INFO - Last timestamp in CSV: 2025-09-21 20:28:02.957000+00:00
+2025-09-22 12:00:07,699 - INFO - Fetching data from 2025-09-21 20:29:02 onwards...
+2025-09-22 12:00:07,902 - INFO - Successfully refreshed access token
+2025-09-22 12:00:08,651 - INFO - Retrieved 33 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-22 12:00:11,405 - INFO - Combined 187155 existing + 33 new = 187188 total records (after deduplication)
+2025-09-22 12:00:16,220 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-22 12:00:16,271 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250922_120016.json
+2025-09-22 12:00:16,273 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-22 12:00:16,276 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-22 12:00:16,277 - INFO - New data range: 2025-09-22 13:36:06.138000+00:00 to 2025-09-22 15:58:32.168000+00:00
+2025-09-22 12:00:16,277 - INFO - New tracks fetched: 33
+2025-09-22 12:00:16,277 - INFO - Records added to CSV: 33
+2025-09-22 12:00:16,277 - INFO - Unique new tracks: 30
+2025-09-22 12:00:16,278 - INFO - Unique new artists: 19
+2025-09-22 12:00:18,373 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-22 15:58:32.168000+00:00
+2025-09-22 12:00:18,373 - INFO - Total records in dataset: 187,188
+2025-09-22 12:00:18,401 - INFO - Incremental data collection completed successfully!
+2025-09-22 16:00:04,375 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-22 16:00:06,173 - INFO - Last timestamp in CSV: 2025-09-22 15:58:32.168000+00:00
+2025-09-22 16:00:06,198 - INFO - Fetching data from 2025-09-22 15:59:32 onwards...
+2025-09-22 16:00:06,384 - INFO - Successfully refreshed access token
+2025-09-22 16:00:07,368 - INFO - Retrieved 50 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-22 16:00:10,430 - INFO - Combined 187188 existing + 50 new = 187238 total records (after deduplication)
+2025-09-22 16:00:16,551 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-22 16:00:16,600 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250922_160016.json
+2025-09-22 16:00:16,602 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-22 16:00:16,606 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-22 16:00:16,606 - INFO - New data range: 2025-09-22 17:24:27.090000+00:00 to 2025-09-22 19:30:56.724000+00:00
+2025-09-22 16:00:16,607 - INFO - New tracks fetched: 50
+2025-09-22 16:00:16,607 - INFO - Records added to CSV: 50
+2025-09-22 16:00:16,608 - INFO - Unique new tracks: 50
+2025-09-22 16:00:16,609 - INFO - Unique new artists: 27
+2025-09-22 16:00:19,040 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-22 19:30:56.724000+00:00
+2025-09-22 16:00:19,047 - INFO - Total records in dataset: 187,238
+2025-09-22 16:00:19,075 - INFO - Incremental data collection completed successfully!
+2025-09-23 08:00:05,327 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-23 08:00:06,645 - INFO - Last timestamp in CSV: 2025-09-22 19:30:56.724000+00:00
+2025-09-23 08:00:06,665 - INFO - Fetching data from 2025-09-22 19:31:56 onwards...
+2025-09-23 08:00:06,898 - INFO - Successfully refreshed access token
+2025-09-23 08:00:07,430 - INFO - Retrieved 1 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-23 08:00:08,912 - INFO - Combined 187238 existing + 1 new = 187239 total records (after deduplication)
+2025-09-23 08:00:11,159 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-23 08:00:11,190 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250923_080011.json
+2025-09-23 08:00:11,192 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-23 08:00:11,194 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-23 08:00:11,195 - INFO - New data range: 2025-09-22 20:29:43.707000+00:00 to 2025-09-22 20:29:43.707000+00:00
+2025-09-23 08:00:11,195 - INFO - New tracks fetched: 1
+2025-09-23 08:00:11,195 - INFO - Records added to CSV: 1
+2025-09-23 08:00:11,195 - INFO - Unique new tracks: 1
+2025-09-23 08:00:11,195 - INFO - Unique new artists: 1
+2025-09-23 08:00:12,652 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-22 20:29:43.707000+00:00
+2025-09-23 08:00:12,652 - INFO - Total records in dataset: 187,239
+2025-09-23 08:00:12,672 - INFO - Incremental data collection completed successfully!
+2025-09-23 12:00:03,814 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-23 12:00:07,280 - INFO - Last timestamp in CSV: 2025-09-22 20:29:43.707000+00:00
+2025-09-23 12:00:07,312 - INFO - Fetching data from 2025-09-22 20:30:43 onwards...
+2025-09-23 12:00:07,508 - INFO - Successfully refreshed access token
+2025-09-23 12:00:08,179 - INFO - Retrieved 29 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-23 12:00:11,088 - INFO - Combined 187239 existing + 29 new = 187268 total records (after deduplication)
+2025-09-23 12:00:15,789 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-23 12:00:15,852 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250923_120015.json
+2025-09-23 12:00:15,854 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-23 12:00:15,857 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-23 12:00:15,858 - INFO - New data range: 2025-09-23 14:06:27.652000+00:00 to 2025-09-23 15:31:44.931000+00:00
+2025-09-23 12:00:15,858 - INFO - New tracks fetched: 29
+2025-09-23 12:00:15,858 - INFO - Records added to CSV: 29
+2025-09-23 12:00:15,859 - INFO - Unique new tracks: 29
+2025-09-23 12:00:15,860 - INFO - Unique new artists: 19
+2025-09-23 12:00:19,486 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-23 15:31:44.931000+00:00
+2025-09-23 12:00:19,487 - INFO - Total records in dataset: 187,268
+2025-09-23 12:00:19,529 - INFO - Incremental data collection completed successfully!
+2025-09-23 16:00:03,032 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-23 16:00:04,636 - INFO - Last timestamp in CSV: 2025-09-23 15:31:44.931000+00:00
+2025-09-23 16:00:04,659 - INFO - Fetching data from 2025-09-23 15:32:44 onwards...
+2025-09-23 16:00:04,861 - INFO - Successfully refreshed access token
+2025-09-23 16:00:05,605 - INFO - Retrieved 29 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-23 16:00:07,522 - INFO - Combined 187268 existing + 29 new = 187297 total records (after deduplication)
+2025-09-23 16:00:10,453 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-23 16:00:10,493 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250923_160010.json
+2025-09-23 16:00:10,495 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-23 16:00:10,498 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-23 16:00:10,499 - INFO - New data range: 2025-09-23 16:22:52.741000+00:00 to 2025-09-23 18:32:18.245000+00:00
+2025-09-23 16:00:10,499 - INFO - New tracks fetched: 29
+2025-09-23 16:00:10,499 - INFO - Records added to CSV: 29
+2025-09-23 16:00:10,500 - INFO - Unique new tracks: 29
+2025-09-23 16:00:10,500 - INFO - Unique new artists: 21
+2025-09-23 16:00:12,435 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-23 18:32:18.245000+00:00
+2025-09-23 16:00:12,435 - INFO - Total records in dataset: 187,297
+2025-09-23 16:00:12,458 - INFO - Incremental data collection completed successfully!
+2025-09-23 20:00:09,774 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-23 20:00:11,890 - INFO - Last timestamp in CSV: 2025-09-23 18:32:18.245000+00:00
+2025-09-23 20:00:11,921 - INFO - Fetching data from 2025-09-23 18:33:18 onwards...
+2025-09-23 20:00:12,143 - INFO - Successfully refreshed access token
+2025-09-23 20:00:12,317 - INFO - Retrieved 0 tracks
+2025-09-23 20:00:12,317 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-09-23 20:00:12,317 - INFO - Incremental data collection completed successfully!
+2025-09-24 08:00:07,599 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-24 08:00:09,509 - INFO - Last timestamp in CSV: 2025-09-23 18:32:18.245000+00:00
+2025-09-24 08:00:09,534 - INFO - Fetching data from 2025-09-23 18:33:18 onwards...
+2025-09-24 08:00:09,738 - INFO - Successfully refreshed access token
+2025-09-24 08:00:09,881 - INFO - Retrieved 0 tracks
+2025-09-24 08:00:09,882 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-09-24 08:00:09,882 - INFO - Incremental data collection completed successfully!
+2025-09-24 12:00:03,687 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-24 12:00:05,902 - INFO - Last timestamp in CSV: 2025-09-23 18:32:18.245000+00:00
+2025-09-24 12:00:05,933 - INFO - Fetching data from 2025-09-23 18:33:18 onwards...
+2025-09-24 12:00:06,137 - INFO - Successfully refreshed access token
+2025-09-24 12:00:06,758 - INFO - Retrieved 27 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-24 12:00:09,231 - INFO - Combined 187297 existing + 27 new = 187324 total records (after deduplication)
+2025-09-24 12:00:13,537 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-24 12:00:13,591 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250924_120013.json
+2025-09-24 12:00:13,593 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-24 12:00:13,596 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-24 12:00:13,596 - INFO - New data range: 2025-09-24 13:53:58.959000+00:00 to 2025-09-24 15:51:31.111000+00:00
+2025-09-24 12:00:13,596 - INFO - New tracks fetched: 27
+2025-09-24 12:00:13,596 - INFO - Records added to CSV: 27
+2025-09-24 12:00:13,597 - INFO - Unique new tracks: 26
+2025-09-24 12:00:13,597 - INFO - Unique new artists: 13
+2025-09-24 12:00:16,099 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-24 15:51:31.111000+00:00
+2025-09-24 12:00:16,100 - INFO - Total records in dataset: 187,324
+2025-09-24 12:00:16,174 - INFO - Incremental data collection completed successfully!
+2025-09-24 16:00:05,739 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-24 16:00:09,293 - INFO - Last timestamp in CSV: 2025-09-24 15:51:31.111000+00:00
+2025-09-24 16:00:09,337 - INFO - Fetching data from 2025-09-24 15:52:31 onwards...
+2025-09-24 16:00:09,704 - INFO - Successfully refreshed access token
+2025-09-24 16:00:10,523 - INFO - Retrieved 32 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-24 16:00:14,708 - INFO - Combined 187324 existing + 32 new = 187356 total records (after deduplication)
+2025-09-24 16:00:22,920 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-24 16:00:23,013 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250924_160023.json
+2025-09-24 16:00:23,017 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-24 16:00:23,021 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-24 16:00:23,022 - INFO - New data range: 2025-09-24 16:00:07.360000+00:00 to 2025-09-24 19:26:52.401000+00:00
+2025-09-24 16:00:23,022 - INFO - New tracks fetched: 32
+2025-09-24 16:00:23,022 - INFO - Records added to CSV: 32
+2025-09-24 16:00:23,023 - INFO - Unique new tracks: 31
+2025-09-24 16:00:23,023 - INFO - Unique new artists: 25
+2025-09-24 16:00:28,361 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-24 19:26:52.401000+00:00
+2025-09-24 16:00:28,361 - INFO - Total records in dataset: 187,356
+2025-09-24 16:00:28,387 - INFO - Incremental data collection completed successfully!
+2025-09-24 20:00:04,368 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-24 20:00:06,146 - INFO - Last timestamp in CSV: 2025-09-24 19:26:52.401000+00:00
+2025-09-24 20:00:06,170 - INFO - Fetching data from 2025-09-24 19:27:52 onwards...
+2025-09-24 20:00:06,375 - INFO - Successfully refreshed access token
+2025-09-24 20:00:06,965 - INFO - Retrieved 18 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-24 20:00:09,096 - INFO - Combined 187356 existing + 18 new = 187374 total records (after deduplication)
+2025-09-24 20:00:12,744 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-24 20:00:12,783 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250924_200012.json
+2025-09-24 20:00:12,785 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-24 20:00:12,787 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-24 20:00:12,787 - INFO - New data range: 2025-09-24 20:13:06.949000+00:00 to 2025-09-24 21:22:39.122000+00:00
+2025-09-24 20:00:12,787 - INFO - New tracks fetched: 18
+2025-09-24 20:00:12,787 - INFO - Records added to CSV: 18
+2025-09-24 20:00:12,788 - INFO - Unique new tracks: 18
+2025-09-24 20:00:12,788 - INFO - Unique new artists: 13
+2025-09-24 20:00:14,795 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-24 21:22:39.122000+00:00
+2025-09-24 20:00:14,795 - INFO - Total records in dataset: 187,374
+2025-09-24 20:00:14,873 - INFO - Incremental data collection completed successfully!
+2025-09-25 08:00:05,054 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-25 08:00:06,452 - INFO - Last timestamp in CSV: 2025-09-24 21:22:39.122000+00:00
+2025-09-25 08:00:06,485 - INFO - Fetching data from 2025-09-24 21:23:39 onwards...
+2025-09-25 08:00:06,737 - INFO - Successfully refreshed access token
+2025-09-25 08:00:06,900 - INFO - Retrieved 0 tracks
+2025-09-25 08:00:06,901 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-09-25 08:00:06,901 - INFO - Incremental data collection completed successfully!
+2025-09-25 12:00:04,599 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-25 12:00:06,417 - INFO - Last timestamp in CSV: 2025-09-24 21:22:39.122000+00:00
+2025-09-25 12:00:06,441 - INFO - Fetching data from 2025-09-24 21:23:39 onwards...
+2025-09-25 12:00:06,872 - INFO - Successfully refreshed access token
+2025-09-25 12:00:07,806 - INFO - Retrieved 20 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-25 12:00:09,920 - INFO - Combined 187374 existing + 20 new = 187394 total records (after deduplication)
+2025-09-25 12:00:12,966 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-25 12:00:13,006 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250925_120013.json
+2025-09-25 12:00:13,008 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-25 12:00:13,011 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-25 12:00:13,011 - INFO - New data range: 2025-09-25 13:21:36.247000+00:00 to 2025-09-25 15:59:49.165000+00:00
+2025-09-25 12:00:13,011 - INFO - New tracks fetched: 20
+2025-09-25 12:00:13,011 - INFO - Records added to CSV: 20
+2025-09-25 12:00:13,012 - INFO - Unique new tracks: 20
+2025-09-25 12:00:13,012 - INFO - Unique new artists: 13
+2025-09-25 12:00:14,835 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-25 15:59:49.165000+00:00
+2025-09-25 12:00:14,835 - INFO - Total records in dataset: 187,394
+2025-09-25 12:00:14,861 - INFO - Incremental data collection completed successfully!
+2025-09-25 16:00:03,533 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-25 16:00:05,528 - INFO - Last timestamp in CSV: 2025-09-25 15:59:49.165000+00:00
+2025-09-25 16:00:05,558 - INFO - Fetching data from 2025-09-25 16:00:49 onwards...
+2025-09-25 16:00:05,849 - INFO - Successfully refreshed access token
+2025-09-25 16:00:06,710 - INFO - Retrieved 50 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-25 16:00:09,090 - INFO - Combined 187394 existing + 50 new = 187444 total records (after deduplication)
+2025-09-25 16:00:13,590 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-25 16:00:13,650 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250925_160013.json
+2025-09-25 16:00:13,652 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-25 16:00:13,655 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-25 16:00:13,656 - INFO - New data range: 2025-09-25 16:51:28.679000+00:00 to 2025-09-25 19:58:56.941000+00:00
+2025-09-25 16:00:13,656 - INFO - New tracks fetched: 50
+2025-09-25 16:00:13,656 - INFO - Records added to CSV: 50
+2025-09-25 16:00:13,657 - INFO - Unique new tracks: 50
+2025-09-25 16:00:13,658 - INFO - Unique new artists: 33
+2025-09-25 16:00:16,361 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-25 19:58:56.941000+00:00
+2025-09-25 16:00:16,361 - INFO - Total records in dataset: 187,444
+2025-09-25 16:00:16,391 - INFO - Incremental data collection completed successfully!
+2025-09-26 08:00:04,284 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-26 08:00:06,128 - INFO - Last timestamp in CSV: 2025-09-25 19:58:56.941000+00:00
+2025-09-26 08:00:06,160 - INFO - Fetching data from 2025-09-25 19:59:56 onwards...
+2025-09-26 08:00:06,490 - INFO - Successfully refreshed access token
+2025-09-26 08:00:07,114 - INFO - Retrieved 14 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-26 08:00:09,169 - INFO - Combined 187444 existing + 14 new = 187458 total records (after deduplication)
+2025-09-26 08:00:12,626 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-26 08:00:12,673 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250926_080012.json
+2025-09-26 08:00:12,676 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-26 08:00:12,679 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-26 08:00:12,679 - INFO - New data range: 2025-09-25 20:00:38.286000+00:00 to 2025-09-25 21:56:47.227000+00:00
+2025-09-26 08:00:12,680 - INFO - New tracks fetched: 14
+2025-09-26 08:00:12,680 - INFO - Records added to CSV: 14
+2025-09-26 08:00:12,680 - INFO - Unique new tracks: 14
+2025-09-26 08:00:12,680 - INFO - Unique new artists: 10
+2025-09-26 08:00:14,684 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-25 21:56:47.227000+00:00
+2025-09-26 08:00:14,684 - INFO - Total records in dataset: 187,458
+2025-09-26 08:00:14,714 - INFO - Incremental data collection completed successfully!
+2025-09-26 12:00:06,594 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-26 12:00:08,026 - INFO - Last timestamp in CSV: 2025-09-25 21:56:47.227000+00:00
+2025-09-26 12:00:08,047 - INFO - Fetching data from 2025-09-25 21:57:47 onwards...
+2025-09-26 12:00:08,265 - INFO - Successfully refreshed access token
+2025-09-26 12:00:08,813 - INFO - Retrieved 18 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-26 12:00:10,805 - INFO - Combined 187458 existing + 18 new = 187476 total records (after deduplication)
+2025-09-26 12:00:13,875 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-26 12:00:13,920 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250926_120013.json
+2025-09-26 12:00:13,921 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-26 12:00:13,924 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-26 12:00:13,925 - INFO - New data range: 2025-09-26 14:11:40.835000+00:00 to 2025-09-26 15:57:40.553000+00:00
+2025-09-26 12:00:13,925 - INFO - New tracks fetched: 18
+2025-09-26 12:00:13,925 - INFO - Records added to CSV: 18
+2025-09-26 12:00:13,925 - INFO - Unique new tracks: 18
+2025-09-26 12:00:13,926 - INFO - Unique new artists: 13
+2025-09-26 12:00:16,053 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-26 15:57:40.553000+00:00
+2025-09-26 12:00:16,053 - INFO - Total records in dataset: 187,476
+2025-09-26 12:00:16,081 - INFO - Incremental data collection completed successfully!
+2025-09-26 16:00:02,832 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-26 16:00:04,488 - INFO - Last timestamp in CSV: 2025-09-26 15:57:40.553000+00:00
+2025-09-26 16:00:04,511 - INFO - Fetching data from 2025-09-26 15:58:40 onwards...
+2025-09-26 16:00:04,702 - INFO - Successfully refreshed access token
+2025-09-26 16:00:05,335 - INFO - Retrieved 49 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-26 16:00:07,231 - INFO - Combined 187476 existing + 49 new = 187525 total records (after deduplication)
+2025-09-26 16:00:10,022 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-26 16:00:10,065 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250926_160010.json
+2025-09-26 16:00:10,067 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-26 16:00:10,070 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-26 16:00:10,070 - INFO - New data range: 2025-09-26 16:32:32.712000+00:00 to 2025-09-26 19:23:50.949000+00:00
+2025-09-26 16:00:10,070 - INFO - New tracks fetched: 49
+2025-09-26 16:00:10,070 - INFO - Records added to CSV: 49
+2025-09-26 16:00:10,071 - INFO - Unique new tracks: 49
+2025-09-26 16:00:10,071 - INFO - Unique new artists: 25
+2025-09-26 16:00:12,367 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-26 19:23:50.949000+00:00
+2025-09-26 16:00:12,367 - INFO - Total records in dataset: 187,525
+2025-09-26 16:00:12,389 - INFO - Incremental data collection completed successfully!
+2025-09-27 08:00:04,391 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-27 08:00:06,036 - INFO - Last timestamp in CSV: 2025-09-26 19:23:50.949000+00:00
+2025-09-27 08:00:06,061 - INFO - Fetching data from 2025-09-26 19:24:50 onwards...
+2025-09-27 08:00:06,284 - INFO - Successfully refreshed access token
+2025-09-27 08:00:06,982 - INFO - Retrieved 15 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-27 08:00:08,847 - INFO - Combined 187525 existing + 15 new = 187540 total records (after deduplication)
+2025-09-27 08:00:12,282 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-27 08:00:12,324 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250927_080012.json
+2025-09-27 08:00:12,327 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-27 08:00:12,329 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-27 08:00:12,330 - INFO - New data range: 2025-09-26 20:14:01.503000+00:00 to 2025-09-26 21:01:15.627000+00:00
+2025-09-27 08:00:12,330 - INFO - New tracks fetched: 15
+2025-09-27 08:00:12,330 - INFO - Records added to CSV: 15
+2025-09-27 08:00:12,330 - INFO - Unique new tracks: 15
+2025-09-27 08:00:12,330 - INFO - Unique new artists: 12
+2025-09-27 08:00:14,119 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-26 21:01:15.627000+00:00
+2025-09-27 08:00:14,119 - INFO - Total records in dataset: 187,540
+2025-09-27 08:00:14,143 - INFO - Incremental data collection completed successfully!
+2025-09-27 12:00:02,863 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-27 12:00:04,940 - INFO - Last timestamp in CSV: 2025-09-26 21:01:15.627000+00:00
+2025-09-27 12:00:04,971 - INFO - Fetching data from 2025-09-26 21:02:15 onwards...
+2025-09-27 12:00:05,176 - INFO - Successfully refreshed access token
+2025-09-27 12:00:05,316 - INFO - Retrieved 0 tracks
+2025-09-27 12:00:05,316 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-09-27 12:00:05,316 - INFO - Incremental data collection completed successfully!
+2025-09-28 08:00:02,691 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-28 08:00:03,981 - INFO - Last timestamp in CSV: 2025-09-26 21:01:15.627000+00:00
+2025-09-28 08:00:04,002 - INFO - Fetching data from 2025-09-26 21:02:15 onwards...
+2025-09-28 08:00:04,198 - INFO - Successfully refreshed access token
+2025-09-28 08:00:04,341 - INFO - Retrieved 0 tracks
+2025-09-28 08:00:04,341 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-09-28 08:00:04,341 - INFO - Incremental data collection completed successfully!
+2025-09-28 12:00:02,799 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-28 12:00:04,561 - INFO - Last timestamp in CSV: 2025-09-26 21:01:15.627000+00:00
+2025-09-28 12:00:04,583 - INFO - Fetching data from 2025-09-26 21:02:15 onwards...
+2025-09-28 12:00:04,782 - INFO - Successfully refreshed access token
+2025-09-28 12:00:04,932 - INFO - Retrieved 0 tracks
+2025-09-28 12:00:04,933 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-09-28 12:00:04,933 - INFO - Incremental data collection completed successfully!
+2025-09-28 16:00:03,098 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-28 16:00:04,389 - INFO - Last timestamp in CSV: 2025-09-26 21:01:15.627000+00:00
+2025-09-28 16:00:04,408 - INFO - Fetching data from 2025-09-26 21:02:15 onwards...
+2025-09-28 16:00:04,614 - INFO - Successfully refreshed access token
+2025-09-28 16:00:04,754 - INFO - Retrieved 0 tracks
+2025-09-28 16:00:04,754 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-09-28 16:00:04,755 - INFO - Incremental data collection completed successfully!
+2025-09-29 08:00:03,269 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-29 08:00:04,554 - INFO - Last timestamp in CSV: 2025-09-26 21:01:15.627000+00:00
+2025-09-29 08:00:04,574 - INFO - Fetching data from 2025-09-26 21:02:15 onwards...
+2025-09-29 08:00:04,798 - INFO - Successfully refreshed access token
+2025-09-29 08:00:05,955 - INFO - Retrieved 4 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-29 08:00:07,415 - INFO - Combined 187540 existing + 4 new = 187544 total records (after deduplication)
+2025-09-29 08:00:09,687 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-29 08:00:09,719 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250929_080009.json
+2025-09-29 08:00:09,721 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-29 08:00:09,723 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-29 08:00:09,723 - INFO - New data range: 2025-09-28 22:32:04.641000+00:00 to 2025-09-28 22:44:11.538000+00:00
+2025-09-29 08:00:09,723 - INFO - New tracks fetched: 4
+2025-09-29 08:00:09,723 - INFO - Records added to CSV: 4
+2025-09-29 08:00:09,724 - INFO - Unique new tracks: 3
+2025-09-29 08:00:09,724 - INFO - Unique new artists: 3
+2025-09-29 08:00:11,077 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-28 22:44:11.538000+00:00
+2025-09-29 08:00:11,077 - INFO - Total records in dataset: 187,544
+2025-09-29 08:00:11,095 - INFO - Incremental data collection completed successfully!
+2025-09-29 12:00:03,935 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-29 12:00:06,286 - INFO - Last timestamp in CSV: 2025-09-28 22:44:11.538000+00:00
+2025-09-29 12:00:06,318 - INFO - Fetching data from 2025-09-28 22:45:11 onwards...
+2025-09-29 12:00:06,513 - INFO - Successfully refreshed access token
+2025-09-29 12:00:07,245 - INFO - Retrieved 17 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-29 12:00:11,101 - INFO - Combined 187544 existing + 17 new = 187561 total records (after deduplication)
+2025-09-29 12:00:15,862 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-29 12:00:15,916 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250929_120015.json
+2025-09-29 12:00:15,918 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-29 12:00:15,922 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-29 12:00:15,922 - INFO - New data range: 2025-09-29 13:25:27.118000+00:00 to 2025-09-29 15:34:20.942000+00:00
+2025-09-29 12:00:15,923 - INFO - New tracks fetched: 17
+2025-09-29 12:00:15,923 - INFO - Records added to CSV: 17
+2025-09-29 12:00:15,924 - INFO - Unique new tracks: 17
+2025-09-29 12:00:15,925 - INFO - Unique new artists: 16
+2025-09-29 12:00:18,874 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-29 15:34:20.942000+00:00
+2025-09-29 12:00:18,880 - INFO - Total records in dataset: 187,561
+2025-09-29 12:00:18,955 - INFO - Incremental data collection completed successfully!
+2025-09-29 16:00:03,985 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-29 16:00:05,593 - INFO - Last timestamp in CSV: 2025-09-29 15:34:20.942000+00:00
+2025-09-29 16:00:05,616 - INFO - Fetching data from 2025-09-29 15:35:20 onwards...
+2025-09-29 16:00:05,810 - INFO - Successfully refreshed access token
+2025-09-29 16:00:06,468 - INFO - Retrieved 48 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-29 16:00:08,349 - INFO - Combined 187561 existing + 48 new = 187609 total records (after deduplication)
+2025-09-29 16:00:11,219 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-29 16:00:11,258 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250929_160011.json
+2025-09-29 16:00:11,259 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-29 16:00:11,262 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-29 16:00:11,263 - INFO - New data range: 2025-09-29 16:19:22.515000+00:00 to 2025-09-29 19:28:13.480000+00:00
+2025-09-29 16:00:11,263 - INFO - New tracks fetched: 48
+2025-09-29 16:00:11,263 - INFO - Records added to CSV: 48
+2025-09-29 16:00:11,263 - INFO - Unique new tracks: 48
+2025-09-29 16:00:11,263 - INFO - Unique new artists: 48
+2025-09-29 16:00:13,070 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-29 19:28:13.480000+00:00
+2025-09-29 16:00:13,094 - INFO - Total records in dataset: 187,609
+2025-09-29 16:00:13,126 - INFO - Incremental data collection completed successfully!
+2025-09-29 20:00:03,411 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-29 20:00:04,779 - INFO - Last timestamp in CSV: 2025-09-29 19:28:13.480000+00:00
+2025-09-29 20:00:04,797 - INFO - Fetching data from 2025-09-29 19:29:13 onwards...
+2025-09-29 20:00:05,005 - INFO - Successfully refreshed access token
+2025-09-29 20:00:05,718 - INFO - Retrieved 21 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-29 20:00:07,322 - INFO - Combined 187609 existing + 21 new = 187630 total records (after deduplication)
+2025-09-29 20:00:09,694 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-29 20:00:09,726 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250929_200009.json
+2025-09-29 20:00:09,728 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-29 20:00:09,730 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-29 20:00:09,730 - INFO - New data range: 2025-09-29 20:13:55.731000+00:00 to 2025-09-29 21:26:03.713000+00:00
+2025-09-29 20:00:09,730 - INFO - New tracks fetched: 21
+2025-09-29 20:00:09,730 - INFO - Records added to CSV: 21
+2025-09-29 20:00:09,731 - INFO - Unique new tracks: 21
+2025-09-29 20:00:09,731 - INFO - Unique new artists: 21
+2025-09-29 20:00:11,162 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-29 21:26:03.713000+00:00
+2025-09-29 20:00:11,162 - INFO - Total records in dataset: 187,630
+2025-09-29 20:00:11,180 - INFO - Incremental data collection completed successfully!
+2025-09-30 00:00:02,869 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-30 00:00:04,147 - INFO - Last timestamp in CSV: 2025-09-29 21:26:03.713000+00:00
+2025-09-30 00:00:04,171 - INFO - Fetching data from 2025-09-29 21:27:03 onwards...
+2025-09-30 00:00:04,352 - INFO - Successfully refreshed access token
+2025-09-30 00:00:04,528 - INFO - Retrieved 0 tracks
+2025-09-30 00:00:04,529 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-09-30 00:00:04,529 - INFO - Incremental data collection completed successfully!
+2025-09-30 04:00:02,130 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-30 04:00:03,500 - INFO - Last timestamp in CSV: 2025-09-29 21:26:03.713000+00:00
+2025-09-30 04:00:03,521 - INFO - Fetching data from 2025-09-29 21:27:03 onwards...
+2025-09-30 04:00:03,704 - INFO - Successfully refreshed access token
+2025-09-30 04:00:03,843 - INFO - Retrieved 0 tracks
+2025-09-30 04:00:03,844 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-09-30 04:00:03,844 - INFO - Incremental data collection completed successfully!
+2025-09-30 08:00:03,350 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-30 08:00:05,193 - INFO - Last timestamp in CSV: 2025-09-29 21:26:03.713000+00:00
+2025-09-30 08:00:05,222 - INFO - Fetching data from 2025-09-29 21:27:03 onwards...
+2025-09-30 08:00:05,430 - INFO - Successfully refreshed access token
+2025-09-30 08:00:06,007 - INFO - Retrieved 1 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-30 08:00:08,060 - INFO - Combined 187630 existing + 1 new = 187631 total records (after deduplication)
+2025-09-30 08:00:11,427 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-30 08:00:11,469 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250930_080011.json
+2025-09-30 08:00:11,472 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-30 08:00:11,477 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-30 08:00:11,477 - INFO - New data range: 2025-09-30 11:48:42.936000+00:00 to 2025-09-30 11:48:42.936000+00:00
+2025-09-30 08:00:11,478 - INFO - New tracks fetched: 1
+2025-09-30 08:00:11,478 - INFO - Records added to CSV: 1
+2025-09-30 08:00:11,479 - INFO - Unique new tracks: 1
+2025-09-30 08:00:11,479 - INFO - Unique new artists: 1
+2025-09-30 08:00:13,477 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-30 11:48:42.936000+00:00
+2025-09-30 08:00:13,477 - INFO - Total records in dataset: 187,631
+2025-09-30 08:00:13,504 - INFO - Incremental data collection completed successfully!
+2025-09-30 12:00:04,920 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-30 12:00:06,930 - INFO - Last timestamp in CSV: 2025-09-30 11:48:42.936000+00:00
+2025-09-30 12:00:06,963 - INFO - Fetching data from 2025-09-30 11:49:42 onwards...
+2025-09-30 12:00:07,148 - INFO - Successfully refreshed access token
+2025-09-30 12:00:07,735 - INFO - Retrieved 21 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-30 12:00:10,046 - INFO - Combined 187631 existing + 21 new = 187652 total records (after deduplication)
+2025-09-30 12:00:13,816 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-30 12:00:13,861 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250930_120013.json
+2025-09-30 12:00:13,863 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-30 12:00:13,866 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-30 12:00:13,866 - INFO - New data range: 2025-09-30 14:41:52.015000+00:00 to 2025-09-30 15:57:52.386000+00:00
+2025-09-30 12:00:13,866 - INFO - New tracks fetched: 21
+2025-09-30 12:00:13,866 - INFO - Records added to CSV: 21
+2025-09-30 12:00:13,867 - INFO - Unique new tracks: 21
+2025-09-30 12:00:13,867 - INFO - Unique new artists: 21
+2025-09-30 12:00:15,906 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-30 15:57:52.386000+00:00
+2025-09-30 12:00:15,906 - INFO - Total records in dataset: 187,652
+2025-09-30 12:00:15,932 - INFO - Incremental data collection completed successfully!
+2025-09-30 16:00:03,067 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-30 16:00:04,938 - INFO - Last timestamp in CSV: 2025-09-30 15:57:52.386000+00:00
+2025-09-30 16:00:04,963 - INFO - Fetching data from 2025-09-30 15:58:52 onwards...
+2025-09-30 16:00:05,142 - INFO - Successfully refreshed access token
+2025-09-30 16:00:05,845 - INFO - Retrieved 45 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-09-30 16:00:08,035 - INFO - Combined 187652 existing + 45 new = 187697 total records (after deduplication)
+2025-09-30 16:00:11,030 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-09-30 16:00:11,069 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20250930_160011.json
+2025-09-30 16:00:11,071 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-09-30 16:00:11,073 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-09-30 16:00:11,074 - INFO - New data range: 2025-09-30 16:00:33.810000+00:00 to 2025-09-30 18:53:52.898000+00:00
+2025-09-30 16:00:11,074 - INFO - New tracks fetched: 45
+2025-09-30 16:00:11,074 - INFO - Records added to CSV: 45
+2025-09-30 16:00:11,074 - INFO - Unique new tracks: 45
+2025-09-30 16:00:11,075 - INFO - Unique new artists: 27
+2025-09-30 16:00:12,920 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-09-30 18:53:52.898000+00:00
+2025-09-30 16:00:12,920 - INFO - Total records in dataset: 187,697
+2025-09-30 16:00:12,942 - INFO - Incremental data collection completed successfully!
+2025-09-30 20:00:06,612 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-09-30 20:00:08,141 - INFO - Last timestamp in CSV: 2025-09-30 18:53:52.898000+00:00
+2025-09-30 20:00:08,164 - INFO - Fetching data from 2025-09-30 18:54:52 onwards...
+2025-09-30 20:00:08,356 - INFO - Successfully refreshed access token
+2025-09-30 20:00:08,495 - INFO - Retrieved 0 tracks
+2025-09-30 20:00:08,495 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-09-30 20:00:08,495 - INFO - Incremental data collection completed successfully!
+2025-10-01 08:00:05,082 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-01 08:00:07,256 - INFO - Last timestamp in CSV: 2025-09-30 18:53:52.898000+00:00
+2025-10-01 08:00:07,286 - INFO - Fetching data from 2025-09-30 18:54:52 onwards...
+2025-10-01 08:00:07,476 - INFO - Successfully refreshed access token
+2025-10-01 08:00:07,616 - INFO - Retrieved 0 tracks
+2025-10-01 08:00:07,617 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-10-01 08:00:07,617 - INFO - Incremental data collection completed successfully!
+2025-10-01 12:00:04,933 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-01 12:00:07,989 - INFO - Last timestamp in CSV: 2025-09-30 18:53:52.898000+00:00
+2025-10-01 12:00:08,023 - INFO - Fetching data from 2025-09-30 18:54:52 onwards...
+2025-10-01 12:00:08,225 - INFO - Successfully refreshed access token
+2025-10-01 12:00:08,842 - INFO - Retrieved 36 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-01 12:00:11,824 - INFO - Combined 187697 existing + 36 new = 187733 total records (after deduplication)
+2025-10-01 12:00:16,643 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-01 12:00:16,725 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251001_120016.json
+2025-10-01 12:00:16,727 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-01 12:00:16,730 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-01 12:00:16,730 - INFO - New data range: 2025-10-01 13:50:23.217000+00:00 to 2025-10-01 16:00:00.271000+00:00
+2025-10-01 12:00:16,730 - INFO - New tracks fetched: 36
+2025-10-01 12:00:16,730 - INFO - Records added to CSV: 36
+2025-10-01 12:00:16,733 - INFO - Unique new tracks: 36
+2025-10-01 12:00:16,733 - INFO - Unique new artists: 36
+2025-10-01 12:00:19,776 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-01 16:00:00.271000+00:00
+2025-10-01 12:00:19,777 - INFO - Total records in dataset: 187,733
+2025-10-01 12:00:19,809 - INFO - Incremental data collection completed successfully!
+2025-10-01 16:00:05,510 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-01 16:00:06,877 - INFO - Last timestamp in CSV: 2025-10-01 16:00:00.271000+00:00
+2025-10-01 16:00:06,902 - INFO - Fetching data from 2025-10-01 16:01:00 onwards...
+2025-10-01 16:00:07,092 - INFO - Successfully refreshed access token
+2025-10-01 16:00:07,716 - INFO - Retrieved 22 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-01 16:00:09,598 - INFO - Combined 187733 existing + 22 new = 187755 total records (after deduplication)
+2025-10-01 16:00:12,417 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-01 16:00:12,481 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251001_160012.json
+2025-10-01 16:00:12,509 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-01 16:00:12,513 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-01 16:00:12,529 - INFO - New data range: 2025-10-01 16:04:45.783000+00:00 to 2025-10-01 18:30:29.923000+00:00
+2025-10-01 16:00:12,530 - INFO - New tracks fetched: 22
+2025-10-01 16:00:12,530 - INFO - Records added to CSV: 22
+2025-10-01 16:00:12,532 - INFO - Unique new tracks: 22
+2025-10-01 16:00:12,532 - INFO - Unique new artists: 22
+2025-10-01 16:00:14,369 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-01 18:30:29.923000+00:00
+2025-10-01 16:00:14,369 - INFO - Total records in dataset: 187,755
+2025-10-01 16:00:14,394 - INFO - Incremental data collection completed successfully!
+2025-10-01 20:00:07,020 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-01 20:00:08,834 - INFO - Last timestamp in CSV: 2025-10-01 18:30:29.923000+00:00
+2025-10-01 20:00:08,859 - INFO - Fetching data from 2025-10-01 18:31:29 onwards...
+2025-10-01 20:00:09,034 - INFO - Successfully refreshed access token
+2025-10-01 20:00:09,182 - INFO - Retrieved 0 tracks
+2025-10-01 20:00:09,182 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-10-01 20:00:09,182 - INFO - Incremental data collection completed successfully!
+2025-10-02 08:00:06,310 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-02 08:00:08,594 - INFO - Last timestamp in CSV: 2025-10-01 18:30:29.923000+00:00
+2025-10-02 08:00:08,628 - INFO - Fetching data from 2025-10-01 18:31:29 onwards...
+2025-10-02 08:00:08,863 - INFO - Successfully refreshed access token
+2025-10-02 08:00:08,999 - INFO - Retrieved 0 tracks
+2025-10-02 08:00:09,000 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-10-02 08:00:09,000 - INFO - Incremental data collection completed successfully!
+2025-10-02 12:00:05,279 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-02 12:00:06,753 - INFO - Last timestamp in CSV: 2025-10-01 18:30:29.923000+00:00
+2025-10-02 12:00:06,776 - INFO - Fetching data from 2025-10-01 18:31:29 onwards...
+2025-10-02 12:00:06,970 - INFO - Successfully refreshed access token
+2025-10-02 12:00:07,620 - INFO - Retrieved 30 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-02 12:00:09,376 - INFO - Combined 187755 existing + 30 new = 187785 total records (after deduplication)
+2025-10-02 12:00:12,052 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-02 12:00:12,091 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251002_120012.json
+2025-10-02 12:00:12,093 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-02 12:00:12,095 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-02 12:00:12,095 - INFO - New data range: 2025-10-02 14:03:53.176000+00:00 to 2025-10-02 15:59:47.575000+00:00
+2025-10-02 12:00:12,095 - INFO - New tracks fetched: 30
+2025-10-02 12:00:12,095 - INFO - Records added to CSV: 30
+2025-10-02 12:00:12,096 - INFO - Unique new tracks: 30
+2025-10-02 12:00:12,096 - INFO - Unique new artists: 23
+2025-10-02 12:00:13,634 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-02 15:59:47.575000+00:00
+2025-10-02 12:00:13,635 - INFO - Total records in dataset: 187,785
+2025-10-02 12:00:13,657 - INFO - Incremental data collection completed successfully!
+2025-10-02 16:00:04,985 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-02 16:00:06,825 - INFO - Last timestamp in CSV: 2025-10-02 15:59:47.575000+00:00
+2025-10-02 16:00:06,854 - INFO - Fetching data from 2025-10-02 16:00:47 onwards...
+2025-10-02 16:00:07,063 - INFO - Successfully refreshed access token
+2025-10-02 16:00:07,620 - INFO - Retrieved 24 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-02 16:00:09,657 - INFO - Combined 187785 existing + 24 new = 187809 total records (after deduplication)
+2025-10-02 16:00:13,341 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-02 16:00:13,418 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251002_160013.json
+2025-10-02 16:00:13,421 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-02 16:00:13,424 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-02 16:00:13,424 - INFO - New data range: 2025-10-02 17:01:42.528000+00:00 to 2025-10-02 18:43:11.048000+00:00
+2025-10-02 16:00:13,424 - INFO - New tracks fetched: 24
+2025-10-02 16:00:13,424 - INFO - Records added to CSV: 24
+2025-10-02 16:00:13,425 - INFO - Unique new tracks: 24
+2025-10-02 16:00:13,425 - INFO - Unique new artists: 21
+2025-10-02 16:00:15,830 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-02 18:43:11.048000+00:00
+2025-10-02 16:00:15,831 - INFO - Total records in dataset: 187,809
+2025-10-02 16:00:15,876 - INFO - Incremental data collection completed successfully!
+2025-10-03 08:00:03,706 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-03 08:00:05,036 - INFO - Last timestamp in CSV: 2025-10-02 18:43:11.048000+00:00
+2025-10-03 08:00:05,057 - INFO - Fetching data from 2025-10-02 18:44:11 onwards...
+2025-10-03 08:00:05,288 - INFO - Successfully refreshed access token
+2025-10-03 08:00:05,907 - INFO - Retrieved 2 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-03 08:00:07,428 - INFO - Combined 187809 existing + 2 new = 187811 total records (after deduplication)
+2025-10-03 08:00:09,693 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-03 08:00:09,725 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251003_080009.json
+2025-10-03 08:00:09,726 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-03 08:00:09,728 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-03 08:00:09,728 - INFO - New data range: 2025-10-03 11:42:10.861000+00:00 to 2025-10-03 11:45:57.616000+00:00
+2025-10-03 08:00:09,728 - INFO - New tracks fetched: 2
+2025-10-03 08:00:09,728 - INFO - Records added to CSV: 2
+2025-10-03 08:00:09,729 - INFO - Unique new tracks: 2
+2025-10-03 08:00:09,729 - INFO - Unique new artists: 2
+2025-10-03 08:00:11,179 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-03 11:45:57.616000+00:00
+2025-10-03 08:00:11,180 - INFO - Total records in dataset: 187,811
+2025-10-03 08:00:11,200 - INFO - Incremental data collection completed successfully!
+2025-10-06 08:00:04,305 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-06 08:00:05,651 - INFO - Last timestamp in CSV: 2025-10-03 11:45:57.616000+00:00
+2025-10-06 08:00:05,670 - INFO - Fetching data from 2025-10-03 11:46:57 onwards...
+2025-10-06 08:00:05,864 - INFO - Successfully refreshed access token
+2025-10-06 08:00:06,774 - INFO - Retrieved 9 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-06 08:00:08,234 - INFO - Combined 187811 existing + 9 new = 187820 total records (after deduplication)
+2025-10-06 08:00:10,632 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-06 08:00:10,664 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251006_080010.json
+2025-10-06 08:00:10,667 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-06 08:00:10,668 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-06 08:00:10,669 - INFO - New data range: 2025-10-03 12:02:18.573000+00:00 to 2025-10-05 18:32:10.438000+00:00
+2025-10-06 08:00:10,669 - INFO - New tracks fetched: 9
+2025-10-06 08:00:10,669 - INFO - Records added to CSV: 9
+2025-10-06 08:00:10,669 - INFO - Unique new tracks: 8
+2025-10-06 08:00:10,669 - INFO - Unique new artists: 8
+2025-10-06 08:00:12,038 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-05 18:32:10.438000+00:00
+2025-10-06 08:00:12,038 - INFO - Total records in dataset: 187,820
+2025-10-06 08:00:12,057 - INFO - Incremental data collection completed successfully!
+2025-10-06 12:00:04,398 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-06 12:00:06,762 - INFO - Last timestamp in CSV: 2025-10-05 18:32:10.438000+00:00
+2025-10-06 12:00:06,792 - INFO - Fetching data from 2025-10-05 18:33:10 onwards...
+2025-10-06 12:00:07,015 - INFO - Successfully refreshed access token
+2025-10-06 12:00:07,595 - INFO - Retrieved 4 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-06 12:00:09,971 - INFO - Combined 187820 existing + 4 new = 187824 total records (after deduplication)
+2025-10-06 12:00:13,543 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-06 12:00:13,589 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251006_120013.json
+2025-10-06 12:00:13,591 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-06 12:00:13,593 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-06 12:00:13,594 - INFO - New data range: 2025-10-06 14:40:59.356000+00:00 to 2025-10-06 15:46:28.900000+00:00
+2025-10-06 12:00:13,594 - INFO - New tracks fetched: 4
+2025-10-06 12:00:13,594 - INFO - Records added to CSV: 4
+2025-10-06 12:00:13,594 - INFO - Unique new tracks: 4
+2025-10-06 12:00:13,594 - INFO - Unique new artists: 4
+2025-10-06 12:00:15,705 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-06 15:46:28.900000+00:00
+2025-10-06 12:00:15,705 - INFO - Total records in dataset: 187,824
+2025-10-06 12:00:15,730 - INFO - Incremental data collection completed successfully!
+2025-10-06 16:00:02,316 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-06 16:00:04,249 - INFO - Last timestamp in CSV: 2025-10-06 15:46:28.900000+00:00
+2025-10-06 16:00:04,277 - INFO - Fetching data from 2025-10-06 15:47:28 onwards...
+2025-10-06 16:00:04,586 - INFO - Successfully refreshed access token
+2025-10-06 16:00:05,504 - INFO - Retrieved 50 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-06 16:00:07,771 - INFO - Combined 187824 existing + 50 new = 187874 total records (after deduplication)
+2025-10-06 16:00:11,530 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-06 16:00:11,580 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251006_160011.json
+2025-10-06 16:00:11,583 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-06 16:00:11,585 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-06 16:00:11,586 - INFO - New data range: 2025-10-06 16:29:49.173000+00:00 to 2025-10-06 19:57:57.139000+00:00
+2025-10-06 16:00:11,586 - INFO - New tracks fetched: 50
+2025-10-06 16:00:11,586 - INFO - Records added to CSV: 50
+2025-10-06 16:00:11,587 - INFO - Unique new tracks: 50
+2025-10-06 16:00:11,587 - INFO - Unique new artists: 49
+2025-10-06 16:00:13,726 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-06 19:57:57.139000+00:00
+2025-10-06 16:00:13,726 - INFO - Total records in dataset: 187,874
+2025-10-06 16:00:13,752 - INFO - Incremental data collection completed successfully!
+2025-10-07 08:00:04,705 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-07 08:00:06,450 - INFO - Last timestamp in CSV: 2025-10-06 19:57:57.139000+00:00
+2025-10-07 08:00:06,479 - INFO - Fetching data from 2025-10-06 19:58:57 onwards...
+2025-10-07 08:00:06,981 - INFO - Successfully refreshed access token
+2025-10-07 08:00:07,646 - INFO - Retrieved 33 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-07 08:00:09,756 - INFO - Combined 187874 existing + 33 new = 187907 total records (after deduplication)
+2025-10-07 08:00:13,302 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-07 08:00:13,352 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251007_080013.json
+2025-10-07 08:00:13,353 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-07 08:00:13,356 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-07 08:00:13,357 - INFO - New data range: 2025-10-06 20:00:36.421000+00:00 to 2025-10-06 23:02:13.997000+00:00
+2025-10-07 08:00:13,357 - INFO - New tracks fetched: 33
+2025-10-07 08:00:13,357 - INFO - Records added to CSV: 33
+2025-10-07 08:00:13,357 - INFO - Unique new tracks: 33
+2025-10-07 08:00:13,357 - INFO - Unique new artists: 32
+2025-10-07 08:00:15,420 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-06 23:02:13.997000+00:00
+2025-10-07 08:00:15,420 - INFO - Total records in dataset: 187,907
+2025-10-07 08:00:15,454 - INFO - Incremental data collection completed successfully!
+2025-10-07 12:00:02,438 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-07 12:00:03,911 - INFO - Last timestamp in CSV: 2025-10-06 23:02:13.997000+00:00
+2025-10-07 12:00:03,932 - INFO - Fetching data from 2025-10-06 23:03:13 onwards...
+2025-10-07 12:00:04,119 - INFO - Successfully refreshed access token
+2025-10-07 12:00:04,276 - INFO - Retrieved 0 tracks
+2025-10-07 12:00:04,277 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-10-07 12:00:04,277 - INFO - Incremental data collection completed successfully!
+2025-10-07 16:00:08,683 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-07 16:00:12,403 - INFO - Last timestamp in CSV: 2025-10-06 23:02:13.997000+00:00
+2025-10-07 16:00:12,451 - INFO - Fetching data from 2025-10-06 23:03:13 onwards...
+2025-10-07 16:00:12,700 - INFO - Successfully refreshed access token
+2025-10-07 16:00:13,266 - INFO - Retrieved 12 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-07 16:00:17,549 - INFO - Combined 187907 existing + 12 new = 187919 total records (after deduplication)
+2025-10-07 16:00:24,442 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-07 16:00:24,525 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251007_160024.json
+2025-10-07 16:00:24,529 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-07 16:00:24,536 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-07 16:00:24,538 - INFO - New data range: 2025-10-07 16:20:28.030000+00:00 to 2025-10-07 17:00:11.618000+00:00
+2025-10-07 16:00:24,538 - INFO - New tracks fetched: 12
+2025-10-07 16:00:24,538 - INFO - Records added to CSV: 12
+2025-10-07 16:00:24,540 - INFO - Unique new tracks: 12
+2025-10-07 16:00:24,542 - INFO - Unique new artists: 10
+2025-10-07 16:00:27,796 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-07 17:00:11.618000+00:00
+2025-10-07 16:00:27,796 - INFO - Total records in dataset: 187,919
+2025-10-07 16:00:27,821 - INFO - Incremental data collection completed successfully!
+2025-10-07 20:00:19,165 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-07 20:00:21,309 - INFO - Last timestamp in CSV: 2025-10-07 17:00:11.618000+00:00
+2025-10-07 20:00:21,342 - INFO - Fetching data from 2025-10-07 17:01:11 onwards...
+2025-10-07 20:00:21,537 - INFO - Successfully refreshed access token
+2025-10-07 20:00:21,697 - INFO - Retrieved 0 tracks
+2025-10-07 20:00:21,698 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-10-07 20:00:21,698 - INFO - Incremental data collection completed successfully!
+2025-10-08 08:00:04,400 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-08 08:00:05,856 - INFO - Last timestamp in CSV: 2025-10-07 17:00:11.618000+00:00
+2025-10-08 08:00:05,887 - INFO - Fetching data from 2025-10-07 17:01:11 onwards...
+2025-10-08 08:00:06,097 - INFO - Successfully refreshed access token
+2025-10-08 08:00:06,249 - INFO - Retrieved 0 tracks
+2025-10-08 08:00:06,249 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-10-08 08:00:06,249 - INFO - Incremental data collection completed successfully!
+2025-10-08 12:00:06,125 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-08 12:00:08,502 - INFO - Last timestamp in CSV: 2025-10-07 17:00:11.618000+00:00
+2025-10-08 12:00:08,547 - INFO - Fetching data from 2025-10-07 17:01:11 onwards...
+2025-10-08 12:00:08,783 - INFO - Successfully refreshed access token
+2025-10-08 12:00:09,409 - INFO - Retrieved 50 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-08 12:00:12,726 - INFO - Combined 187919 existing + 50 new = 187969 total records (after deduplication)
+2025-10-08 12:00:17,623 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-08 12:00:17,678 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251008_120017.json
+2025-10-08 12:00:17,679 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-08 12:00:17,683 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-08 12:00:17,683 - INFO - New data range: 2025-10-08 13:40:56.213000+00:00 to 2025-10-08 15:55:39.219000+00:00
+2025-10-08 12:00:17,684 - INFO - New tracks fetched: 50
+2025-10-08 12:00:17,684 - INFO - Records added to CSV: 50
+2025-10-08 12:00:17,684 - INFO - Unique new tracks: 50
+2025-10-08 12:00:17,685 - INFO - Unique new artists: 44
+2025-10-08 12:00:20,348 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-08 15:55:39.219000+00:00
+2025-10-08 12:00:20,360 - INFO - Total records in dataset: 187,969
+2025-10-08 12:00:20,393 - INFO - Incremental data collection completed successfully!
+2025-10-08 16:00:05,106 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-08 16:00:07,104 - INFO - Last timestamp in CSV: 2025-10-08 15:55:39.219000+00:00
+2025-10-08 16:00:07,135 - INFO - Fetching data from 2025-10-08 15:56:39 onwards...
+2025-10-08 16:00:07,373 - INFO - Successfully refreshed access token
+2025-10-08 16:00:08,166 - INFO - Retrieved 46 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-08 16:00:10,444 - INFO - Combined 187969 existing + 46 new = 188015 total records (after deduplication)
+2025-10-08 16:00:14,606 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-08 16:00:14,659 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251008_160014.json
+2025-10-08 16:00:14,661 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-08 16:00:14,664 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-08 16:00:14,664 - INFO - New data range: 2025-10-08 16:00:17.015000+00:00 to 2025-10-08 19:28:17.019000+00:00
+2025-10-08 16:00:14,665 - INFO - New tracks fetched: 46
+2025-10-08 16:00:14,665 - INFO - Records added to CSV: 46
+2025-10-08 16:00:14,665 - INFO - Unique new tracks: 46
+2025-10-08 16:00:14,665 - INFO - Unique new artists: 27
+2025-10-08 16:00:16,998 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-08 19:28:17.019000+00:00
+2025-10-08 16:00:16,999 - INFO - Total records in dataset: 188,015
+2025-10-08 16:00:17,035 - INFO - Incremental data collection completed successfully!
+2025-10-08 20:00:02,718 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-08 20:00:04,432 - INFO - Last timestamp in CSV: 2025-10-08 19:28:17.019000+00:00
+2025-10-08 20:00:04,456 - INFO - Fetching data from 2025-10-08 19:29:17 onwards...
+2025-10-08 20:00:04,656 - INFO - Successfully refreshed access token
+2025-10-08 20:00:05,340 - INFO - Retrieved 10 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-08 20:00:07,262 - INFO - Combined 188015 existing + 10 new = 188025 total records (after deduplication)
+2025-10-08 20:00:10,216 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-08 20:00:10,254 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251008_200010.json
+2025-10-08 20:00:10,256 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-08 20:00:10,259 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-08 20:00:10,259 - INFO - New data range: 2025-10-08 20:36:55.123000+00:00 to 2025-10-08 22:03:20.465000+00:00
+2025-10-08 20:00:10,259 - INFO - New tracks fetched: 10
+2025-10-08 20:00:10,259 - INFO - Records added to CSV: 10
+2025-10-08 20:00:10,260 - INFO - Unique new tracks: 10
+2025-10-08 20:00:10,260 - INFO - Unique new artists: 9
+2025-10-08 20:00:12,128 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-08 22:03:20.465000+00:00
+2025-10-08 20:00:12,129 - INFO - Total records in dataset: 188,025
+2025-10-08 20:00:12,151 - INFO - Incremental data collection completed successfully!
+2025-10-09 08:00:03,178 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-09 08:00:04,984 - INFO - Last timestamp in CSV: 2025-10-08 22:03:20.465000+00:00
+2025-10-09 08:00:05,011 - INFO - Fetching data from 2025-10-08 22:04:20 onwards...
+2025-10-09 08:00:05,215 - INFO - Successfully refreshed access token
+2025-10-09 08:00:05,355 - INFO - Retrieved 0 tracks
+2025-10-09 08:00:05,356 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-10-09 08:00:05,356 - INFO - Incremental data collection completed successfully!
+2025-10-09 12:00:08,245 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-09 12:00:10,294 - INFO - Last timestamp in CSV: 2025-10-08 22:03:20.465000+00:00
+2025-10-09 12:00:10,318 - INFO - Fetching data from 2025-10-08 22:04:20 onwards...
+2025-10-09 12:00:10,786 - INFO - Successfully refreshed access token
+2025-10-09 12:00:11,781 - INFO - Retrieved 42 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-09 12:00:13,972 - INFO - Combined 188025 existing + 42 new = 188067 total records (after deduplication)
+2025-10-09 12:00:17,953 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-09 12:00:17,999 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251009_120017.json
+2025-10-09 12:00:18,001 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-09 12:00:18,004 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-09 12:00:18,005 - INFO - New data range: 2025-10-09 13:26:44.245000+00:00 to 2025-10-09 15:59:17.198000+00:00
+2025-10-09 12:00:18,005 - INFO - New tracks fetched: 42
+2025-10-09 12:00:18,005 - INFO - Records added to CSV: 42
+2025-10-09 12:00:18,005 - INFO - Unique new tracks: 42
+2025-10-09 12:00:18,005 - INFO - Unique new artists: 16
+2025-10-09 12:00:20,165 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-09 15:59:17.198000+00:00
+2025-10-09 12:00:20,166 - INFO - Total records in dataset: 188,067
+2025-10-09 12:00:20,192 - INFO - Incremental data collection completed successfully!
+2025-10-09 16:00:01,959 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-09 16:00:03,711 - INFO - Last timestamp in CSV: 2025-10-09 15:59:17.198000+00:00
+2025-10-09 16:00:03,738 - INFO - Fetching data from 2025-10-09 16:00:17 onwards...
+2025-10-09 16:00:03,938 - INFO - Successfully refreshed access token
+2025-10-09 16:00:04,685 - INFO - Retrieved 23 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-09 16:00:06,725 - INFO - Combined 188067 existing + 23 new = 188090 total records (after deduplication)
+2025-10-09 16:00:09,937 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-09 16:00:09,979 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251009_160009.json
+2025-10-09 16:00:09,981 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-09 16:00:09,983 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-09 16:00:09,984 - INFO - New data range: 2025-10-09 16:03:08.077000+00:00 to 2025-10-09 18:38:30.904000+00:00
+2025-10-09 16:00:09,985 - INFO - New tracks fetched: 23
+2025-10-09 16:00:09,985 - INFO - Records added to CSV: 23
+2025-10-09 16:00:09,985 - INFO - Unique new tracks: 23
+2025-10-09 16:00:09,986 - INFO - Unique new artists: 13
+2025-10-09 16:00:11,653 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-09 18:38:30.904000+00:00
+2025-10-09 16:00:11,654 - INFO - Total records in dataset: 188,090
+2025-10-09 16:00:11,678 - INFO - Incremental data collection completed successfully!
+2025-10-10 08:00:04,719 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-10 08:00:06,521 - INFO - Last timestamp in CSV: 2025-10-09 18:38:30.904000+00:00
+2025-10-10 08:00:06,550 - INFO - Fetching data from 2025-10-09 18:39:30 onwards...
+2025-10-10 08:00:06,783 - INFO - Successfully refreshed access token
+2025-10-10 08:00:07,442 - INFO - Retrieved 27 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-10 08:00:09,550 - INFO - Combined 188090 existing + 27 new = 188117 total records (after deduplication)
+2025-10-10 08:00:13,339 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-10 08:00:13,408 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251010_080013.json
+2025-10-10 08:00:13,433 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-10 08:00:13,438 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-10 08:00:13,439 - INFO - New data range: 2025-10-09 21:04:09.730000+00:00 to 2025-10-10 11:35:13.152000+00:00
+2025-10-10 08:00:13,439 - INFO - New tracks fetched: 27
+2025-10-10 08:00:13,439 - INFO - Records added to CSV: 27
+2025-10-10 08:00:13,451 - INFO - Unique new tracks: 26
+2025-10-10 08:00:13,452 - INFO - Unique new artists: 24
+2025-10-10 08:00:15,538 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-10 11:35:13.152000+00:00
+2025-10-10 08:00:15,541 - INFO - Total records in dataset: 188,117
+2025-10-10 08:00:15,570 - INFO - Incremental data collection completed successfully!
+2025-10-10 12:00:04,687 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-10 12:00:07,044 - INFO - Last timestamp in CSV: 2025-10-10 11:35:13.152000+00:00
+2025-10-10 12:00:07,082 - INFO - Fetching data from 2025-10-10 11:36:13 onwards...
+2025-10-10 12:00:07,285 - INFO - Successfully refreshed access token
+2025-10-10 12:00:07,871 - INFO - Retrieved 9 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-10 12:00:10,225 - INFO - Combined 188117 existing + 9 new = 188126 total records (after deduplication)
+2025-10-10 12:00:14,420 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-10 12:00:14,464 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251010_120014.json
+2025-10-10 12:00:14,466 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-10 12:00:14,469 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-10 12:00:14,470 - INFO - New data range: 2025-10-10 15:43:09.638000+00:00 to 2025-10-10 15:58:10.075000+00:00
+2025-10-10 12:00:14,470 - INFO - New tracks fetched: 9
+2025-10-10 12:00:14,470 - INFO - Records added to CSV: 9
+2025-10-10 12:00:14,470 - INFO - Unique new tracks: 9
+2025-10-10 12:00:14,470 - INFO - Unique new artists: 9
+2025-10-10 12:00:16,629 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-10 15:58:10.075000+00:00
+2025-10-10 12:00:16,629 - INFO - Total records in dataset: 188,126
+2025-10-10 12:00:16,656 - INFO - Incremental data collection completed successfully!
+2025-10-10 16:00:04,530 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-10 16:00:06,385 - INFO - Last timestamp in CSV: 2025-10-10 15:58:10.075000+00:00
+2025-10-10 16:00:06,411 - INFO - Fetching data from 2025-10-10 15:59:10 onwards...
+2025-10-10 16:00:06,615 - INFO - Successfully refreshed access token
+2025-10-10 16:00:07,286 - INFO - Retrieved 19 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-10 16:00:09,227 - INFO - Combined 188126 existing + 19 new = 188145 total records (after deduplication)
+2025-10-10 16:00:12,273 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-10 16:00:12,314 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251010_160012.json
+2025-10-10 16:00:12,316 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-10 16:00:12,318 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-10 16:00:12,318 - INFO - New data range: 2025-10-10 16:00:57.163000+00:00 to 2025-10-10 16:51:28.006000+00:00
+2025-10-10 16:00:12,318 - INFO - New tracks fetched: 19
+2025-10-10 16:00:12,318 - INFO - Records added to CSV: 19
+2025-10-10 16:00:12,319 - INFO - Unique new tracks: 19
+2025-10-10 16:00:12,319 - INFO - Unique new artists: 18
+2025-10-10 16:00:14,323 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-10 16:51:28.006000+00:00
+2025-10-10 16:00:14,323 - INFO - Total records in dataset: 188,145
+2025-10-10 16:00:14,347 - INFO - Incremental data collection completed successfully!
+2025-10-11 16:00:02,314 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-11 16:00:04,112 - INFO - Last timestamp in CSV: 2025-10-10 16:51:28.006000+00:00
+2025-10-11 16:00:04,139 - INFO - Fetching data from 2025-10-10 16:52:28 onwards...
+2025-10-11 16:00:04,373 - INFO - Successfully refreshed access token
+2025-10-11 16:00:04,539 - INFO - Retrieved 0 tracks
+2025-10-11 16:00:04,540 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-10-11 16:00:04,540 - INFO - Incremental data collection completed successfully!
+2025-10-11 20:00:02,453 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-11 20:00:04,344 - INFO - Last timestamp in CSV: 2025-10-10 16:51:28.006000+00:00
+2025-10-11 20:00:04,373 - INFO - Fetching data from 2025-10-10 16:52:28 onwards...
+2025-10-11 20:00:04,615 - INFO - Successfully refreshed access token
+2025-10-11 20:00:04,761 - INFO - Retrieved 0 tracks
+2025-10-11 20:00:04,761 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-10-11 20:00:04,761 - INFO - Incremental data collection completed successfully!
+2025-10-12 08:00:01,740 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-12 08:00:03,049 - INFO - Last timestamp in CSV: 2025-10-10 16:51:28.006000+00:00
+2025-10-12 08:00:03,068 - INFO - Fetching data from 2025-10-10 16:52:28 onwards...
+2025-10-12 08:00:03,334 - INFO - Successfully refreshed access token
+2025-10-12 08:00:03,508 - INFO - Retrieved 0 tracks
+2025-10-12 08:00:03,509 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-10-12 08:00:03,509 - INFO - Incremental data collection completed successfully!
+2025-10-13 08:00:03,892 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-13 08:00:05,225 - INFO - Last timestamp in CSV: 2025-10-10 16:51:28.006000+00:00
+2025-10-13 08:00:05,256 - INFO - Fetching data from 2025-10-10 16:52:28 onwards...
+2025-10-13 08:00:05,461 - INFO - Successfully refreshed access token
+2025-10-13 08:00:06,068 - INFO - Retrieved 7 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-13 08:00:07,570 - INFO - Combined 188145 existing + 7 new = 188152 total records (after deduplication)
+2025-10-13 08:00:09,819 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-13 08:00:09,854 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251013_080009.json
+2025-10-13 08:00:09,856 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-13 08:00:09,857 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-13 08:00:09,858 - INFO - New data range: 2025-10-12 22:02:05.372000+00:00 to 2025-10-12 22:23:38.923000+00:00
+2025-10-13 08:00:09,858 - INFO - New tracks fetched: 7
+2025-10-13 08:00:09,858 - INFO - Records added to CSV: 7
+2025-10-13 08:00:09,858 - INFO - Unique new tracks: 7
+2025-10-13 08:00:09,859 - INFO - Unique new artists: 2
+2025-10-13 08:00:11,371 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-12 22:23:38.923000+00:00
+2025-10-13 08:00:11,372 - INFO - Total records in dataset: 188,152
+2025-10-13 08:00:11,391 - INFO - Incremental data collection completed successfully!
+2025-10-13 12:00:04,007 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-13 12:00:05,705 - INFO - Last timestamp in CSV: 2025-10-12 22:23:38.923000+00:00
+2025-10-13 12:00:05,745 - INFO - Fetching data from 2025-10-12 22:24:38 onwards...
+2025-10-13 12:00:06,020 - INFO - Successfully refreshed access token
+2025-10-13 12:00:06,826 - INFO - Retrieved 20 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-13 12:00:08,848 - INFO - Combined 188152 existing + 20 new = 188172 total records (after deduplication)
+2025-10-13 12:00:12,194 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-13 12:00:12,231 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251013_120012.json
+2025-10-13 12:00:12,232 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-13 12:00:12,234 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-13 12:00:12,235 - INFO - New data range: 2025-10-13 13:41:53.514000+00:00 to 2025-10-13 15:56:18.552000+00:00
+2025-10-13 12:00:12,235 - INFO - New tracks fetched: 20
+2025-10-13 12:00:12,235 - INFO - Records added to CSV: 20
+2025-10-13 12:00:12,235 - INFO - Unique new tracks: 20
+2025-10-13 12:00:12,236 - INFO - Unique new artists: 18
+2025-10-13 12:00:13,907 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-13 15:56:18.552000+00:00
+2025-10-13 12:00:13,907 - INFO - Total records in dataset: 188,172
+2025-10-13 12:00:13,934 - INFO - Incremental data collection completed successfully!
+2025-10-13 16:00:04,429 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-13 16:00:06,291 - INFO - Last timestamp in CSV: 2025-10-13 15:56:18.552000+00:00
+2025-10-13 16:00:06,317 - INFO - Fetching data from 2025-10-13 15:57:18 onwards...
+2025-10-13 16:00:06,865 - INFO - Successfully refreshed access token
+2025-10-13 16:00:07,548 - INFO - Retrieved 37 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-13 16:00:09,796 - INFO - Combined 188172 existing + 37 new = 188209 total records (after deduplication)
+2025-10-13 16:00:13,962 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-13 16:00:14,032 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251013_160014.json
+2025-10-13 16:00:14,056 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-13 16:00:14,061 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-13 16:00:14,062 - INFO - New data range: 2025-10-13 16:52:05.015000+00:00 to 2025-10-13 19:56:34.702000+00:00
+2025-10-13 16:00:14,062 - INFO - New tracks fetched: 37
+2025-10-13 16:00:14,062 - INFO - Records added to CSV: 37
+2025-10-13 16:00:14,064 - INFO - Unique new tracks: 37
+2025-10-13 16:00:14,064 - INFO - Unique new artists: 20
+2025-10-13 16:00:16,090 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-13 19:56:34.702000+00:00
+2025-10-13 16:00:16,091 - INFO - Total records in dataset: 188,209
+2025-10-13 16:00:16,117 - INFO - Incremental data collection completed successfully!
+2025-10-14 08:00:03,315 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-14 08:00:04,634 - INFO - Last timestamp in CSV: 2025-10-13 19:56:34.702000+00:00
+2025-10-14 08:00:04,655 - INFO - Fetching data from 2025-10-13 19:57:34 onwards...
+2025-10-14 08:00:04,876 - INFO - Successfully refreshed access token
+2025-10-14 08:00:05,647 - INFO - Retrieved 20 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-14 08:00:07,125 - INFO - Combined 188209 existing + 20 new = 188229 total records (after deduplication)
+2025-10-14 08:00:09,417 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-14 08:00:09,452 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251014_080009.json
+2025-10-14 08:00:09,454 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-14 08:00:09,455 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-14 08:00:09,456 - INFO - New data range: 2025-10-13 20:00:44.856000+00:00 to 2025-10-13 21:09:41.098000+00:00
+2025-10-14 08:00:09,456 - INFO - New tracks fetched: 20
+2025-10-14 08:00:09,456 - INFO - Records added to CSV: 20
+2025-10-14 08:00:09,456 - INFO - Unique new tracks: 20
+2025-10-14 08:00:09,456 - INFO - Unique new artists: 14
+2025-10-14 08:00:10,865 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-13 21:09:41.098000+00:00
+2025-10-14 08:00:10,865 - INFO - Total records in dataset: 188,229
+2025-10-14 08:00:10,883 - INFO - Incremental data collection completed successfully!
+2025-10-14 12:00:04,998 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-14 12:00:07,061 - INFO - Last timestamp in CSV: 2025-10-13 21:09:41.098000+00:00
+2025-10-14 12:00:07,089 - INFO - Fetching data from 2025-10-13 21:10:41 onwards...
+2025-10-14 12:00:07,308 - INFO - Successfully refreshed access token
+2025-10-14 12:00:07,454 - INFO - Retrieved 0 tracks
+2025-10-14 12:00:07,454 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-10-14 12:00:07,454 - INFO - Incremental data collection completed successfully!
+2025-10-14 16:00:04,471 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-14 16:00:06,184 - INFO - Last timestamp in CSV: 2025-10-13 21:09:41.098000+00:00
+2025-10-14 16:00:06,209 - INFO - Fetching data from 2025-10-13 21:10:41 onwards...
+2025-10-14 16:00:06,407 - INFO - Successfully refreshed access token
+2025-10-14 16:00:07,070 - INFO - Retrieved 29 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-14 16:00:09,158 - INFO - Combined 188229 existing + 29 new = 188258 total records (after deduplication)
+2025-10-14 16:00:12,372 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-14 16:00:12,415 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251014_160012.json
+2025-10-14 16:00:12,417 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-14 16:00:12,420 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-14 16:00:12,420 - INFO - New data range: 2025-10-14 16:25:33.673000+00:00 to 2025-10-14 18:18:39.916000+00:00
+2025-10-14 16:00:12,420 - INFO - New tracks fetched: 29
+2025-10-14 16:00:12,420 - INFO - Records added to CSV: 29
+2025-10-14 16:00:12,421 - INFO - Unique new tracks: 28
+2025-10-14 16:00:12,421 - INFO - Unique new artists: 22
+2025-10-14 16:00:14,277 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-14 18:18:39.916000+00:00
+2025-10-14 16:00:14,283 - INFO - Total records in dataset: 188,258
+2025-10-14 16:00:14,309 - INFO - Incremental data collection completed successfully!
+2025-10-14 20:00:04,090 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-14 20:00:06,526 - INFO - Last timestamp in CSV: 2025-10-14 18:18:39.916000+00:00
+2025-10-14 20:00:06,552 - INFO - Fetching data from 2025-10-14 18:19:39 onwards...
+2025-10-14 20:00:06,762 - INFO - Successfully refreshed access token
+2025-10-14 20:00:06,895 - INFO - Retrieved 0 tracks
+2025-10-14 20:00:06,895 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-10-14 20:00:06,895 - INFO - Incremental data collection completed successfully!
+2025-10-15 00:00:05,262 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-15 00:00:07,329 - INFO - Last timestamp in CSV: 2025-10-14 18:18:39.916000+00:00
+2025-10-15 00:00:07,357 - INFO - Fetching data from 2025-10-14 18:19:39 onwards...
+2025-10-15 00:00:07,571 - INFO - Successfully refreshed access token
+2025-10-15 00:00:07,710 - INFO - Retrieved 0 tracks
+2025-10-15 00:00:07,710 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-10-15 00:00:07,710 - INFO - Incremental data collection completed successfully!
+2025-10-15 04:00:01,939 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-15 04:00:03,251 - INFO - Last timestamp in CSV: 2025-10-14 18:18:39.916000+00:00
+2025-10-15 04:00:03,270 - INFO - Fetching data from 2025-10-14 18:19:39 onwards...
+2025-10-15 04:00:03,493 - INFO - Successfully refreshed access token
+2025-10-15 04:00:03,642 - INFO - Retrieved 0 tracks
+2025-10-15 04:00:03,642 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-10-15 04:00:03,642 - INFO - Incremental data collection completed successfully!
+2025-10-15 12:00:08,395 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-15 12:00:13,742 - INFO - Last timestamp in CSV: 2025-10-14 18:18:39.916000+00:00
+2025-10-15 12:00:13,817 - INFO - Fetching data from 2025-10-14 18:19:39 onwards...
+2025-10-15 12:00:14,087 - INFO - Successfully refreshed access token
+2025-10-15 12:00:14,324 - INFO - Retrieved 0 tracks
+2025-10-15 12:00:14,324 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-10-15 12:00:14,324 - INFO - Incremental data collection completed successfully!
+2025-10-15 16:00:04,714 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-15 16:00:07,455 - INFO - Last timestamp in CSV: 2025-10-14 18:18:39.916000+00:00
+2025-10-15 16:00:07,485 - INFO - Fetching data from 2025-10-14 18:19:39 onwards...
+2025-10-15 16:00:07,714 - INFO - Successfully refreshed access token
+2025-10-15 16:00:08,324 - INFO - Retrieved 12 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-15 16:00:10,391 - INFO - Combined 188258 existing + 12 new = 188270 total records (after deduplication)
+2025-10-15 16:00:13,923 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-15 16:00:13,971 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251015_160013.json
+2025-10-15 16:00:13,972 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-15 16:00:13,975 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-15 16:00:13,975 - INFO - New data range: 2025-10-15 18:28:36.821000+00:00 to 2025-10-15 19:58:05.638000+00:00
+2025-10-15 16:00:13,975 - INFO - New tracks fetched: 12
+2025-10-15 16:00:13,975 - INFO - Records added to CSV: 12
+2025-10-15 16:00:13,976 - INFO - Unique new tracks: 2
+2025-10-15 16:00:13,976 - INFO - Unique new artists: 2
+2025-10-15 16:00:16,706 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-15 19:58:05.638000+00:00
+2025-10-15 16:00:16,707 - INFO - Total records in dataset: 188,270
+2025-10-15 16:00:16,737 - INFO - Incremental data collection completed successfully!
+2025-10-16 08:00:07,917 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-16 08:00:09,445 - INFO - Last timestamp in CSV: 2025-10-15 19:58:05.638000+00:00
+2025-10-16 08:00:09,464 - INFO - Fetching data from 2025-10-15 19:59:05 onwards...
+2025-10-16 08:00:09,689 - INFO - Successfully refreshed access token
+2025-10-16 08:00:10,438 - INFO - Retrieved 8 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-16 08:00:12,034 - INFO - Combined 188270 existing + 8 new = 188278 total records (after deduplication)
+2025-10-16 08:00:14,239 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-16 08:00:14,273 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251016_080014.json
+2025-10-16 08:00:14,275 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-16 08:00:14,277 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-16 08:00:14,277 - INFO - New data range: 2025-10-15 20:07:28.889000+00:00 to 2025-10-15 21:14:45.458000+00:00
+2025-10-16 08:00:14,277 - INFO - New tracks fetched: 8
+2025-10-16 08:00:14,277 - INFO - Records added to CSV: 8
+2025-10-16 08:00:14,277 - INFO - Unique new tracks: 1
+2025-10-16 08:00:14,277 - INFO - Unique new artists: 1
+2025-10-16 08:00:15,762 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-15 21:14:45.458000+00:00
+2025-10-16 08:00:15,762 - INFO - Total records in dataset: 188,278
+2025-10-16 08:00:15,784 - INFO - Incremental data collection completed successfully!
+2025-10-17 08:00:04,694 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-17 08:00:07,168 - INFO - Last timestamp in CSV: 2025-10-15 21:14:45.458000+00:00
+2025-10-17 08:00:07,205 - INFO - Fetching data from 2025-10-15 21:15:45 onwards...
+2025-10-17 08:00:07,342 - INFO - Successfully refreshed access token
+2025-10-17 08:00:08,054 - INFO - Retrieved 50 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-17 08:00:10,990 - INFO - Combined 188278 existing + 50 new = 188328 total records (after deduplication)
+2025-10-17 08:00:15,495 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-17 08:00:15,550 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251017_080015.json
+2025-10-17 08:00:15,552 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-17 08:00:15,560 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-17 08:00:15,560 - INFO - New data range: 2025-10-16 17:45:45.305000+00:00 to 2025-10-17 11:08:20.065000+00:00
+2025-10-17 08:00:15,560 - INFO - New tracks fetched: 50
+2025-10-17 08:00:15,560 - INFO - Records added to CSV: 50
+2025-10-17 08:00:15,561 - INFO - Unique new tracks: 48
+2025-10-17 08:00:15,561 - INFO - Unique new artists: 25
+2025-10-17 08:00:18,089 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-17 11:08:20.065000+00:00
+2025-10-17 08:00:18,089 - INFO - Total records in dataset: 188,328
+2025-10-17 08:00:18,127 - INFO - Incremental data collection completed successfully!
+2025-10-17 12:00:05,202 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-17 12:00:06,600 - INFO - Last timestamp in CSV: 2025-10-17 11:08:20.065000+00:00
+2025-10-17 12:00:06,622 - INFO - Fetching data from 2025-10-17 11:09:20 onwards...
+2025-10-17 12:00:06,732 - INFO - Successfully refreshed access token
+2025-10-17 12:00:07,234 - INFO - Retrieved 5 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-17 12:00:08,886 - INFO - Combined 188328 existing + 5 new = 188333 total records (after deduplication)
+2025-10-17 12:00:11,357 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-17 12:00:11,389 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251017_120011.json
+2025-10-17 12:00:11,391 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-17 12:00:11,393 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-17 12:00:11,393 - INFO - New data range: 2025-10-17 15:31:08.996000+00:00 to 2025-10-17 15:56:52.179000+00:00
+2025-10-17 12:00:11,393 - INFO - New tracks fetched: 5
+2025-10-17 12:00:11,393 - INFO - Records added to CSV: 5
+2025-10-17 12:00:11,394 - INFO - Unique new tracks: 5
+2025-10-17 12:00:11,394 - INFO - Unique new artists: 5
+2025-10-17 12:00:12,838 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-17 15:56:52.179000+00:00
+2025-10-17 12:00:12,838 - INFO - Total records in dataset: 188,333
+2025-10-17 12:00:12,858 - INFO - Incremental data collection completed successfully!
+2025-10-17 16:00:01,772 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-17 16:00:03,042 - INFO - Last timestamp in CSV: 2025-10-17 15:56:52.179000+00:00
+2025-10-17 16:00:03,064 - INFO - Fetching data from 2025-10-17 15:57:52 onwards...
+Traceback (most recent call last):
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/socket.py", line 962, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+    raise new_e
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/urllib3/connection.py", line 704, in connect
+    self.sock = sock = self._new_conn()
+                       ^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPSConnection object at 0x115fbe010>: Failed to resolve 'accounts.spotify.com' ([Errno 8] nodename nor servname provided, or not known)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/requests/adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/urllib3/util/retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='accounts.spotify.com', port=443): Max retries exceeded with url: /api/token (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x115fbe010>: Failed to resolve 'accounts.spotify.com' ([Errno 8] nodename nor servname provided, or not known)"))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 528, in <module>
+    main()
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 520, in main
+    success = fetch_incremental_data(data_dir, config_file)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 455, in fetch_incremental_data
+    items = spotify_api.get_all_recently_played(after_timestamp)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 161, in get_all_recently_played
+    data = self.get_recently_played(after_timestamp)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 124, in get_recently_played
+    if not self.ensure_valid_token():
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 113, in ensure_valid_token
+    return self.refresh_access_token()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 95, in refresh_access_token
+    response = requests.post(self.token_url, data=payload)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/requests/api.py", line 115, in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/requests/adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPSConnectionPool(host='accounts.spotify.com', port=443): Max retries exceeded with url: /api/token (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x115fbe010>: Failed to resolve 'accounts.spotify.com' ([Errno 8] nodename nor servname provided, or not known)"))
+2025-10-17 20:00:03,101 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-17 20:00:04,430 - INFO - Last timestamp in CSV: 2025-10-17 15:56:52.179000+00:00
+2025-10-17 20:00:04,454 - INFO - Fetching data from 2025-10-17 15:57:52 onwards...
+2025-10-17 20:00:04,609 - INFO - Successfully refreshed access token
+2025-10-17 20:00:05,069 - INFO - Retrieved 6 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-17 20:00:06,559 - INFO - Combined 188333 existing + 6 new = 188339 total records (after deduplication)
+2025-10-17 20:00:08,811 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-17 20:00:08,842 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251017_200008.json
+2025-10-17 20:00:08,846 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-17 20:00:08,848 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-17 20:00:08,848 - INFO - New data range: 2025-10-17 16:03:27.933000+00:00 to 2025-10-17 16:14:40.807000+00:00
+2025-10-17 20:00:08,848 - INFO - New tracks fetched: 6
+2025-10-17 20:00:08,848 - INFO - Records added to CSV: 6
+2025-10-17 20:00:08,849 - INFO - Unique new tracks: 6
+2025-10-17 20:00:08,849 - INFO - Unique new artists: 6
+2025-10-17 20:00:10,168 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-17 16:14:40.807000+00:00
+2025-10-17 20:00:10,168 - INFO - Total records in dataset: 188,339
+2025-10-17 20:00:10,185 - INFO - Incremental data collection completed successfully!
+2025-10-18 08:00:05,050 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-18 08:00:06,408 - INFO - Last timestamp in CSV: 2025-10-17 16:14:40.807000+00:00
+2025-10-18 08:00:06,429 - INFO - Fetching data from 2025-10-17 16:15:40 onwards...
+2025-10-18 08:00:06,897 - INFO - Successfully refreshed access token
+2025-10-18 08:00:07,539 - INFO - Retrieved 2 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-18 08:00:09,110 - INFO - Combined 188339 existing + 2 new = 188341 total records (after deduplication)
+2025-10-18 08:00:11,718 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-18 08:00:11,754 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251018_080011.json
+2025-10-18 08:00:11,756 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-18 08:00:11,758 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-18 08:00:11,758 - INFO - New data range: 2025-10-18 11:52:12.820000+00:00 to 2025-10-18 11:57:08.488000+00:00
+2025-10-18 08:00:11,758 - INFO - New tracks fetched: 2
+2025-10-18 08:00:11,759 - INFO - Records added to CSV: 2
+2025-10-18 08:00:11,759 - INFO - Unique new tracks: 2
+2025-10-18 08:00:11,759 - INFO - Unique new artists: 2
+2025-10-18 08:00:13,237 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-18 11:57:08.488000+00:00
+2025-10-18 08:00:13,237 - INFO - Total records in dataset: 188,341
+2025-10-18 08:00:13,256 - INFO - Incremental data collection completed successfully!
+2025-10-19 08:00:04,722 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-19 08:00:07,010 - INFO - Last timestamp in CSV: 2025-10-18 11:57:08.488000+00:00
+2025-10-19 08:00:07,040 - INFO - Fetching data from 2025-10-18 11:58:08 onwards...
+2025-10-19 08:00:07,248 - INFO - Successfully refreshed access token
+2025-10-19 08:00:07,948 - INFO - Retrieved 50 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-19 08:00:10,282 - INFO - Combined 188341 existing + 50 new = 188391 total records (after deduplication)
+2025-10-19 08:00:14,503 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-19 08:00:14,558 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251019_080014.json
+2025-10-19 08:00:14,560 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-19 08:00:14,563 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-19 08:00:14,563 - INFO - New data range: 2025-10-18 13:01:54.446000+00:00 to 2025-10-19 00:11:26.894000+00:00
+2025-10-19 08:00:14,563 - INFO - New tracks fetched: 50
+2025-10-19 08:00:14,564 - INFO - Records added to CSV: 50
+2025-10-19 08:00:14,564 - INFO - Unique new tracks: 47
+2025-10-19 08:00:14,564 - INFO - Unique new artists: 38
+2025-10-19 08:00:17,390 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-19 00:11:26.894000+00:00
+2025-10-19 08:00:17,399 - INFO - Total records in dataset: 188,391
+2025-10-19 08:00:17,431 - INFO - Incremental data collection completed successfully!
+2025-10-19 12:00:06,343 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-19 12:00:08,761 - INFO - Last timestamp in CSV: 2025-10-19 00:11:26.894000+00:00
+2025-10-19 12:00:08,787 - INFO - Fetching data from 2025-10-19 00:12:26 onwards...
+2025-10-19 12:00:08,986 - INFO - Successfully refreshed access token
+2025-10-19 12:00:09,727 - INFO - Retrieved 22 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-19 12:00:11,967 - INFO - Combined 188391 existing + 22 new = 188413 total records (after deduplication)
+2025-10-19 12:00:15,055 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-19 12:00:15,098 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251019_120015.json
+2025-10-19 12:00:15,099 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-19 12:00:15,102 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-19 12:00:15,103 - INFO - New data range: 2025-10-19 13:24:20.971000+00:00 to 2025-10-19 13:28:46.185000+00:00
+2025-10-19 12:00:15,103 - INFO - New tracks fetched: 22
+2025-10-19 12:00:15,103 - INFO - Records added to CSV: 22
+2025-10-19 12:00:15,104 - INFO - Unique new tracks: 16
+2025-10-19 12:00:15,104 - INFO - Unique new artists: 11
+2025-10-19 12:00:16,955 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-19 13:28:46.185000+00:00
+2025-10-19 12:00:16,955 - INFO - Total records in dataset: 188,413
+2025-10-19 12:00:16,982 - INFO - Incremental data collection completed successfully!
+2025-10-19 16:00:02,899 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-19 16:00:04,522 - INFO - Last timestamp in CSV: 2025-10-19 13:28:46.185000+00:00
+2025-10-19 16:00:04,549 - INFO - Fetching data from 2025-10-19 13:29:46 onwards...
+2025-10-19 16:00:04,764 - INFO - Successfully refreshed access token
+2025-10-19 16:00:05,453 - INFO - Retrieved 26 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-19 16:00:07,361 - INFO - Combined 188413 existing + 26 new = 188439 total records (after deduplication)
+2025-10-19 16:00:10,810 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-19 16:00:10,853 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251019_160010.json
+2025-10-19 16:00:10,856 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-19 16:00:10,860 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-19 16:00:10,860 - INFO - New data range: 2025-10-19 16:25:30.019000+00:00 to 2025-10-19 17:55:44.596000+00:00
+2025-10-19 16:00:10,860 - INFO - New tracks fetched: 26
+2025-10-19 16:00:10,861 - INFO - Records added to CSV: 26
+2025-10-19 16:00:10,861 - INFO - Unique new tracks: 26
+2025-10-19 16:00:10,862 - INFO - Unique new artists: 19
+2025-10-19 16:00:12,667 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-19 17:55:44.596000+00:00
+2025-10-19 16:00:12,667 - INFO - Total records in dataset: 188,439
+2025-10-19 16:00:12,692 - INFO - Incremental data collection completed successfully!
+2025-10-19 20:00:02,648 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-19 20:00:03,966 - INFO - Last timestamp in CSV: 2025-10-19 17:55:44.596000+00:00
+2025-10-19 20:00:03,987 - INFO - Fetching data from 2025-10-19 17:56:44 onwards...
+2025-10-19 20:00:04,221 - INFO - Successfully refreshed access token
+2025-10-19 20:00:04,871 - INFO - Retrieved 2 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-19 20:00:06,385 - INFO - Combined 188439 existing + 2 new = 188441 total records (after deduplication)
+2025-10-19 20:00:08,720 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-19 20:00:08,765 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251019_200008.json
+2025-10-19 20:00:08,767 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-19 20:00:08,771 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-19 20:00:08,772 - INFO - New data range: 2025-10-19 22:25:55.862000+00:00 to 2025-10-19 22:30:24.635000+00:00
+2025-10-19 20:00:08,772 - INFO - New tracks fetched: 2
+2025-10-19 20:00:08,772 - INFO - Records added to CSV: 2
+2025-10-19 20:00:08,773 - INFO - Unique new tracks: 2
+2025-10-19 20:00:08,773 - INFO - Unique new artists: 2
+2025-10-19 20:00:10,202 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-19 22:30:24.635000+00:00
+2025-10-19 20:00:10,202 - INFO - Total records in dataset: 188,441
+2025-10-19 20:00:10,220 - INFO - Incremental data collection completed successfully!
+2025-10-20 00:00:02,183 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-20 00:00:03,546 - INFO - Last timestamp in CSV: 2025-10-19 22:30:24.635000+00:00
+2025-10-20 00:00:03,571 - INFO - Fetching data from 2025-10-19 22:31:24 onwards...
+2025-10-20 00:00:03,808 - INFO - Successfully refreshed access token
+2025-10-20 00:00:03,962 - INFO - Retrieved 0 tracks
+2025-10-20 00:00:03,963 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-10-20 00:00:03,963 - INFO - Incremental data collection completed successfully!
+2025-10-20 04:00:02,463 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-20 04:00:03,779 - INFO - Last timestamp in CSV: 2025-10-19 22:30:24.635000+00:00
+2025-10-20 04:00:03,800 - INFO - Fetching data from 2025-10-19 22:31:24 onwards...
+2025-10-20 04:00:04,055 - INFO - Successfully refreshed access token
+2025-10-20 04:00:04,206 - INFO - Retrieved 0 tracks
+2025-10-20 04:00:04,206 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-10-20 04:00:04,206 - INFO - Incremental data collection completed successfully!
+2025-10-20 08:00:02,241 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-20 08:00:03,555 - INFO - Last timestamp in CSV: 2025-10-19 22:30:24.635000+00:00
+2025-10-20 08:00:03,574 - INFO - Fetching data from 2025-10-19 22:31:24 onwards...
+2025-10-20 08:00:03,855 - INFO - Successfully refreshed access token
+2025-10-20 08:00:04,492 - INFO - Retrieved 1 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-20 08:00:06,044 - INFO - Combined 188441 existing + 1 new = 188442 total records (after deduplication)
+2025-10-20 08:00:08,331 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-20 08:00:08,374 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251020_080008.json
+2025-10-20 08:00:08,376 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-20 08:00:08,379 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-20 08:00:08,379 - INFO - New data range: 2025-10-20 09:11:18.282000+00:00 to 2025-10-20 09:11:18.282000+00:00
+2025-10-20 08:00:08,380 - INFO - New tracks fetched: 1
+2025-10-20 08:00:08,380 - INFO - Records added to CSV: 1
+2025-10-20 08:00:08,380 - INFO - Unique new tracks: 1
+2025-10-20 08:00:08,380 - INFO - Unique new artists: 1
+2025-10-20 08:00:09,801 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-20 09:11:18.282000+00:00
+2025-10-20 08:00:09,801 - INFO - Total records in dataset: 188,442
+2025-10-20 08:00:09,820 - INFO - Incremental data collection completed successfully!
+2025-10-20 12:00:03,056 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-20 12:00:05,343 - INFO - Last timestamp in CSV: 2025-10-20 09:11:18.282000+00:00
+2025-10-20 12:00:05,389 - INFO - Fetching data from 2025-10-20 09:12:18 onwards...
+2025-10-20 12:00:05,576 - INFO - Successfully refreshed access token
+2025-10-20 12:00:06,223 - INFO - Retrieved 26 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-20 12:00:09,880 - INFO - Combined 188442 existing + 26 new = 188468 total records (after deduplication)
+2025-10-20 12:00:14,306 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-20 12:00:14,354 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251020_120014.json
+2025-10-20 12:00:14,356 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-20 12:00:14,358 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-20 12:00:14,359 - INFO - New data range: 2025-10-20 13:36:10.852000+00:00 to 2025-10-20 15:58:48.273000+00:00
+2025-10-20 12:00:14,359 - INFO - New tracks fetched: 26
+2025-10-20 12:00:14,359 - INFO - Records added to CSV: 26
+2025-10-20 12:00:14,360 - INFO - Unique new tracks: 26
+2025-10-20 12:00:14,360 - INFO - Unique new artists: 13
+2025-10-20 12:00:16,202 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-20 15:58:48.273000+00:00
+2025-10-20 12:00:16,202 - INFO - Total records in dataset: 188,468
+2025-10-20 12:00:16,227 - INFO - Incremental data collection completed successfully!
+2025-10-20 16:00:02,501 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-20 16:00:04,270 - INFO - Last timestamp in CSV: 2025-10-20 15:58:48.273000+00:00
+2025-10-20 16:00:04,297 - INFO - Fetching data from 2025-10-20 15:59:48 onwards...
+2025-10-20 16:00:04,502 - INFO - Successfully refreshed access token
+2025-10-20 16:00:05,027 - INFO - Retrieved 9 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-20 16:00:07,048 - INFO - Combined 188468 existing + 9 new = 188477 total records (after deduplication)
+2025-10-20 16:00:10,105 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-20 16:00:10,150 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251020_160010.json
+2025-10-20 16:00:10,152 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-20 16:00:10,154 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-20 16:00:10,154 - INFO - New data range: 2025-10-20 17:05:11.223000+00:00 to 2025-10-20 17:57:40.737000+00:00
+2025-10-20 16:00:10,154 - INFO - New tracks fetched: 9
+2025-10-20 16:00:10,154 - INFO - Records added to CSV: 9
+2025-10-20 16:00:10,155 - INFO - Unique new tracks: 9
+2025-10-20 16:00:10,155 - INFO - Unique new artists: 7
+2025-10-20 16:00:12,107 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-20 17:57:40.737000+00:00
+2025-10-20 16:00:12,110 - INFO - Total records in dataset: 188,477
+2025-10-20 16:00:12,136 - INFO - Incremental data collection completed successfully!
+2025-10-20 20:02:35,998 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-20 20:02:38,063 - INFO - Last timestamp in CSV: 2025-10-20 17:57:40.737000+00:00
+2025-10-20 20:02:38,088 - INFO - Fetching data from 2025-10-20 17:58:40 onwards...
+2025-10-20 20:02:38,320 - INFO - Successfully refreshed access token
+2025-10-20 20:02:38,843 - INFO - Retrieved 7 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-20 20:02:40,954 - INFO - Combined 188477 existing + 7 new = 188484 total records (after deduplication)
+2025-10-20 20:02:44,367 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-20 20:02:44,408 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251020_200244.json
+2025-10-20 20:02:44,410 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-20 20:02:44,413 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-20 20:02:44,414 - INFO - New data range: 2025-10-20 22:04:52.700000+00:00 to 2025-10-20 22:26:12.459000+00:00
+2025-10-20 20:02:44,414 - INFO - New tracks fetched: 7
+2025-10-20 20:02:44,414 - INFO - Records added to CSV: 7
+2025-10-20 20:02:44,415 - INFO - Unique new tracks: 7
+2025-10-20 20:02:44,415 - INFO - Unique new artists: 6
+2025-10-20 20:02:46,569 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-20 22:26:12.459000+00:00
+2025-10-20 20:02:46,569 - INFO - Total records in dataset: 188,484
+2025-10-20 20:02:46,593 - INFO - Incremental data collection completed successfully!
+2025-10-21 08:00:05,598 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-21 08:00:07,010 - INFO - Last timestamp in CSV: 2025-10-20 22:26:12.459000+00:00
+2025-10-21 08:00:07,032 - INFO - Fetching data from 2025-10-20 22:27:12 onwards...
+2025-10-21 08:00:07,245 - INFO - Successfully refreshed access token
+2025-10-21 08:00:07,390 - INFO - Retrieved 0 tracks
+2025-10-21 08:00:07,390 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-10-21 08:00:07,390 - INFO - Incremental data collection completed successfully!
+2025-10-21 12:00:05,144 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-21 12:00:07,131 - INFO - Last timestamp in CSV: 2025-10-20 22:26:12.459000+00:00
+2025-10-21 12:00:07,161 - INFO - Fetching data from 2025-10-20 22:27:12 onwards...
+2025-10-21 12:00:07,363 - INFO - Successfully refreshed access token
+2025-10-21 12:00:08,018 - INFO - Retrieved 32 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-21 12:00:10,440 - INFO - Combined 188484 existing + 32 new = 188516 total records (after deduplication)
+2025-10-21 12:00:13,991 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-21 12:00:14,050 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251021_120014.json
+2025-10-21 12:00:14,051 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-21 12:00:14,057 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-21 12:00:14,058 - INFO - New data range: 2025-10-21 12:55:05.398000+00:00 to 2025-10-21 15:44:46.585000+00:00
+2025-10-21 12:00:14,058 - INFO - New tracks fetched: 32
+2025-10-21 12:00:14,058 - INFO - Records added to CSV: 32
+2025-10-21 12:00:14,059 - INFO - Unique new tracks: 32
+2025-10-21 12:00:14,059 - INFO - Unique new artists: 14
+2025-10-21 12:00:16,103 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-21 15:44:46.585000+00:00
+2025-10-21 12:00:16,112 - INFO - Total records in dataset: 188,516
+2025-10-21 12:00:16,142 - INFO - Incremental data collection completed successfully!
+2025-10-21 16:00:05,167 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-21 16:00:06,614 - INFO - Last timestamp in CSV: 2025-10-21 15:44:46.585000+00:00
+2025-10-21 16:00:06,643 - INFO - Fetching data from 2025-10-21 15:45:46 onwards...
+2025-10-21 16:00:06,955 - INFO - Successfully refreshed access token
+2025-10-21 16:00:07,187 - INFO - Retrieved 0 tracks
+2025-10-21 16:00:07,187 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-10-21 16:00:07,187 - INFO - Incremental data collection completed successfully!
+2025-10-22 08:00:08,175 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-22 08:00:10,500 - INFO - Last timestamp in CSV: 2025-10-21 15:44:46.585000+00:00
+2025-10-22 08:00:10,530 - INFO - Fetching data from 2025-10-21 15:45:46 onwards...
+2025-10-22 08:00:10,763 - INFO - Successfully refreshed access token
+2025-10-22 08:00:11,553 - INFO - Retrieved 24 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-22 08:00:14,196 - INFO - Combined 188516 existing + 24 new = 188540 total records (after deduplication)
+2025-10-22 08:00:18,468 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-22 08:00:18,520 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251022_080018.json
+2025-10-22 08:00:18,522 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-22 08:00:18,526 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-22 08:00:18,527 - INFO - New data range: 2025-10-21 20:10:14.580000+00:00 to 2025-10-21 23:14:40.997000+00:00
+2025-10-22 08:00:18,527 - INFO - New tracks fetched: 24
+2025-10-22 08:00:18,527 - INFO - Records added to CSV: 24
+2025-10-22 08:00:18,528 - INFO - Unique new tracks: 24
+2025-10-22 08:00:18,528 - INFO - Unique new artists: 24
+2025-10-22 08:00:20,960 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-21 23:14:40.997000+00:00
+2025-10-22 08:00:20,961 - INFO - Total records in dataset: 188,540
+2025-10-22 08:00:20,994 - INFO - Incremental data collection completed successfully!
+2025-10-22 12:00:03,720 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-22 12:00:05,320 - INFO - Last timestamp in CSV: 2025-10-21 23:14:40.997000+00:00
+2025-10-22 12:00:05,344 - INFO - Fetching data from 2025-10-21 23:15:40 onwards...
+2025-10-22 12:00:05,546 - INFO - Successfully refreshed access token
+2025-10-22 12:00:06,080 - INFO - Retrieved 16 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-22 12:00:07,986 - INFO - Combined 188540 existing + 16 new = 188556 total records (after deduplication)
+2025-10-22 12:00:11,234 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-22 12:00:11,295 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251022_120011.json
+2025-10-22 12:00:11,297 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-22 12:00:11,301 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-22 12:00:11,302 - INFO - New data range: 2025-10-22 15:07:44.599000+00:00 to 2025-10-22 15:59:29.483000+00:00
+2025-10-22 12:00:11,302 - INFO - New tracks fetched: 16
+2025-10-22 12:00:11,302 - INFO - Records added to CSV: 16
+2025-10-22 12:00:11,304 - INFO - Unique new tracks: 16
+2025-10-22 12:00:11,304 - INFO - Unique new artists: 16
+2025-10-22 12:00:12,911 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-22 15:59:29.483000+00:00
+2025-10-22 12:00:12,911 - INFO - Total records in dataset: 188,556
+2025-10-22 12:00:12,933 - INFO - Incremental data collection completed successfully!
+2025-10-22 16:00:04,196 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-22 16:00:06,541 - INFO - Last timestamp in CSV: 2025-10-22 15:59:29.483000+00:00
+2025-10-22 16:00:06,574 - INFO - Fetching data from 2025-10-22 16:00:29 onwards...
+2025-10-22 16:00:06,815 - INFO - Successfully refreshed access token
+2025-10-22 16:00:07,614 - INFO - Retrieved 50 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-22 16:00:10,286 - INFO - Combined 188556 existing + 50 new = 188606 total records (after deduplication)
+2025-10-22 16:00:14,822 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-22 16:00:14,878 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251022_160014.json
+2025-10-22 16:00:14,882 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-22 16:00:14,887 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-22 16:00:14,905 - INFO - New data range: 2025-10-22 16:20:37.780000+00:00 to 2025-10-22 19:56:49.844000+00:00
+2025-10-22 16:00:14,905 - INFO - New tracks fetched: 50
+2025-10-22 16:00:14,905 - INFO - Records added to CSV: 50
+2025-10-22 16:00:14,906 - INFO - Unique new tracks: 50
+2025-10-22 16:00:14,906 - INFO - Unique new artists: 32
+2025-10-22 16:00:17,658 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-22 19:56:49.844000+00:00
+2025-10-22 16:00:17,670 - INFO - Total records in dataset: 188,606
+2025-10-22 16:00:17,703 - INFO - Incremental data collection completed successfully!
+2025-10-22 20:00:04,826 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-22 20:00:06,524 - INFO - Last timestamp in CSV: 2025-10-22 19:56:49.844000+00:00
+2025-10-22 20:00:06,550 - INFO - Fetching data from 2025-10-22 19:57:49 onwards...
+2025-10-22 20:00:06,770 - INFO - Successfully refreshed access token
+2025-10-22 20:00:07,297 - INFO - Retrieved 18 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-22 20:00:09,382 - INFO - Combined 188606 existing + 18 new = 188624 total records (after deduplication)
+2025-10-22 20:00:12,706 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-22 20:00:12,748 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251022_200012.json
+2025-10-22 20:00:12,750 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-22 20:00:12,756 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-22 20:00:12,756 - INFO - New data range: 2025-10-22 20:07:33.558000+00:00 to 2025-10-22 20:59:28.679000+00:00
+2025-10-22 20:00:12,756 - INFO - New tracks fetched: 18
+2025-10-22 20:00:12,757 - INFO - Records added to CSV: 18
+2025-10-22 20:00:12,757 - INFO - Unique new tracks: 18
+2025-10-22 20:00:12,758 - INFO - Unique new artists: 13
+2025-10-22 20:00:14,674 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-22 20:59:28.679000+00:00
+2025-10-22 20:00:14,674 - INFO - Total records in dataset: 188,624
+2025-10-22 20:00:14,698 - INFO - Incremental data collection completed successfully!
+2025-10-23 08:00:12,300 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-23 08:00:14,105 - INFO - Last timestamp in CSV: 2025-10-22 20:59:28.679000+00:00
+2025-10-23 08:00:14,149 - INFO - Fetching data from 2025-10-22 21:00:28 onwards...
+2025-10-23 08:00:14,362 - INFO - Successfully refreshed access token
+2025-10-23 08:00:14,976 - INFO - Retrieved 2 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-23 08:00:16,956 - INFO - Combined 188624 existing + 2 new = 188626 total records (after deduplication)
+2025-10-23 08:00:19,779 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-23 08:00:19,845 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251023_080019.json
+2025-10-23 08:00:19,849 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-23 08:00:19,851 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-23 08:00:19,852 - INFO - New data range: 2025-10-23 11:55:47.865000+00:00 to 2025-10-23 11:55:55.361000+00:00
+2025-10-23 08:00:19,852 - INFO - New tracks fetched: 2
+2025-10-23 08:00:19,852 - INFO - Records added to CSV: 2
+2025-10-23 08:00:19,852 - INFO - Unique new tracks: 1
+2025-10-23 08:00:19,853 - INFO - Unique new artists: 1
+2025-10-23 08:00:21,637 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-23 11:55:55.361000+00:00
+2025-10-23 08:00:21,638 - INFO - Total records in dataset: 188,626
+2025-10-23 08:00:21,668 - INFO - Incremental data collection completed successfully!
+2025-10-23 12:00:06,503 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-23 12:00:08,520 - INFO - Last timestamp in CSV: 2025-10-23 11:55:55.361000+00:00
+2025-10-23 12:00:08,550 - INFO - Fetching data from 2025-10-23 11:56:55 onwards...
+2025-10-23 12:00:08,769 - INFO - Successfully refreshed access token
+2025-10-23 12:00:08,918 - INFO - Retrieved 0 tracks
+2025-10-23 12:00:08,918 - INFO - No new data retrieved since last run (this is normal for frequent automated runs)
+2025-10-23 12:00:08,918 - INFO - Incremental data collection completed successfully!
+2025-10-23 16:00:03,851 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-23 16:00:05,835 - INFO - Last timestamp in CSV: 2025-10-23 11:55:55.361000+00:00
+2025-10-23 16:00:05,864 - INFO - Fetching data from 2025-10-23 11:56:55 onwards...
+2025-10-23 16:00:06,163 - INFO - Successfully refreshed access token
+2025-10-23 16:00:07,122 - INFO - Retrieved 47 tracks
+/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py:295: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+2025-10-23 16:00:10,352 - INFO - Combined 188626 existing + 47 new = 188673 total records (after deduplication)
+2025-10-23 16:00:15,499 - INFO - Updated /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/spotify_history.csv
+2025-10-23 16:00:15,549 - INFO - Backup saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Data/Spotify Extended Streaming History/API_Fetch_20251023_160015.json
+2025-10-23 16:00:15,552 - INFO - Credentials saved to /Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_config.json
+2025-10-23 16:00:15,555 - INFO - === INCREMENTAL UPDATE SUMMARY ===
+2025-10-23 16:00:15,556 - INFO - New data range: 2025-10-23 16:56:10.909000+00:00 to 2025-10-23 19:58:00.380000+00:00
+2025-10-23 16:00:15,556 - INFO - New tracks fetched: 47
+2025-10-23 16:00:15,556 - INFO - Records added to CSV: 47
+2025-10-23 16:00:15,557 - INFO - Unique new tracks: 31
+2025-10-23 16:00:15,557 - INFO - Unique new artists: 25
+2025-10-23 16:00:18,101 - INFO - Total dataset now spans: 2016-04-09 13:11:15+00:00 to 2025-10-23 19:58:00.380000+00:00
+2025-10-23 16:00:18,101 - INFO - Total records in dataset: 188,673
+2025-10-23 16:00:18,138 - INFO - Incremental data collection completed successfully!
+2025-10-23 20:00:04,301 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-23 20:00:05,672 - INFO - Last timestamp in CSV: 2025-10-23 19:58:00.380000+00:00
+2025-10-23 20:00:05,708 - INFO - Fetching data from 2025-10-23 19:59:00 onwards...
+2025-10-23 20:00:05,972 - INFO - Successfully refreshed access token
+2025-10-23 20:00:06,711 - INFO - Retrieved 24 tracks
+Traceback (most recent call last):
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 528, in <module>
+    main()
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 520, in main
+    success = fetch_incremental_data(data_dir, config_file)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 465, in fetch_incremental_data
+    new_records = append_to_csv(converted_items, csv_file)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 287, in append_to_csv
+    new_df['ts'] = pd.to_datetime(new_df['ts'])
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/pandas/core/tools/datetimes.py", line 1067, in to_datetime
+    values = convert_listlike(arg._values, format)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/pandas/core/tools/datetimes.py", line 433, in _convert_listlike_datetimes
+    return _array_strptime_with_fallback(arg, name, utc, format, exact, errors)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/pandas/core/tools/datetimes.py", line 467, in _array_strptime_with_fallback
+    result, tz_out = array_strptime(arg, fmt, exact=exact, errors=errors, utc=utc)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "strptime.pyx", line 501, in pandas._libs.tslibs.strptime.array_strptime
+  File "strptime.pyx", line 451, in pandas._libs.tslibs.strptime.array_strptime
+  File "strptime.pyx", line 583, in pandas._libs.tslibs.strptime._parse_with_format
+ValueError: time data "2025-10-23T21:11:12Z" doesn't match format "%Y-%m-%dT%H:%M:%S.%f%z", at position 3. You might want to try:
+    - passing `format` if your strings have a consistent format;
+    - passing `format='ISO8601'` if your strings are all ISO8601 but not necessarily in exactly the same format;
+    - passing `format='mixed'`, and the format will be inferred for each element individually. You might want to use `dayfirst` alongside this.
+2025-10-24 00:00:03,247 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-24 00:00:04,634 - INFO - Last timestamp in CSV: 2025-10-23 19:58:00.380000+00:00
+2025-10-24 00:00:04,663 - INFO - Fetching data from 2025-10-23 19:59:00 onwards...
+2025-10-24 00:00:04,875 - INFO - Successfully refreshed access token
+2025-10-24 00:00:05,573 - INFO - Retrieved 24 tracks
+Traceback (most recent call last):
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 528, in <module>
+    main()
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 520, in main
+    success = fetch_incremental_data(data_dir, config_file)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 465, in fetch_incremental_data
+    new_records = append_to_csv(converted_items, csv_file)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 287, in append_to_csv
+    new_df['ts'] = pd.to_datetime(new_df['ts'])
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/pandas/core/tools/datetimes.py", line 1067, in to_datetime
+    values = convert_listlike(arg._values, format)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/pandas/core/tools/datetimes.py", line 433, in _convert_listlike_datetimes
+    return _array_strptime_with_fallback(arg, name, utc, format, exact, errors)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/pandas/core/tools/datetimes.py", line 467, in _array_strptime_with_fallback
+    result, tz_out = array_strptime(arg, fmt, exact=exact, errors=errors, utc=utc)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "strptime.pyx", line 501, in pandas._libs.tslibs.strptime.array_strptime
+  File "strptime.pyx", line 451, in pandas._libs.tslibs.strptime.array_strptime
+  File "strptime.pyx", line 583, in pandas._libs.tslibs.strptime._parse_with_format
+ValueError: time data "2025-10-23T21:11:12Z" doesn't match format "%Y-%m-%dT%H:%M:%S.%f%z", at position 3. You might want to try:
+    - passing `format` if your strings have a consistent format;
+    - passing `format='ISO8601'` if your strings are all ISO8601 but not necessarily in exactly the same format;
+    - passing `format='mixed'`, and the format will be inferred for each element individually. You might want to use `dayfirst` alongside this.
+2025-10-24 04:00:02,404 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-24 04:00:03,811 - INFO - Last timestamp in CSV: 2025-10-23 19:58:00.380000+00:00
+2025-10-24 04:00:03,836 - INFO - Fetching data from 2025-10-23 19:59:00 onwards...
+2025-10-24 04:00:04,073 - INFO - Successfully refreshed access token
+2025-10-24 04:00:04,858 - INFO - Retrieved 24 tracks
+Traceback (most recent call last):
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 528, in <module>
+    main()
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 520, in main
+    success = fetch_incremental_data(data_dir, config_file)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 465, in fetch_incremental_data
+    new_records = append_to_csv(converted_items, csv_file)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 287, in append_to_csv
+    new_df['ts'] = pd.to_datetime(new_df['ts'])
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/pandas/core/tools/datetimes.py", line 1067, in to_datetime
+    values = convert_listlike(arg._values, format)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/pandas/core/tools/datetimes.py", line 433, in _convert_listlike_datetimes
+    return _array_strptime_with_fallback(arg, name, utc, format, exact, errors)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/pandas/core/tools/datetimes.py", line 467, in _array_strptime_with_fallback
+    result, tz_out = array_strptime(arg, fmt, exact=exact, errors=errors, utc=utc)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "strptime.pyx", line 501, in pandas._libs.tslibs.strptime.array_strptime
+  File "strptime.pyx", line 451, in pandas._libs.tslibs.strptime.array_strptime
+  File "strptime.pyx", line 583, in pandas._libs.tslibs.strptime._parse_with_format
+ValueError: time data "2025-10-23T21:11:12Z" doesn't match format "%Y-%m-%dT%H:%M:%S.%f%z", at position 3. You might want to try:
+    - passing `format` if your strings have a consistent format;
+    - passing `format='ISO8601'` if your strings are all ISO8601 but not necessarily in exactly the same format;
+    - passing `format='mixed'`, and the format will be inferred for each element individually. You might want to use `dayfirst` alongside this.
+2025-10-24 08:00:03,259 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-24 08:00:04,615 - INFO - Last timestamp in CSV: 2025-10-23 19:58:00.380000+00:00
+2025-10-24 08:00:04,641 - INFO - Fetching data from 2025-10-23 19:59:00 onwards...
+2025-10-24 08:00:04,871 - INFO - Successfully refreshed access token
+2025-10-24 08:00:05,795 - INFO - Retrieved 24 tracks
+Traceback (most recent call last):
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 528, in <module>
+    main()
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 520, in main
+    success = fetch_incremental_data(data_dir, config_file)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 465, in fetch_incremental_data
+    new_records = append_to_csv(converted_items, csv_file)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 287, in append_to_csv
+    new_df['ts'] = pd.to_datetime(new_df['ts'])
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/pandas/core/tools/datetimes.py", line 1067, in to_datetime
+    values = convert_listlike(arg._values, format)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/pandas/core/tools/datetimes.py", line 433, in _convert_listlike_datetimes
+    return _array_strptime_with_fallback(arg, name, utc, format, exact, errors)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/pandas/core/tools/datetimes.py", line 467, in _array_strptime_with_fallback
+    result, tz_out = array_strptime(arg, fmt, exact=exact, errors=errors, utc=utc)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "strptime.pyx", line 501, in pandas._libs.tslibs.strptime.array_strptime
+  File "strptime.pyx", line 451, in pandas._libs.tslibs.strptime.array_strptime
+  File "strptime.pyx", line 583, in pandas._libs.tslibs.strptime._parse_with_format
+ValueError: time data "2025-10-23T21:11:12Z" doesn't match format "%Y-%m-%dT%H:%M:%S.%f%z", at position 3. You might want to try:
+    - passing `format` if your strings have a consistent format;
+    - passing `format='ISO8601'` if your strings are all ISO8601 but not necessarily in exactly the same format;
+    - passing `format='mixed'`, and the format will be inferred for each element individually. You might want to use `dayfirst` alongside this.
+2025-10-24 12:00:02,967 - INFO - Starting Spotify incremental data collection (4-hour automated run)...
+2025-10-24 12:00:05,057 - INFO - Last timestamp in CSV: 2025-10-23 19:58:00.380000+00:00
+2025-10-24 12:00:05,088 - INFO - Fetching data from 2025-10-23 19:59:00 onwards...
+2025-10-24 12:00:05,292 - INFO - Successfully refreshed access token
+2025-10-24 12:00:05,979 - INFO - Retrieved 50 tracks
+Traceback (most recent call last):
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 528, in <module>
+    main()
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 520, in main
+    success = fetch_incremental_data(data_dir, config_file)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 465, in fetch_incremental_data
+    new_records = append_to_csv(converted_items, csv_file)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/Scripts/spotify_weekly_data.py", line 287, in append_to_csv
+    new_df['ts'] = pd.to_datetime(new_df['ts'])
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/pandas/core/tools/datetimes.py", line 1067, in to_datetime
+    values = convert_listlike(arg._values, format)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/pandas/core/tools/datetimes.py", line 433, in _convert_listlike_datetimes
+    return _array_strptime_with_fallback(arg, name, utc, format, exact, errors)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/davidjcox/Library/CloudStorage/Dropbox/Miscellaneous/quantified-self-app/venv/lib/python3.11/site-packages/pandas/core/tools/datetimes.py", line 467, in _array_strptime_with_fallback
+    result, tz_out = array_strptime(arg, fmt, exact=exact, errors=errors, utc=utc)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "strptime.pyx", line 501, in pandas._libs.tslibs.strptime.array_strptime
+  File "strptime.pyx", line 451, in pandas._libs.tslibs.strptime.array_strptime
+  File "strptime.pyx", line 583, in pandas._libs.tslibs.strptime._parse_with_format
+ValueError: time data "2025-10-23T21:11:12Z" doesn't match format "%Y-%m-%dT%H:%M:%S.%f%z", at position 34. You might want to try:
+    - passing `format` if your strings have a consistent format;
+    - passing `format='ISO8601'` if your strings are all ISO8601 but not necessarily in exactly the same format;
+    - passing `format='mixed'`, and the format will be inferred for each element individually. You might want to use `dayfirst` alongside this.
