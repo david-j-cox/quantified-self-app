@@ -1879,7 +1879,7 @@ def plot_whoop_sleep_percentages():
             ax.plot(metric_df['sleep_start'], p(x), linestyle='--', linewidth=2, alpha=0.7, color=color_dict[metric])
     plt.xlabel("Date", fontsize=26, labelpad=12)
     plt.xticks(fontsize=16)
-    plt.ylabel("Sleep Percentage Scores", fontsize=26, labelpad=12)
+    plt.ylabel("Sleep Percentage Scores", fontsize=30, labelpad=12)
     plt.yticks(fontsize=16)
     ax.yaxis.set_major_formatter(FuncFormatter(lambda x, p: f'{x:.0%}'))
     sns.despine(top=True, right=True)

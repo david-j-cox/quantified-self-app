@@ -68,6 +68,16 @@ except subprocess.CalledProcessError as e:
 except Exception as e:
     print(f"An unexpected error occurred extracting strava data: {e}")
 
+# Run Spotify weekly data extract
+print("\n\nRunning spotify weekly data extraction...")
+try:
+    run_script('spotify_weekly_data.py')
+    print("Spotify weekly data extracted")
+except subprocess.CalledProcessError as e:
+    print(f"Error running {e.cmd}: {e}")
+except Exception as e:
+    print(f"An unexpected error occurred extracting spotify data: {e}")
+
 # Run Whoop data extract
 print("Getting fresh access token for whoop...")
 fresh_token = get_fresh_whoop_token()
