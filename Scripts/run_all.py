@@ -2,25 +2,41 @@
 # coding: utf-8
 
 import subprocess
+import sys
 import re
 import os
 from pathlib import Path
 
 def run_script(script_path):
     """Function to run a script."""
-    subprocess.run(['python', script_path], check=True)
+    subprocess.run([sys.executable, script_path], check=True)
 
 def get_fresh_whoop_token():
-    """Run OAuth helper and return the fresh access token."""
+    """Get a fresh Whoop token. Tries silent refresh first, falls back to browser flow."""
+    token_pattern = r'WHOOP_ACCESS_TOKEN=([^\s]+)'
+
+    # Step 1: Try silent refresh (no browser)
     try:
-        # Run oauth_helper.py and capture output
-        result = subprocess.run(['python', 'oauth_helper.py'], 
+        print("Attempting silent token refresh...")
+        result = subprocess.run([sys.executable, 'oauth_helper.py', '--refresh'],
+                              capture_output=True, text=True, timeout=30)
+        if result.returncode == 0:
+            match = re.search(token_pattern, result.stdout)
+            if match:
+                new_token = match.group(1)
+                print(f"Token refreshed silently: {new_token[:20]}...")
+                return new_token
+        print("Silent refresh failed, falling back to browser flow...")
+    except subprocess.TimeoutExpired:
+        print("Silent refresh timed out, falling back to browser flow...")
+    except Exception as e:
+        print(f"Silent refresh error: {e}, falling back to browser flow...")
+
+    # Step 2: Fall back to full browser OAuth flow
+    try:
+        result = subprocess.run([sys.executable, 'oauth_helper.py'],
                               capture_output=True, text=True, check=True)
-        
-        # Extract access token from output using regex
-        token_pattern = r'WHOOP_ACCESS_TOKEN=([^\s]+)'
         match = re.search(token_pattern, result.stdout)
-        
         if match:
             new_token = match.group(1)
             print(f"New access token obtained: {new_token[:20]}...")
@@ -28,7 +44,6 @@ def get_fresh_whoop_token():
         else:
             print("Could not extract access token from OAuth output")
             return None
-            
     except subprocess.CalledProcessError as e:
         print(f"Error running oauth_helper.py: {e}")
         print(f"Stdout: {e.stdout}")
@@ -43,7 +58,7 @@ def run_script_with_env(script_path, env_vars=None):
     env = os.environ.copy()
     if env_vars:
         env.update(env_vars)
-    subprocess.run(['python', script_path], env=env, check=True)
+    subprocess.run([sys.executable, script_path], env=env, check=True)
 
 # Run time allocation script
 print("\n\nRunning time allocation aggregation...")
