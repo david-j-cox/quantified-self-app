@@ -13,14 +13,18 @@ Instructions:
 """
 
 import os
+import sys
 import requests
 import webbrowser
 from urllib.parse import urlparse, parse_qs
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import threading
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+# Always load the root project .env (one level up from Scripts/)
+ENV_PATH = Path(__file__).resolve().parent.parent / '.env'
+load_dotenv(ENV_PATH)
 
 # Configuration
 CLIENT_ID = os.getenv("WHOOP_CLIENT_ID")
@@ -32,12 +36,74 @@ TOKEN_URL = "https://api.prod.whoop.com/oauth/oauth2/token"
 # Required scopes for data access
 SCOPES = [
     "read:profile",
-    "read:workout", 
+    "read:workout",
     "read:sleep",
     "read:recovery",
     "read:cycles",
-    "read:body_measurement"
+    "read:body_measurement",
+    "offline"
 ]
+
+def update_env_file(key, value):
+    """Update or add a key=value pair in the root .env file."""
+    env_path = str(ENV_PATH)
+    if not os.path.exists(env_path):
+        with open(env_path, 'w') as f:
+            f.write(f'{key}={value}\n')
+        return
+
+    with open(env_path, 'r') as f:
+        content = f.read()
+
+    if f'{key}=' in content:
+        lines = content.split('\n')
+        new_lines = []
+        for line in lines:
+            if line.startswith(f'{key}='):
+                new_lines.append(f'{key}={value}')
+            else:
+                new_lines.append(line)
+        content = '\n'.join(new_lines)
+    else:
+        content += f'\n{key}={value}'
+
+    with open(env_path, 'w') as f:
+        f.write(content)
+
+
+def refresh_whoop_token():
+    """Attempt to refresh the Whoop access token using the stored refresh token.
+
+    Returns the new access token on success, None on failure.
+    """
+    refresh_token = os.getenv("WHOOP_REFRESH_TOKEN")
+    if not refresh_token:
+        print("No WHOOP_REFRESH_TOKEN found in .env")
+        return None
+
+    try:
+        response = requests.post(TOKEN_URL, data={
+            'grant_type': 'refresh_token',
+            'client_id': CLIENT_ID,
+            'client_secret': CLIENT_SECRET,
+            'refresh_token': refresh_token,
+            'scope': 'offline',
+        })
+        response.raise_for_status()
+        token_data = response.json()
+
+        access_token = token_data['access_token']
+        new_refresh_token = token_data.get('refresh_token', refresh_token)
+
+        update_env_file('WHOOP_ACCESS_TOKEN', access_token)
+        update_env_file('WHOOP_REFRESH_TOKEN', new_refresh_token)
+
+        print(f"WHOOP_ACCESS_TOKEN={access_token}")
+        return access_token
+    except Exception as e:
+        print(f"Refresh failed: {e}")
+        return None
+
 
 class CallbackHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -155,42 +221,26 @@ def main():
             access_token = token_data['access_token']
             expires_in = token_data.get('expires_in', 'unknown')
             
+            refresh_token = token_data.get('refresh_token')
+
             print(f"\nSuccess! Access token obtained:")
             print(f"Access Token: {access_token}")
             print(f"Expires in: {expires_in} seconds")
-            
-            print(f"\nAdd this to your .env file:")
-            print(f"WHOOP_ACCESS_TOKEN={access_token}")
-            
-            # Optionally save to .env file
-            env_path = '.env'
-            if os.path.exists(env_path):
-                with open(env_path, 'r') as f:
-                    content = f.read()
-                
-                if 'WHOOP_ACCESS_TOKEN=' in content:
-                    # Replace existing token
-                    lines = content.split('\n')
-                    new_lines = []
-                    for line in lines:
-                        if line.startswith('WHOOP_ACCESS_TOKEN='):
-                            new_lines.append(f'WHOOP_ACCESS_TOKEN={access_token}')
-                        else:
-                            new_lines.append(line)
-                    content = '\n'.join(new_lines)
-                else:
-                    # Add new token
-                    content += f'\nWHOOP_ACCESS_TOKEN={access_token}'
-                
-                with open(env_path, 'w') as f:
-                    f.write(content)
-                
-                print(f"Token saved to {env_path}")
-            else:
-                print(f".env file not found. Please create one with the access token.")
+
+            print(f"\nWHOOP_ACCESS_TOKEN={access_token}")
+
+            update_env_file('WHOOP_ACCESS_TOKEN', access_token)
+            if refresh_token:
+                update_env_file('WHOOP_REFRESH_TOKEN', refresh_token)
+                print("Refresh token saved to .env")
+            print("Token saved to .env")
                 
         except Exception as e:
             print(f"Error exchanging code for token: {e}")
 
 if __name__ == "__main__":
-    main()
+    if '--refresh' in sys.argv:
+        token = refresh_whoop_token()
+        sys.exit(0 if token else 1)
+    else:
+        main()
