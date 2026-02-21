@@ -31,6 +31,9 @@ wheels/
 .installed.cfg
 *.egg
 
+# Logs
+logs/
+
 # Jupyter Notebook
 .ipynb_checkpoints
 .virtual_documents/
