@@ -2,8 +2,10 @@
 """MLB Game Entry Tool — fetch yesterday's games, present a form, insert selections into DB."""
 
 import os
+import sys
 import threading
 from datetime import date, timedelta
+from pathlib import Path
 
 import pandas as pd
 import requests
@@ -27,6 +29,22 @@ engine = create_engine(DATABASE_URL)
 
 PORT = 8052
 YESTERDAY = date.today() - timedelta(days=1)
+
+# Sentinel file to prevent duplicate runs on the same day
+SENTINEL = Path(__file__).resolve().parent.parent / "logs" / ".baseball_entry_last_run"
+
+
+def already_ran_today() -> bool:
+    """Return True if the script already ran successfully today."""
+    if SENTINEL.exists():
+        return SENTINEL.read_text().strip() == str(date.today())
+    return False
+
+
+def mark_ran_today():
+    """Write today's date to the sentinel file."""
+    SENTINEL.parent.mkdir(parents=True, exist_ok=True)
+    SENTINEL.write_text(str(date.today()))
 
 # ---------------------------------------------------------------------------
 # Team short-name lookup
@@ -297,6 +315,7 @@ def submit():
     count = len(rows)
     recent = recent_entries_html()
     body = f'<div class="card"><p class="msg">&#10003; {count} game(s) saved. You can close this tab.</p>{recent}</div>'
+    mark_ran_today()
     _schedule_exit()
     return page("MLB Games", body)
 
@@ -305,6 +324,7 @@ def submit():
 def no_games():
     recent = recent_entries_html()
     body = f'<div class="card"><p class="msg">No entries recorded. You can close this tab.</p>{recent}</div>'
+    mark_ran_today()
     _schedule_exit()
     return page("MLB Games", body)
 
@@ -321,6 +341,9 @@ def _schedule_exit():
 # Entry point
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
+    if already_ran_today():
+        sys.exit(0)
+
     import webbrowser
     from threading import Timer
 
