@@ -3,8 +3,10 @@ import pandas as pd
 from datetime import datetime, timedelta
 from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
-import os
 import shutil
+import requests
+import zipfile
+import io
 
 # Load environment variables from .env file
 load_dotenv()
@@ -20,6 +22,45 @@ DB_URL = os.getenv("DB_URL")
 # Paths
 folder_path = '../Data/Time Tracking/'  # Folder with the data files
 raw_data_path = '../Data/raw_data.csv'  # Path to the raw_data.csv file
+script_dir = os.path.dirname(os.path.abspath(__file__))
+archive_path = os.path.join(script_dir, '..', 'Archive')
+
+# Download new files from Dropbox shared folder
+DROPBOX_URL = os.getenv("DROPBOX_TIME_TRACKING_URL")
+if DROPBOX_URL:
+    download_url = DROPBOX_URL.replace("dl=0", "dl=1")
+    print("Downloading time tracking data from Dropbox...")
+    try:
+        response = requests.get(download_url, stream=True, timeout=60)
+        response.raise_for_status()
+
+        with zipfile.ZipFile(io.BytesIO(response.content)) as z:
+            downloaded_count = 0
+            for file_info in z.infolist():
+                if file_info.filename.endswith('.csv'):
+                    basename = os.path.basename(file_info.filename)
+                    if basename and basename.startswith("Stopwatch Export"):
+                        target_path = os.path.join(folder_path, basename)
+                        archived_path = os.path.join(archive_path, basename)
+                        # Skip files already downloaded or already processed
+                        if not os.path.exists(target_path) and not os.path.exists(archived_path):
+                            with z.open(file_info) as source:
+                                with open(target_path, 'wb') as target_file:
+                                    target_file.write(source.read())
+                            downloaded_count += 1
+                            print(f"  Downloaded: {basename}")
+            if downloaded_count == 0:
+                print("  No new files to download.")
+            else:
+                print(f"  Downloaded {downloaded_count} new file(s).")
+    except requests.exceptions.RequestException as e:
+        print(f"Warning: Could not download from Dropbox: {e}")
+        print("Continuing with local files...")
+    except zipfile.BadZipFile:
+        print("Warning: Downloaded file is not a valid zip archive.")
+        print("Continuing with local files...")
+else:
+    print("Warning: DROPBOX_TIME_TRACKING_URL not set in .env, skipping Dropbox download.")
 
 # Read existing data from raw_data.csv
 if os.path.exists(raw_data_path):
@@ -130,12 +171,6 @@ except Exception as e:
     print(f"Error saving new data to the database: {e}")
 
 # MOVE DATA TO AN ARCHIVE FOLDER
-# Get the directory of the current script file
-script_dir = os.path.dirname(os.path.abspath(__file__))
-
-# The Archive folder is one directory up from script_dir
-archive_path = os.path.join(script_dir, '..', 'Archive')
-
 # Ensure the archive directory exists
 if not os.path.exists(archive_path):
     os.makedirs(archive_path)
