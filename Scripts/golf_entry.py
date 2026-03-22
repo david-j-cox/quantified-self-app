@@ -102,7 +102,7 @@ def find_last_weekend_tournaments() -> list[dict]:
 # GHIN API (unofficial — reverse-engineered from mobile app)
 # ---------------------------------------------------------------------------
 FIREBASE_URL = "https://firebaseinstallations.googleapis.com/v1/projects/ghin-mobile-app/installations"
-FIREBASE_API_KEY = "AIzaSyBxgTOAWxiud0HuaE5tN-5NTlzFnrtyz-I"
+FIREBASE_API_KEY = os.getenv("FIREBASE_API_KEY")
 GHIN_LOGIN_URL = "https://api2.ghin.com/api/v1/golfer_login.json"
 GHIN_SCORES_URL = "https://api2.ghin.com/api/v1/scores.json"
 

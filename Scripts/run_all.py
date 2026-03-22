@@ -110,6 +110,15 @@ if fresh_token:
 else:
     print("Skipping Whoop data extraction due to token retrieval failure")
 
+# Pull GHIN golf scores
+print("\n\nPulling GHIN golf scores...")
+try:
+    from golf_entry import pull_ghin_scores
+    result = pull_ghin_scores()
+    print(result)
+except Exception as e:
+    print(f"Error pulling GHIN scores: {e}")
+
 # Prep the data for unsupervised learning
 print("\n\nPrepping data for unsupervised learning...")
 try:

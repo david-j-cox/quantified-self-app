@@ -91,6 +91,10 @@ print("Loading publication_stats...")
 pubs = read_table('publication_stats')
 print("Loading strava_activities...")
 phys_act = read_table('strava_activities')
+print("Loading golf_watched...")
+golf_watched = read_table('golf_watched')
+print("Loading golf_scores...")
+golf_scores = read_table('golf_scores')
 print("Loading modeling_ready_data...")
 model_df = read_table('modeling_ready_data')
 print("Loading whoop_recoveries...")
@@ -2461,6 +2465,179 @@ def plot_pca_feature_importance(pca, feature_names, n_components=3, loading_thre
 
     return images
 
+
+# ---------------------------------------------------------------------------
+# Golf plots
+# ---------------------------------------------------------------------------
+def plot_cumulative_rounds_watched():
+    """Cumulative PGA Tour rounds watched with annual trend slopes (rounds/week)."""
+    plot_df = golf_watched.copy()
+    plot_df['date'] = pd.to_datetime(plot_df['date'])
+    plot_df = plot_df.sort_values('date').reset_index(drop=True)
+    plot_df['rounds'] = plot_df[['r1', 'r2', 'r3', 'r4']].sum(axis=1)
+    plot_df['cumulative'] = plot_df['rounds'].cumsum()
+    plot_df['Year'] = plot_df['date'].dt.year
+
+    fig, ax = plt.subplots(figsize=(18, 10))
+    plt.plot(plot_df['date'], plot_df['cumulative'], color='green', linewidth=2)
+
+    # Annual trendline slopes (rounds per week = slope * 7)
+    for year in plot_df['Year'].unique():
+        yearly = plot_df[plot_df['Year'] == year].copy()
+        yearly['DayOfYear'] = yearly['date'].dt.dayofyear
+        if len(yearly) < 2:
+            continue
+        z = np.polyfit(yearly['DayOfYear'], yearly['cumulative'], 1)
+        slope_per_week = z[0] * 7
+        last_date = yearly['date'].max()
+        y_value = yearly.loc[yearly['date'] == last_date, 'cumulative'].values[0]
+        plt.annotate(f'{slope_per_week:.1f}/wk', xy=(last_date, y_value),
+                     xytext=(-10, 0), textcoords='offset points', ha='right',
+                     color='green', fontsize=14)
+
+    plt.xlabel("Date", fontsize=26, labelpad=12)
+    plt.xticks(fontsize=16)
+    plt.ylabel("Cumulative Rounds Watched", fontsize=26, labelpad=12)
+    plt.yticks(fontsize=16)
+    ax.ticklabel_format(style='plain', axis='y')
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '{:,.0f}'.format(x)))
+    sns.despine(top=True, right=True)
+
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+    plt.close()
+    return image_base64
+
+
+def plot_rounds_played_monthly():
+    """Rounds of golf played per month with lines per year."""
+    plot_df = golf_scores.copy()
+    plot_df['played_at'] = pd.to_datetime(plot_df['played_at'])
+    plot_df['Year'] = plot_df['played_at'].dt.year
+    plot_df['Month'] = plot_df['played_at'].dt.month
+
+    monthly = plot_df.groupby(['Year', 'Month']).size().reset_index(name='Rounds')
+
+    fig, ax = plt.subplots(figsize=(10, 8))
+    sns.lineplot(
+        data=monthly,
+        x='Month',
+        y='Rounds',
+        hue='Year',
+        markers=True,
+        markersize=8,
+        style='Year',
+        palette={yr: 'red' if yr == 2026 else 'gray' for yr in monthly['Year'].unique()},
+    )
+
+    plt.xlabel("Month", fontsize=26, labelpad=12)
+    plt.xticks(range(1, 13), fontsize=16)
+    plt.ylabel("Rounds Played", fontsize=26, labelpad=12)
+    plt.yticks(fontsize=16)
+    sns.despine(top=True, right=True)
+    plt.legend(loc="best", fontsize=16, frameon=False)
+
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+    plt.close()
+    return image_base64
+
+
+def plot_golf_scores_handicap():
+    """Score differentials over time with rolling handicap index."""
+    import matplotlib.dates as mdates
+
+    plot_df = golf_scores.copy()
+    plot_df['played_at'] = pd.to_datetime(plot_df['played_at'])
+    plot_df['differential'] = pd.to_numeric(plot_df['differential'], errors='coerce')
+    # Filter to 18-hole rounds with valid, plausible differentials
+    plot_df = plot_df[
+        (plot_df['number_of_holes'] == 18)
+        & plot_df['differential'].notna()
+        & (plot_df['adjusted_gross_score'] > 50)  # exclude mis-tagged 9-hole rounds
+    ].sort_values('played_at').reset_index(drop=True)
+
+    if plot_df.empty:
+        fig, ax = plt.subplots(figsize=(12, 6))
+        ax.text(0.5, 0.5, 'No 18-hole scores available', transform=ax.transAxes,
+                ha='center', fontsize=16)
+        buffer = BytesIO()
+        plt.savefig(buffer, format='png')
+        buffer.seek(0)
+        image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+        plt.close()
+        return image_base64
+
+    # WHS handicap lookup: number of scores → number of lowest differentials to use
+    WHS_TABLE = {
+        3: 1, 4: 1, 5: 1, 6: 2, 7: 2, 8: 2,
+        9: 3, 10: 3, 11: 3, 12: 4, 13: 4, 14: 4,
+        15: 5, 16: 5, 17: 6, 18: 6, 19: 7, 20: 8,
+    }
+
+    # Calculate rolling handicap index per WHS rules
+    handicaps = []
+    for i in range(len(plot_df)):
+        window = plot_df['differential'].iloc[max(0, i - 19):i + 1]
+        n = len(window)
+        if n < 3:
+            handicaps.append(np.nan)
+        else:
+            k = WHS_TABLE.get(n, 8)  # 20+ scores → best 8
+            best = window.nsmallest(k).mean()
+            handicaps.append(round(best, 1))
+    plot_df['handicap'] = handicaps
+
+    fig, ax1 = plt.subplots(figsize=(12, 6))
+
+    # Score differentials (scatter + trend)
+    ax1.scatter(plot_df['played_at'], plot_df['differential'], color='black',
+                alpha=0.6, s=40, zorder=3)
+
+    # Trendline
+    x_num = mdates.date2num(plot_df['played_at'])
+    if len(plot_df) > 3:
+        degree = min(3, len(plot_df) - 1)
+        z = np.polyfit(x_num, plot_df['differential'], degree)
+        p = np.poly1d(z)
+        ax1.plot(plot_df['played_at'], p(x_num), linestyle='--', linewidth=2,
+                 alpha=0.7, color='black', label='Differential trend')
+
+    ax1.set_xlabel("Date", fontsize=20, labelpad=12)
+    ax1.set_ylabel("Score Differential", fontsize=20, labelpad=12, color='black')
+    ax1.tick_params(axis='x', labelsize=12)
+    ax1.tick_params(axis='y', labelsize=12, colors='black')
+
+    # Handicap index on secondary y-axis
+    ax2 = ax1.twinx()
+    valid_hc = plot_df.dropna(subset=['handicap'])
+    if not valid_hc.empty:
+        ax2.plot(valid_hc['played_at'], valid_hc['handicap'], color='#2563eb',
+                 linewidth=2.5, label='Handicap Index')
+        ax2.set_ylabel("Handicap Index", fontsize=20, labelpad=12, color='#2563eb')
+        ax2.tick_params(axis='y', labelsize=12, colors='#2563eb')
+
+    # Combined legend
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper right',
+               fontsize=12, frameon=False)
+
+    ax1.spines['top'].set_visible(False)
+    ax2.spines['top'].set_visible(False)
+
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
+    image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+    plt.close()
+    return image_base64
+
+
 # CREATE DASH APP
 app = Dash(__name__)
 
@@ -2648,6 +2825,27 @@ app.layout = html.Div(children=[
                 src=f'data:image/png;base64,{plot_games_year()}',
                 style={'display': 'block', 'width': '60%',
                        'margin-right': 'auto', 'margin-left': 'auto'}
+            ),
+        ]),
+
+        # Golf Data
+        dcc.Tab(label="Golf", value="Golf", children=[
+            html.Img(
+                src=f'data:image/png;base64,{plot_cumulative_rounds_watched()}',
+                style={'display': 'block', 'width': '90%',
+                       'margin-right': '2.5%', 'margin-left': '2.5%',
+                       'margin-bottom': '3rem'}
+            ),
+            html.Img(
+                src=f'data:image/png;base64,{plot_rounds_played_monthly()}',
+                style={'display': 'block', 'width': '60%',
+                       'margin-right': 'auto', 'margin-left': 'auto',
+                       'margin-bottom': '3rem'}
+            ),
+            html.Img(
+                src=f'data:image/png;base64,{plot_golf_scores_handicap()}',
+                style={'display': 'block', 'width': '90%',
+                       'margin-right': '2.5%', 'margin-left': '2.5%'}
             ),
         ]),
 
