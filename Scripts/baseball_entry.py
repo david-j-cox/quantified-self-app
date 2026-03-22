@@ -367,7 +367,6 @@ if __name__ == "__main__":
     import socket
     import subprocess
     import time
-    import webbrowser
     from threading import Timer
 
     attempt = get_attempt() + 1
@@ -408,7 +407,7 @@ if __name__ == "__main__":
         for _ in range(20):
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 if s.connect_ex(("127.0.0.1", PORT)) == 0:
-                    webbrowser.open(f"http://127.0.0.1:{PORT}")
+                    subprocess.run(["/usr/bin/open", f"http://127.0.0.1:{PORT}"])
                     return
             time.sleep(0.25)
     Timer(0.5, _open_browser).start()
