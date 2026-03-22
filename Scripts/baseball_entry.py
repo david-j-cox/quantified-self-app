@@ -340,12 +340,77 @@ def _schedule_exit():
 # ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
+AUTO_EXIT_MINUTES = 120
+MAX_ATTEMPTS = 2
+ATTEMPT_FILE = Path(__file__).resolve().parent.parent / "logs" / ".baseball_entry_attempt"
+
+
+def get_attempt() -> int:
+    """Return the current attempt number for today (0 if none yet)."""
+    if ATTEMPT_FILE.exists():
+        parts = ATTEMPT_FILE.read_text().strip().split(",")
+        if len(parts) == 2 and parts[0] == str(date.today()):
+            return int(parts[1])
+    return 0
+
+
+def set_attempt(n: int):
+    ATTEMPT_FILE.parent.mkdir(parents=True, exist_ok=True)
+    ATTEMPT_FILE.write_text(f"{date.today()},{n}")
+
+
 if __name__ == "__main__":
     if already_ran_today():
         sys.exit(0)
 
+    import signal
+    import socket
+    import subprocess
+    import time
     import webbrowser
     from threading import Timer
 
-    Timer(1.0, lambda: webbrowser.open(f"http://127.0.0.1:{PORT}")).start()
+    attempt = get_attempt() + 1
+    if attempt > MAX_ATTEMPTS:
+        sys.exit(0)
+    set_attempt(attempt)
+
+    # Kill any leftover Flask process from a previous day still holding the port
+    result = subprocess.run(
+        ["lsof", "-ti", f"tcp:{PORT}"], capture_output=True, text=True
+    )
+    for pid in result.stdout.strip().split("\n"):
+        if pid and int(pid) != os.getpid():
+            try:
+                os.kill(int(pid), signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+    # Wait for port to be released
+    for _ in range(10):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            if s.connect_ex(("127.0.0.1", PORT)) != 0:
+                break
+        time.sleep(0.5)
+
+    # Auto-exit after 2 hours; re-launch once if this is the first attempt
+    def _auto_exit():
+        time.sleep(AUTO_EXIT_MINUTES * 60)
+        if attempt < MAX_ATTEMPTS:
+            subprocess.Popen(
+                [sys.executable, __file__],
+                cwd=str(Path(__file__).resolve().parent.parent),
+            )
+        os._exit(0)
+    threading.Thread(target=_auto_exit, daemon=True).start()
+
+    # Wait for Flask to be ready before opening browser
+    def _open_browser():
+        for _ in range(20):
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                if s.connect_ex(("127.0.0.1", PORT)) == 0:
+                    webbrowser.open(f"http://127.0.0.1:{PORT}")
+                    return
+            time.sleep(0.25)
+    Timer(0.5, _open_browser).start()
+
     app.run(port=PORT, debug=False)

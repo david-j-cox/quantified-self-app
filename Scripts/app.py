@@ -35,6 +35,16 @@ from sklearn.manifold import TSNE
 from sklearn.preprocessing import MinMaxScaler
 import umap
 from sklearn.decomposition import PCA
+import phate
+from kneed import KneeLocator
+from itertools import combinations
+from pyrqa.time_series import TimeSeries
+from pyrqa.settings import Settings
+from pyrqa.analysis_type import Classic
+from pyrqa.neighbourhood import FixedRadius
+from pyrqa.metric import EuclideanMetric
+from pyrqa.computation import RQAComputation, RPComputation
+from scipy.stats import spearmanr
 
 # Preferences
 pd.options.display.max_columns = None
@@ -402,8 +412,8 @@ def create_cr_all_plot():
     ax.ticklabel_format(style='plain', axis='y')
     ax.yaxis.set_major_formatter(FuncFormatter(thousands_formatter))
     sns.despine(top=True, right=True)
-    legend = plt.legend(frameon=False, loc="upper center", fontsize=16)
-    legend.get_frame().set_facecolor('white')
+    legend = plt.legend(frameon=True, loc="upper center", fontsize=16,
+                        facecolor='white', edgecolor='none', framealpha=1.0)
 
     # Save the plot to a bytes buffer
     buffer = BytesIO()
@@ -815,11 +825,10 @@ def plot_run_miles():
     plot_df = plot_df.pivot_table(index='activitydate', columns='activitytype',
                                   values='distance', aggfunc='sum').reset_index().fillna(0)
 
-    # Ensure the correct column name is used
-    if 'distance_Run' in plot_df.columns:
-        plot_df['distance_Run'] = plot_df['distance_Run']
-    else:
-        plot_df['distance_Run'] = plot_df['Run'].cumsum()
+    # Flatten column names after pivot and compute cumulative miles
+    plot_df.columns = [col[1] if col[1] else col[0] for col in plot_df.columns] if isinstance(plot_df.columns, pd.MultiIndex) else plot_df.columns
+    run_col = 'Run' if 'Run' in plot_df.columns else 'distance_Run'
+    plot_df['distance_Run'] = plot_df[run_col].cumsum()
 
     def calculate_slope_runs(x, y):
         slope, intercept = np.polyfit(x, y, 1)
@@ -1984,91 +1993,104 @@ def plot_whoop_recovery_timeseries():
     return plot_images
 
 
-def plot_2d_tsne_subplots(df, embedding_results, method_name='PCA'):
+def find_optimal_n_components(df_scaled):
+    """Use PCA explained variance with knee detection to determine optimal n_components."""
+    max_components = min(len(df_scaled), len(df_scaled.columns), 15)
+    pca_full = PCA(n_components=max_components, random_state=2225)
+    pca_full.fit(df_scaled)
+
+    cumulative_var = np.cumsum(pca_full.explained_variance_ratio_)
+    kneedle = KneeLocator(
+        range(1, max_components + 1),
+        cumulative_var,
+        curve='concave',
+        direction='increasing'
+    )
+    knee = kneedle.knee if kneedle.knee else 3
+    knee = max(knee, 2)
+
+    # Ensure at least 90% variance is explained
+    min_90 = int(np.searchsorted(cumulative_var, 0.90)) + 1
+    n_components = max(knee, min_90)
+    n_components = min(n_components, max_components)
+
+    # Generate elbow plot
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.plot(range(1, max_components + 1), cumulative_var, 'bo-', linewidth=2, markersize=8)
+    ax.axvline(x=n_components, color='r', linestyle='--', linewidth=2,
+               label=f'n = {n_components} ({cumulative_var[n_components-1]:.0%} variance)')
+    ax.axhline(y=0.90, color='gray', linestyle=':', linewidth=1.5, alpha=0.7, label='90% threshold')
+    ax.set_xlabel('Number of Components', fontsize=40, labelpad=12)
+    ax.set_ylabel('Cumulative\nExplained\nVariance', fontsize=40, labelpad=12)
+    ax.tick_params(labelsize=14)
+    ax.legend(fontsize=14)
+    ax.set_xticks(range(1, max_components + 1))
+    sns.despine(ax=ax)
+    plt.tight_layout()
+
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
+    elbow_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+    plt.close()
+
+    return n_components, pca_full, elbow_base64
+
+
+def plot_2d_embedding_subplots(df, embedding_results, n_components, method_name='PHATE'):
     """
-    Creates six static 2D subplots showing different projections of the 3D embedding.
-    First row: standard XY, XZ, YZ projections.
-    Second row: same projections but with plotting order reversed to reveal hidden points.
+    Creates pairwise 2D projection subplots in a grid with 5 columns (no back views).
     """
+    import math
     temp_df = df.copy()
-    temp_df[f'{method_name}1'] = embedding_results[:, 0]
-    temp_df[f'{method_name}2'] = embedding_results[:, 1]
-    temp_df[f'{method_name}3'] = embedding_results[:, 2]
+    for i in range(n_components):
+        temp_df[f'{method_name}{i+1}'] = embedding_results[:, i]
 
-    fig, axes = plt.subplots(2, 3, figsize=(24, 12))
+    pairs = list(combinations(range(n_components), 2))
+    n_pairs = len(pairs)
+    n_cols = 5
+    n_rows = math.ceil(n_pairs / n_cols)
 
-    # First row: standard projections
-    sns.scatterplot(
-        data=temp_df,
-        x=f'{method_name}1',
-        y=f'{method_name}2',
-        hue='Year',
-        palette='viridis',
-        alpha=0.7,
-        ax=axes[0, 0]
-    )
-    axes[0, 0].set_title('XY Projection', fontsize=24)
-    axes[0, 0].set_xlabel(f'{method_name} Dimension 1', fontsize=18)
-    axes[0, 0].set_ylabel(f'{method_name} Dimension 2', fontsize=18)
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(7 * n_cols, 6 * n_rows))
+    if n_rows == 1:
+        axes = axes.reshape(1, -1)
 
-    sns.scatterplot(
-        data=temp_df,
-        x=f'{method_name}1',
-        y=f'{method_name}3',
-        hue='Year',
-        palette='viridis',
-        alpha=0.7,
-        ax=axes[0, 1]
-    )
-    axes[0, 1].set_title('XZ Projection', fontsize=24)
-    axes[0, 1].set_xlabel(f'{method_name} Dimension 1', fontsize=18)
-    axes[0, 1].set_ylabel(f'{method_name} Dimension 3', fontsize=18)
-
-    sns.scatterplot(
-        data=temp_df,
-        x=f'{method_name}2',
-        y=f'{method_name}3',
-        hue='Year',
-        palette='viridis',
-        alpha=0.7,
-        ax=axes[0, 2]
-    )
-    axes[0, 2].set_title('YZ Projection', fontsize=24)
-    axes[0, 2].set_xlabel(f'{method_name} Dimension 2', fontsize=18)
-    axes[0, 2].set_ylabel(f'{method_name} Dimension 3', fontsize=18)
-
-    # Second row: reversed plotting order to reveal hidden points
-    for i, (x_dim, y_dim, title) in enumerate([
-        (f'{method_name}1', f'{method_name}2', 'XY Projection (Back View)'),
-        (f'{method_name}1', f'{method_name}3', 'XZ Projection (Back View)'),
-        (f'{method_name}2', f'{method_name}3', 'YZ Projection (Back View)'),
-    ]):
-        # Sort by x_dim in descending order to reverse plotting order
-        temp_df_sorted = temp_df.sort_values(by=x_dim, ascending=False).copy()
-        sns.scatterplot(
-            data=temp_df_sorted,
-            x=x_dim,
-            y=y_dim,
-            hue='Year',
-            palette='viridis',
-            alpha=0.7,
-            ax=axes[1, i]
-        )
-        axes[1, i].set_title(title, fontsize=24)
-        axes[1, i].set_xlabel(f'{x_dim} (Back View)', fontsize=18)
-        axes[1, i].set_ylabel(f'{y_dim} (Back View)', fontsize=18)
-
-    # Remove duplicate legends
     for ax in axes.flatten():
-        ax.legend().remove()
-        sns.despine(ax=ax)
+        ax.set_visible(False)
 
-    # Add a single legend for all plots
-    handles, labels = axes[0, 0].get_legend_handles_labels()
-    fig.legend(handles, labels, title='Year', bbox_to_anchor=(1.05, 0.5), loc='center left', fontsize=20, frameon=False)
+    for idx, (i, j) in enumerate(pairs):
+        x_col = f'{method_name}{i+1}'
+        y_col = f'{method_name}{j+1}'
+        row = idx // n_cols
+        col = idx % n_cols
+
+        ax = axes[row, col]
+        ax.set_visible(True)
+        sns.scatterplot(data=temp_df, x=x_col, y=y_col, hue='Year',
+                        palette='viridis', alpha=0.7, ax=ax)
+        ax.set_title(f'Dim {i+1} vs Dim {j+1}', fontsize=20)
+        ax.set_xlabel(f'{method_name} {i+1}', fontsize=14)
+        ax.set_ylabel(f'{method_name} {j+1}', fontsize=14)
+
+    for ax in axes.flatten():
+        if ax.get_visible():
+            if ax.get_legend():
+                ax.legend().remove()
+            sns.despine(ax=ax)
+
+    handles, labels = None, None
+    for ax in axes.flatten():
+        if ax.get_visible():
+            h, l = ax.get_legend_handles_labels()
+            if h:
+                handles, labels = h, l
+                break
+    if handles:
+        fig.legend(handles, labels, title='Year', bbox_to_anchor=(1.02, 0.5),
+                   loc='center left', fontsize=16, frameon=False)
 
     plt.tight_layout()
-    plt.subplots_adjust(hspace=0.5)
+    plt.subplots_adjust(hspace=0.4, wspace=0.3)
 
     buffer = BytesIO()
     plt.savefig(buffer, format='png', bbox_inches='tight')
@@ -2077,6 +2099,310 @@ def plot_2d_tsne_subplots(df, embedding_results, method_name='PCA'):
     plt.close()
 
     return image_base64
+
+
+def plot_feature_phate_correlations(df_features, phate_results, n_components):
+    """Spearman correlation heatmap between original features and PHATE dimensions."""
+    phate_df = pd.DataFrame(phate_results[:, :n_components],
+                            columns=[f'PHATE {i+1}' for i in range(n_components)])
+    n_features = len(df_features.columns)
+    corr_matrix = np.zeros((n_features, n_components))
+    pval_matrix = np.zeros((n_features, n_components))
+    for i, col in enumerate(df_features.columns):
+        for j in range(n_components):
+            corr_matrix[i, j], pval_matrix[i, j] = spearmanr(df_features[col].values, phate_df.iloc[:, j].values)
+
+    corr_df = pd.DataFrame(corr_matrix, index=df_features.columns,
+                           columns=phate_df.columns)
+    pval_df = pd.DataFrame(pval_matrix, index=df_features.columns,
+                           columns=phate_df.columns)
+
+    # Filter to features with at least one |correlation| >= 0.1
+    mask = (corr_df.abs() >= 0.1).any(axis=1)
+    corr_df_filtered = corr_df[mask]
+
+    # Sort by max absolute correlation
+    corr_df_filtered = corr_df_filtered.loc[corr_df_filtered.abs().max(axis=1).sort_values(ascending=False).index]
+
+    fig_height = max(8, 0.4 * len(corr_df_filtered))
+    fig_width = max(10, 3 * n_components)
+    fig, ax = plt.subplots(figsize=(fig_width, fig_height))
+    hm = sns.heatmap(corr_df_filtered, annot=True, fmt='.2f', cmap='RdBu_r', center=0,
+                ax=ax, cbar_kws={'label': 'Spearman Correlation'},
+                annot_kws={'size': 14})
+    # Style the colorbar
+    cbar = hm.collections[0].colorbar
+    cbar.ax.tick_params(labelsize=16)
+    cbar.set_label('Spearman Correlation', fontsize=18)
+    ax.tick_params(axis='x', labelsize=16)
+    ax.tick_params(axis='y', labelsize=14)
+    plt.tight_layout()
+
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
+    image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+    plt.close()
+
+    return image_base64, corr_df, pval_df
+
+
+def describe_phate_dimensions(corr_df, pval_df, corr_threshold=0.1, pval_threshold=0.05):
+    """Generate interpretive descriptions for each PHATE dimension.
+
+    For each dimension, identifies features with significant correlations above
+    the threshold, sorted by distinctiveness (how much stronger the correlation
+    is with this dimension vs. all others).
+
+    Returns a list of dicts with keys: Dimension, Positively Correlated,
+    Negatively Correlated, Description.
+    """
+    n_components = len(corr_df.columns)
+    descriptions = []
+
+    for j, dim_col in enumerate(corr_df.columns):
+        dim_corrs = corr_df[dim_col]
+        dim_pvals = pval_df[dim_col]
+
+        # Filter by threshold and statistical significance
+        sig_mask = (dim_corrs.abs() >= corr_threshold) & (dim_pvals < pval_threshold)
+        sig_features = dim_corrs[sig_mask]
+
+        if sig_features.empty:
+            descriptions.append({
+                'Dimension': dim_col,
+                'Positively Correlated': '(none above threshold)',
+                'Negatively Correlated': '(none above threshold)',
+                'Description': 'No significant features at current threshold'
+            })
+            continue
+
+        # Compute distinctiveness: |corr in this dim| - max |corr in other dims|
+        other_cols = [c for c in corr_df.columns if c != dim_col]
+        if other_cols:
+            max_other = corr_df.loc[sig_features.index, other_cols].abs().max(axis=1)
+            distinctiveness = sig_features.abs() - max_other
+        else:
+            distinctiveness = sig_features.abs()
+
+        # Sort by distinctiveness (most unique to this dimension first)
+        pos_features = sig_features[sig_features > 0].index
+        neg_features = sig_features[sig_features < 0].index
+
+        pos_sorted = distinctiveness.loc[pos_features].sort_values(ascending=False).index.tolist()
+        neg_sorted = distinctiveness.loc[neg_features].sort_values(ascending=False).index.tolist()
+
+        # Format with correlation values, bold the most distinctive ones
+        def fmt_features(feat_list, corrs, distinct):
+            parts = []
+            for f in feat_list:
+                r = corrs[f]
+                d = distinct[f]
+                marker = '*' if d > 0 else ''
+                parts.append(f"{marker}{f} ({r:+.2f})")
+            return ', '.join(parts) if parts else '(none above threshold)'
+
+        pos_str = fmt_features(pos_sorted, sig_features, distinctiveness)
+        neg_str = fmt_features(neg_sorted, sig_features, distinctiveness)
+
+        # Build a concise description contrasting the dimension
+        pos_top = pos_sorted[:3]
+        neg_top = neg_sorted[:3]
+        if pos_top and neg_top:
+            desc = f"More {', '.join(pos_top)} vs. less {', '.join(neg_top)}"
+        elif pos_top:
+            desc = f"Driven by {', '.join(pos_top)}"
+        else:
+            desc = f"Inversely driven by {', '.join(neg_top)}"
+
+        descriptions.append({
+            'Dimension': dim_col,
+            'Positively Correlated': pos_str,
+            'Negatively Correlated': neg_str,
+            'Description': desc
+        })
+
+    return descriptions
+
+
+def _compute_multivariate_recurrence(df_features, percentile=10):
+    """Compute multivariate recurrence matrix using pairwise Euclidean distances.
+    Only uses columns with data for at least 50% of rows to avoid structural breaks."""
+    from scipy.spatial.distance import pdist, squareform
+    # Drop columns where >50% of values are zero (likely missing/unavailable features)
+    nonzero_frac = (df_features != 0).mean()
+    usable_cols = nonzero_frac[nonzero_frac >= 0.5].index
+    data = df_features[usable_cols].values
+    dist_matrix = squareform(pdist(data, metric='euclidean'))
+    threshold = np.percentile(dist_matrix[dist_matrix > 0], percentile)
+    recurrence_matrix = (dist_matrix <= threshold).astype(int)
+    np.fill_diagonal(recurrence_matrix, 0)
+    return recurrence_matrix
+
+
+def plot_recurrence(df_features, dates=None):
+    """Generate a multivariate recurrence plot from the full feature space."""
+    rp_matrix = _compute_multivariate_recurrence(df_features)
+
+    n = rp_matrix.shape[0]
+    fig, ax = plt.subplots(figsize=(12, 12))
+    ax.imshow(rp_matrix, cmap='binary', origin='lower', interpolation='nearest')
+    ax.set_xlabel('Date', fontsize=24, labelpad=12)
+    ax.set_ylabel('Date', fontsize=24, labelpad=12)
+
+    # Use actual dates for tick labels if provided
+    tick_step = max(1, n // 10)
+    tick_positions = list(range(0, n, tick_step))
+    if dates is not None:
+        date_labels = [pd.to_datetime(dates.iloc[t]).strftime('%-m/%d/%Y') for t in tick_positions]
+    else:
+        date_labels = [f'Day {t+1}' for t in tick_positions]
+    ax.set_xticks(tick_positions)
+    ax.set_xticklabels(date_labels, fontsize=12, rotation=45, ha='right')
+    ax.set_yticks(tick_positions)
+    ax.set_yticklabels(date_labels, fontsize=12)
+    plt.tight_layout()
+
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
+    image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+    plt.close()
+
+    return image_base64
+
+
+def compute_rqa_metrics(df_features):
+    """Compute RQA metrics from the multivariate recurrence matrix."""
+    rp_matrix = _compute_multivariate_recurrence(df_features)
+    n = rp_matrix.shape[0]
+    total_possible = n * (n - 1)  # excluding diagonal
+
+    # Recurrence rate
+    n_recurrence = rp_matrix.sum()
+    rr = n_recurrence / total_possible if total_possible > 0 else 0
+
+    # Extract diagonal lines (parallel to main diagonal)
+    diagonal_lengths = []
+    for k in range(1, n):
+        diag = np.diag(rp_matrix, k)
+        length = 0
+        for val in diag:
+            if val:
+                length += 1
+            elif length > 1:
+                diagonal_lengths.append(length)
+                length = 0
+        if length > 1:
+            diagonal_lengths.append(length)
+
+    # Extract vertical lines
+    vertical_lengths = []
+    for col in range(n):
+        length = 0
+        for row in range(n):
+            if rp_matrix[row, col]:
+                length += 1
+            elif length > 1:
+                vertical_lengths.append(length)
+                length = 0
+        if length > 1:
+            vertical_lengths.append(length)
+
+    # Determinism
+    det_points = sum(diagonal_lengths)
+    det = det_points / n_recurrence if n_recurrence > 0 else 0
+
+    # Average diagonal line length
+    avg_diag = np.mean(diagonal_lengths) if diagonal_lengths else 0
+
+    # Longest diagonal line
+    lmax = max(diagonal_lengths) if diagonal_lengths else 0
+
+    # Entropy of diagonal line distribution
+    if diagonal_lengths:
+        counts = np.bincount(diagonal_lengths)
+        counts = counts[counts > 0]
+        probs = counts / counts.sum()
+        entropy = -np.sum(probs * np.log(probs))
+    else:
+        entropy = 0
+
+    # Laminarity
+    lam_points = sum(vertical_lengths)
+    lam = lam_points / n_recurrence if n_recurrence > 0 else 0
+
+    # Trapping time
+    tt = np.mean(vertical_lengths) if vertical_lengths else 0
+
+    # Divergence
+    div = 1.0 / lmax if lmax > 0 else 0
+
+    return {
+        'Recurrence Rate (RR)': rr,
+        'Determinism (DET)': det,
+        'Avg Diagonal Line (L)': avg_diag,
+        'Max Diagonal Line (Lmax)': lmax,
+        'Entropy (ENTR)': entropy,
+        'Laminarity (LAM)': lam,
+        'Trapping Time (TT)': tt,
+        'Divergence (DIV)': div,
+    }
+
+def interpret_rqa(metrics):
+    """Generate a plain-language interpretation of RQA metrics."""
+    if not metrics:
+        return "No RQA data available for interpretation."
+
+    rr = metrics.get('Recurrence Rate (RR)', 0)
+    det = metrics.get('Determinism (DET)', 0)
+    lam = metrics.get('Laminarity (LAM)', 0)
+    entr = metrics.get('Entropy (ENTR)', 0)
+    tt = metrics.get('Trapping Time (TT)', 0)
+    avg_l = metrics.get('Avg Diagonal Line (L)', 0)
+
+    lines = []
+
+    # Recurrence rate
+    if rr < 0.05:
+        lines.append(f"Recurrence Rate ({rr:.2%}): Very low — daily behavioral patterns rarely repeat. Each day tends to be distinct.")
+    elif rr < 0.15:
+        lines.append(f"Recurrence Rate ({rr:.2%}): Moderate — some days resemble past days, suggesting recurring routines.")
+    else:
+        lines.append(f"Recurrence Rate ({rr:.2%}): High — many days closely resemble previous days, indicating strong habitual patterns.")
+
+    # Determinism
+    if det < 0.3:
+        lines.append(f"Determinism ({det:.2%}): Low — recurrences are mostly isolated (random), not forming predictable sequences.")
+    elif det < 0.7:
+        lines.append(f"Determinism ({det:.2%}): Moderate — some recurring day-sequences exist, suggesting semi-regular weekly or seasonal patterns.")
+    else:
+        lines.append(f"Determinism ({det:.2%}): High — recurring states tend to follow the same trajectory, indicating strong predictability in behavioral sequences.")
+
+    # Laminarity
+    if lam < 0.3:
+        lines.append(f"Laminarity ({lam:.2%}): Low — the system rarely gets \"stuck\" in a single state. Behavior changes frequently.")
+    elif lam < 0.7:
+        lines.append(f"Laminarity ({lam:.2%}): Moderate — some periods of sustained similar behavior (e.g., consistent routines for stretches of days).")
+    else:
+        lines.append(f"Laminarity ({lam:.2%}): High — extended periods where daily patterns remain very similar, suggesting stable behavioral regimes.")
+
+    # Trapping time
+    lines.append(f"Trapping Time ({tt:.1f} days): On average, when behavior enters a recurring state, it stays there for ~{tt:.0f} consecutive days before shifting.")
+
+    # Entropy
+    if entr < 1.0:
+        lines.append(f"Entropy ({entr:.2f}): Low complexity — recurring patterns are simple and repetitive.")
+    elif entr < 2.5:
+        lines.append(f"Entropy ({entr:.2f}): Moderate complexity — a healthy mix of pattern types across different time scales.")
+    else:
+        lines.append(f"Entropy ({entr:.2f}): High complexity — diverse set of recurring patterns at many scales, suggesting a rich behavioral repertoire.")
+
+    # Avg diagonal line
+    lines.append(f"Average Diagonal Line ({avg_l:.1f} days): Typical recurring behavioral sequence lasts ~{avg_l:.0f} days.")
+
+    return lines
+
 
 # Add this helper function near the top, after imports
 def generate_placeholder_image(message="No data available"):
@@ -2091,47 +2417,49 @@ def generate_placeholder_image(message="No data available"):
     return f'data:image/png;base64,{image_base64}'
 
 def plot_pca_feature_importance(pca, feature_names, n_components=3, loading_threshold=0.01):
-    import matplotlib.pyplot as plt
-    import numpy as np
-    from io import BytesIO
-    import base64
+    """Returns a list of base64 images, one per PC."""
     from matplotlib.patches import Patch
-    # Compute max abs loading across all selected PCs for each feature
     loadings_matrix = np.abs(pca.components_[:n_components])
     max_abs_loadings = loadings_matrix.max(axis=0)
-    # Filter features with at least one PC above threshold
     keep_idx = np.where(max_abs_loadings >= loading_threshold)[0]
     filtered_features = np.array(feature_names)[keep_idx]
     filtered_loadings = pca.components_[:, keep_idx]
-    fig, axes = plt.subplots(n_components, 1, figsize=(max(14, len(filtered_features) * 0.4), 3.25 * n_components), sharex=True)
-    if n_components == 1:
-        axes = [axes]
+
+    # Consistent feature ordering across all PCs: sort by max abs loading across all PCs
+    global_sort_idx = np.argsort(max_abs_loadings[keep_idx])[::-1]
+    filtered_features = filtered_features[global_sort_idx]
+    filtered_loadings = filtered_loadings[:, global_sort_idx]
+
+    n_features = len(filtered_features)
+    fig_width = max(16, n_features * 0.3)
+    images = []
+
     for i in range(n_components):
+        fig, ax = plt.subplots(figsize=(fig_width, 4))
         loadings = filtered_loadings[i]
-        sorted_idx = np.argsort(np.abs(loadings))[::-1]
-        sorted_features = filtered_features[sorted_idx]
-        sorted_loadings = loadings[sorted_idx]
-        bar_colors = ['green' if val >= 0 else 'red' for val in sorted_loadings]
-        axes[i].bar(sorted_features, np.abs(sorted_loadings), color=bar_colors)
-        axes[i].set_title(f'PC{i+1} Feature Loadings', fontsize=22)
-        axes[i].set_ylabel('Abs(Loading)', fontsize=18)
-        axes[i].tick_params(axis='x', labelsize=18, rotation=90)
-        axes[i].tick_params(axis='y', labelsize=18)
-        if i == 1:
+        bar_colors = ['green' if val >= 0 else 'red' for val in loadings]
+        ax.bar(range(n_features), np.abs(loadings), color=bar_colors)
+        ax.set_title(f'PC{i+1} Feature Loadings', fontsize=22)
+        ax.set_ylabel('Abs(Loading)', fontsize=14)
+        ax.set_xlabel('Feature', fontsize=14)
+        ax.set_xticks(range(n_features))
+        ax.set_xticklabels(filtered_features, rotation=90, fontsize=8, ha='center')
+        ax.tick_params(axis='y', labelsize=9)
+        sns.despine(ax=ax)
+        if i == 0:
             legend_handles = [
                 Patch(color='green', label='Positive Loading'),
                 Patch(color='red', label='Negative Loading')
             ]
-            axes[i].legend(handles=legend_handles, loc='upper right', fontsize=16)
-    plt.xlabel('Feature', fontsize=18)
-    plt.tight_layout()
-    plt.subplots_adjust(hspace=0.5)
-    buffer = BytesIO()
-    plt.savefig(buffer, format='png', bbox_inches='tight')
-    buffer.seek(0)
-    image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
-    plt.close()
-    return image_base64
+            ax.legend(handles=legend_handles, loc='upper right', fontsize=14)
+        plt.tight_layout()
+        buffer = BytesIO()
+        plt.savefig(buffer, format='png', bbox_inches='tight')
+        buffer.seek(0)
+        images.append(base64.b64encode(buffer.read()).decode('utf-8'))
+        plt.close()
+
+    return images
 
 # CREATE DASH APP
 app = Dash(__name__)
@@ -2139,13 +2467,15 @@ app = Dash(__name__)
 # After loading model_df, generate the clustering plot statically
 if not model_df.empty:
     # Prep the data - use only numeric columns and exclude derived/redundant columns
-    exclude_columns = ['date_column', 'Year', 'Month_Num', 'Day', 'DayOfYear', 'nap', 'total', 
-                       'ovr_pirates', 'ovr_guardians', 'ovr_other']
-    exclude_columns += [col for col in model_df.columns if col.startswith('score_')]
-    exclude_columns += [col for col in model_df.columns if col.startswith('cycle_')]
-    exclude_columns += [col for col in model_df.columns if col.startswith('sleep_')]
+    exclude_columns = ['date_column', 'Year', 'Month_Num', 'Day', 'DayOfYear', 'nap', 'total',
+                       'ovr_pirates', 'ovr_guardians', 'ovr_other', 'cycle_id']
+    # Exclude Whoop metadata/timing columns but keep score_ columns (sleep, recovery, strain, HR, HRV)
     exclude_columns += [col for col in model_df.columns if col.startswith('updated_at_')]
-    exclude_columns += [col for col in model_df.columns if col.startswith('workout_')]
+    exclude_columns += [col for col in model_df.columns if col.endswith('_minutes_into_day')]
+    # Exclude duplicated zone duration columns (keep zone_duration_, drop zone_durations_)
+    exclude_columns += [col for col in model_df.columns if 'zone_durations_' in col]
+    # Exclude no-data and percent_recorded metadata
+    exclude_columns += [col for col in model_df.columns if 'no_data' in col or 'percent_recorded' in col]
     numeric_columns = model_df.select_dtypes(include=['float64', 'int64']).columns
     df_numeric = model_df[numeric_columns].drop(columns=exclude_columns, errors='ignore')
     df_numeric = df_numeric.loc[:, (df_numeric != 0).any(axis=0)]
@@ -2153,29 +2483,55 @@ if not model_df.empty:
     df_numeric = df_numeric.fillna(0)
     save_df = df_numeric.copy()
     save_df['date_column'] = model_df['date_column']
-    save_df.to_csv("../Data/df_numeric_for_clustering.csv")
+    save_df.to_csv(os.path.join(os.path.dirname(__file__), '..', 'Data', 'df_numeric_for_clustering.csv'))
     scaler = MinMaxScaler()
     df_scaled = pd.DataFrame(scaler.fit_transform(df_numeric), columns=df_numeric.columns)
-    # Use PCA instead of t-SNE or UMAP
-    pca = PCA(n_components=3, random_state=2225)
-    pca_results = pca.fit_transform(df_scaled)
-    df_scaled['PCA1'] = pca_results[:, 0]
-    df_scaled['PCA2'] = pca_results[:, 1]
-    df_scaled['PCA3'] = pca_results[:, 2]
-    df_scaled['Label'] = 'All Others'
-    df_scaled.loc[df_scaled.tail(7).index, 'Label'] = 'Last 7 Days'
-    df_scaled.loc[df_scaled.tail(30).head(23).index, 'Label'] = 'Last 30 Days'
+
+    # Data-driven n_components via PCA elbow detection
+    n_components, pca_full, elbow_plot_base64 = find_optimal_n_components(df_scaled)
+    print(f"Optimal n_components from elbow analysis: {n_components}")
+
+    # PCA feature loadings (data-driven n_components)
+    pca = PCA(n_components=n_components, random_state=2225)
+    pca.fit(df_scaled)
+    pca_feature_importance_images = plot_pca_feature_importance(pca, df_numeric.columns, n_components=n_components)
+
+    # PHATE embedding
+    phate_op = phate.PHATE(n_components=n_components, random_state=2225, n_jobs=-1)
+    phate_results = phate_op.fit_transform(df_scaled)
+
+    # Add Year for scatter plot coloring
     df_scaled['date_column'] = pd.to_datetime(model_df['date_column'], errors='coerce', utc=True)
     df_scaled['Year'] = df_scaled['date_column'].dt.year
-    clustering_image_base64 = plot_2d_tsne_subplots(df_scaled, pca_results, method_name='PCA')
-    # Add PCA feature importance plot
-    pca_feature_importance_image_base64 = plot_pca_feature_importance(pca, df_numeric.columns, n_components=3)
+
+    # PHATE scatter plots (pairwise projections)
+    clustering_image_base64 = plot_2d_embedding_subplots(df_scaled, phate_results, n_components, method_name='PHATE')
+
+    # Feature-PHATE correlation heatmap
+    phate_correlation_image_base64, phate_corr_df, phate_pval_df = plot_feature_phate_correlations(
+        df_scaled[df_numeric.columns], phate_results, n_components
+    )
+
+    # PHATE dimension descriptions
+    phate_dimension_descriptions = describe_phate_dimensions(phate_corr_df, phate_pval_df)
+
+    # Recurrence plot and RQA metrics
+    recurrence_plot_base64 = plot_recurrence(df_scaled[df_numeric.columns], dates=model_df['date_column'].reset_index(drop=True))
+    rqa_metrics = compute_rqa_metrics(df_scaled[df_numeric.columns])
+    rqa_interpretation = interpret_rqa(rqa_metrics)
+
     # Drop columns with more than 40% missing data
     missing_fraction = df_numeric.isnull().mean()
     df_numeric = df_numeric.loc[:, missing_fraction <= 0.4]
 else:
     clustering_image_base64 = generate_placeholder_image("No clustering data available.")
-    pca_feature_importance_image_base64 = generate_placeholder_image("No PCA feature importance available.")
+    pca_feature_importance_images = []
+    elbow_plot_base64 = generate_placeholder_image("No elbow plot available.")
+    phate_correlation_image_base64 = generate_placeholder_image("No PHATE correlation data available.")
+    phate_dimension_descriptions = []
+    recurrence_plot_base64 = generate_placeholder_image("No recurrence plot available.")
+    rqa_metrics = {}
+    rqa_interpretation = []
 
 app.layout = html.Div(children=[
     dcc.Tabs(id='tabs', value='OVR Data', children=[
@@ -2215,14 +2571,66 @@ app.layout = html.Div(children=[
         # Clustering data
         dcc.Tab(label='Data Clustering', value='Data Clustering', children=[
             html.Div(children=[
+                html.H3("PCA Elbow Analysis", style={'textAlign': 'center'}),
+                html.Img(
+                    src=f'data:image/png;base64,{elbow_plot_base64}',
+                    style={'display': 'block', 'width': '60%', 'margin': '0 auto', 'margin-bottom': '4rem'}
+                ),
+                html.H3("PHATE Embedding Projections", style={'textAlign': 'center'}),
                 html.Img(
                     src=f'data:image/png;base64,{clustering_image_base64}',
                     style={'display': 'block', 'width': '90%', 'margin': '0 auto', 'margin-bottom': '6rem'}
                 ),
+                html.H3("PCA Feature Loadings", style={'textAlign': 'center'}),
+                *[html.Img(
+                    src=f'data:image/png;base64,{img}',
+                    style={'display': 'block', 'width': '100%', 'margin': '0 auto', 'margin-bottom': '3rem'}
+                ) for img in pca_feature_importance_images],
+                html.H3("Feature-PHATE Dimension Correlations", style={'textAlign': 'center'}),
                 html.Img(
-                    src=f'data:image/png;base64,{pca_feature_importance_image_base64}',
-                    style={'display': 'block', 'width': '100%', 'margin': '0 auto', 'margin-top': '6rem'}
-                )
+                    src=f'data:image/png;base64,{phate_correlation_image_base64}',
+                    style={'display': 'block', 'width': '80%', 'margin': '0 auto', 'margin-bottom': '2rem'}
+                ),
+                html.H3("PHATE Dimension Descriptions", style={'textAlign': 'center'}),
+                html.P("Features marked with * are most distinctive to that dimension (stronger correlation here than in any other dimension).",
+                       style={'textAlign': 'center', 'fontSize': 14, 'color': 'gray', 'marginBottom': '1rem'}),
+                dash_table.DataTable(
+                    data=phate_dimension_descriptions,
+                    columns=[
+                        {'name': 'Dimension', 'id': 'Dimension'},
+                        {'name': 'Positively Correlated', 'id': 'Positively Correlated'},
+                        {'name': 'Negatively Correlated', 'id': 'Negatively Correlated'},
+                        {'name': 'Description', 'id': 'Description'},
+                    ],
+                    style_table={'width': '90%', 'margin': '0 auto', 'marginBottom': '6rem'},
+                    style_cell={'textAlign': 'left', 'fontSize': 14, 'padding': '10px',
+                                'whiteSpace': 'normal', 'maxWidth': '300px'},
+                    style_header={'fontWeight': 'bold', 'fontSize': 16, 'textAlign': 'center'},
+                    style_data_conditional=[
+                        {'if': {'column_id': 'Dimension'}, 'fontWeight': 'bold', 'textAlign': 'center', 'width': '80px'},
+                        {'if': {'column_id': 'Description'}, 'fontStyle': 'italic'},
+                    ],
+                ) if phate_dimension_descriptions else html.P("No dimension descriptions available."),
+                html.H3("Recurrence Plot", style={'textAlign': 'center'}),
+                html.Img(
+                    src=f'data:image/png;base64,{recurrence_plot_base64}',
+                    style={'display': 'block', 'width': '80%', 'margin': '0 auto', 'margin-bottom': '4rem'}
+                ),
+                html.H3("Recurrence Quantification Analysis", style={'textAlign': 'center'}),
+                dash_table.DataTable(
+                    data=[{'Metric': k, 'Value': f'{v:.4f}'} for k, v in rqa_metrics.items()] if rqa_metrics else [],
+                    columns=[{'name': 'Metric', 'id': 'Metric'}, {'name': 'Value', 'id': 'Value'}],
+                    style_table={'width': '50%', 'margin': '0 auto', 'marginBottom': '2rem'},
+                    style_cell={'textAlign': 'center', 'fontSize': 16, 'padding': '8px'},
+                    style_header={'fontWeight': 'bold', 'fontSize': 18},
+                ),
+                html.Div(children=[
+                    html.H4("Interpretation", style={'textAlign': 'left', 'marginBottom': '1rem'}),
+                    html.Ul([
+                        html.Li(line, style={'fontSize': 15, 'marginBottom': '0.5rem', 'textAlign': 'left'})
+                        for line in rqa_interpretation
+                    ]) if rqa_interpretation else html.P("No interpretation available."),
+                ], style={'width': '70%', 'margin': '0 auto', 'marginBottom': '6rem'}),
             ], style={'textAlign': 'center'})
         ]),
 

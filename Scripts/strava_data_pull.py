@@ -177,6 +177,7 @@ if __name__ == "__main__":
         """
         with engine.connect() as connection:
             connection.execute(text(remove_duplicates_query))
+            connection.commit()
         print("Duplicates removed from the database.")
     else:
         print("No new activities to append.")
