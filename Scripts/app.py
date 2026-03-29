@@ -1040,8 +1040,12 @@ def plot_run_mins_mile_month():
 
 # BOOKS READ
 def pages_per_day():
-    plot_books = (books.groupby(by=['year_read'])[
-                  'pages'].sum()/365).reset_index()
+    current_year = date.today().year
+    days_elapsed = (date.today() - date(current_year, 1, 1)).days or 1
+    plot_books = books.groupby(by=['year_read'])['pages'].sum().reset_index()
+    plot_books['pages'] = plot_books.apply(
+        lambda row: row['pages'] / days_elapsed if row['year_read'] == current_year
+        else row['pages'] / 365, axis=1)
     fig, ax = plt.subplots(figsize=(10, 8))
     sns.lineplot(x='year_read', y='pages', data=plot_books,
                  color='k', marker='o', markersize=12)
@@ -1072,8 +1076,12 @@ def pages_per_day():
 
 
 def books_annually():
-    plot_books = (books.groupby(by=['year_read'])[
-                  'prop_read'].sum()).reset_index()
+    current_year = date.today().year
+    day_of_year = (date.today() - date(current_year, 1, 1)).days or 1
+    plot_books = books.groupby(by=['year_read'])['prop_read'].sum().reset_index()
+    plot_books['prop_read'] = plot_books.apply(
+        lambda row: row['prop_read'] * 365 / day_of_year if row['year_read'] == current_year
+        else row['prop_read'], axis=1)
     fig, ax = plt.subplots(figsize=(10, 8))
     sns.lineplot(x='year_read', y='prop_read', data=plot_books,
                  color='k', marker='o', markersize=12)
