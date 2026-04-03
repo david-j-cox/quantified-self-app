@@ -28,7 +28,15 @@ DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NA
 engine = create_engine(DATABASE_URL)
 
 PORT = 8052
-YESTERDAY = date.today() - timedelta(days=1)
+
+# Allow date override via --date YYYY-MM-DD for backfilling missed days
+_date_override = None
+if "--date" in sys.argv:
+    _idx = sys.argv.index("--date")
+    if _idx + 1 < len(sys.argv):
+        _date_override = date.fromisoformat(sys.argv[_idx + 1])
+
+YESTERDAY = _date_override or (date.today() - timedelta(days=1))
 
 # Sentinel file to prevent duplicate runs on the same day
 SENTINEL = Path(__file__).resolve().parent.parent / "logs" / ".baseball_entry_last_run"
@@ -360,7 +368,7 @@ def set_attempt(n: int):
 
 
 if __name__ == "__main__":
-    if already_ran_today():
+    if not _date_override and already_ran_today():
         sys.exit(0)
 
     import signal
@@ -369,14 +377,17 @@ if __name__ == "__main__":
     import time
     from threading import Timer
 
-    attempt = get_attempt() + 1
-    if attempt > MAX_ATTEMPTS:
-        sys.exit(0)
-    set_attempt(attempt)
+    if not _date_override:
+        attempt = get_attempt() + 1
+        if attempt > MAX_ATTEMPTS:
+            sys.exit(0)
+        set_attempt(attempt)
+    else:
+        attempt = 1
 
     # Kill any leftover Flask process from a previous day still holding the port
     result = subprocess.run(
-        ["lsof", "-ti", f"tcp:{PORT}"], capture_output=True, text=True
+        ["/usr/sbin/lsof", "-ti", f"tcp:{PORT}"], capture_output=True, text=True
     )
     for pid in result.stdout.strip().split("\n"):
         if pid and int(pid) != os.getpid():
