@@ -2,8 +2,10 @@
 """MLB Game Entry Tool — fetch yesterday's games, present a form, insert selections into DB."""
 
 import os
+import sys
 import threading
 from datetime import date, timedelta
+from pathlib import Path
 
 import pandas as pd
 import requests
@@ -26,7 +28,31 @@ DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NA
 engine = create_engine(DATABASE_URL)
 
 PORT = 8052
-YESTERDAY = date.today() - timedelta(days=1)
+
+# Allow date override via --date YYYY-MM-DD for backfilling missed days
+_date_override = None
+if "--date" in sys.argv:
+    _idx = sys.argv.index("--date")
+    if _idx + 1 < len(sys.argv):
+        _date_override = date.fromisoformat(sys.argv[_idx + 1])
+
+YESTERDAY = _date_override or (date.today() - timedelta(days=1))
+
+# Sentinel file to prevent duplicate runs on the same day
+SENTINEL = Path(__file__).resolve().parent.parent / "logs" / ".baseball_entry_last_run"
+
+
+def already_ran_today() -> bool:
+    """Return True if the script already ran successfully today."""
+    if SENTINEL.exists():
+        return SENTINEL.read_text().strip() == str(date.today())
+    return False
+
+
+def mark_ran_today():
+    """Write today's date to the sentinel file."""
+    SENTINEL.parent.mkdir(parents=True, exist_ok=True)
+    SENTINEL.write_text(str(date.today()))
 
 # ---------------------------------------------------------------------------
 # Team short-name lookup
@@ -297,6 +323,7 @@ def submit():
     count = len(rows)
     recent = recent_entries_html()
     body = f'<div class="card"><p class="msg">&#10003; {count} game(s) saved. You can close this tab.</p>{recent}</div>'
+    mark_ran_today()
     _schedule_exit()
     return page("MLB Games", body)
 
@@ -305,6 +332,7 @@ def submit():
 def no_games():
     recent = recent_entries_html()
     body = f'<div class="card"><p class="msg">No entries recorded. You can close this tab.</p>{recent}</div>'
+    mark_ran_today()
     _schedule_exit()
     return page("MLB Games", body)
 
@@ -320,9 +348,79 @@ def _schedule_exit():
 # ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
+AUTO_EXIT_MINUTES = 120
+MAX_ATTEMPTS = 2
+ATTEMPT_FILE = Path(__file__).resolve().parent.parent / "logs" / ".baseball_entry_attempt"
+
+
+def get_attempt() -> int:
+    """Return the current attempt number for today (0 if none yet)."""
+    if ATTEMPT_FILE.exists():
+        parts = ATTEMPT_FILE.read_text().strip().split(",")
+        if len(parts) == 2 and parts[0] == str(date.today()):
+            return int(parts[1])
+    return 0
+
+
+def set_attempt(n: int):
+    ATTEMPT_FILE.parent.mkdir(parents=True, exist_ok=True)
+    ATTEMPT_FILE.write_text(f"{date.today()},{n}")
+
+
 if __name__ == "__main__":
-    import webbrowser
+    if not _date_override and already_ran_today():
+        sys.exit(0)
+
+    import signal
+    import socket
+    import subprocess
+    import time
     from threading import Timer
 
-    Timer(1.0, lambda: webbrowser.open(f"http://127.0.0.1:{PORT}")).start()
+    if not _date_override:
+        attempt = get_attempt() + 1
+        if attempt > MAX_ATTEMPTS:
+            sys.exit(0)
+        set_attempt(attempt)
+    else:
+        attempt = 1
+
+    # Kill any leftover Flask process from a previous day still holding the port
+    result = subprocess.run(
+        ["/usr/sbin/lsof", "-ti", f"tcp:{PORT}"], capture_output=True, text=True
+    )
+    for pid in result.stdout.strip().split("\n"):
+        if pid and int(pid) != os.getpid():
+            try:
+                os.kill(int(pid), signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+    # Wait for port to be released
+    for _ in range(10):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            if s.connect_ex(("127.0.0.1", PORT)) != 0:
+                break
+        time.sleep(0.5)
+
+    # Auto-exit after 2 hours; re-launch once if this is the first attempt
+    def _auto_exit():
+        time.sleep(AUTO_EXIT_MINUTES * 60)
+        if attempt < MAX_ATTEMPTS:
+            subprocess.Popen(
+                [sys.executable, __file__],
+                cwd=str(Path(__file__).resolve().parent.parent),
+            )
+        os._exit(0)
+    threading.Thread(target=_auto_exit, daemon=True).start()
+
+    # Wait for Flask to be ready before opening browser
+    def _open_browser():
+        for _ in range(20):
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                if s.connect_ex(("127.0.0.1", PORT)) == 0:
+                    subprocess.run(["/usr/bin/open", f"http://127.0.0.1:{PORT}"])
+                    return
+            time.sleep(0.25)
+    Timer(0.5, _open_browser).start()
+
     app.run(port=PORT, debug=False)

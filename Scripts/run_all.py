@@ -110,6 +110,34 @@ if fresh_token:
 else:
     print("Skipping Whoop data extraction due to token retrieval failure")
 
+# Pull GHIN golf scores
+print("\n\nPulling GHIN golf scores...")
+try:
+    from golf_entry import pull_ghin_scores
+    result = pull_ghin_scores()
+    print(result)
+except Exception as e:
+    print(f"Error pulling GHIN scores: {e}")
+
+# Sync food tracker data and generate plots
+print("\n\nSyncing food tracker data...")
+try:
+    run_script('sync_food_tracker.py')
+    print("Food tracker data synced")
+except subprocess.CalledProcessError as e:
+    print(f"Error syncing food tracker: {e}")
+except Exception as e:
+    print(f"Error syncing food tracker: {e}")
+
+print("\n\nGenerating food tracking plots...")
+try:
+    run_script('generate_food_plots.py')
+    print("Food tracking plots generated")
+except subprocess.CalledProcessError as e:
+    print(f"Error generating food plots: {e}")
+except Exception as e:
+    print(f"Error generating food plots: {e}")
+
 # Prep the data for unsupervised learning
 print("\n\nPrepping data for unsupervised learning...")
 try:
