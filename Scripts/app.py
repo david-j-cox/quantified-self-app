@@ -13,6 +13,7 @@ import numpy as np
 # System
 import base64
 from io import BytesIO
+from pathlib import Path
 from datetime import datetime, date
 import random
 
@@ -2834,6 +2835,47 @@ app.layout = html.Div(children=[
                 style={'display': 'block', 'width': '60%',
                        'margin-right': 'auto', 'margin-left': 'auto'}
             ),
+        ]),
+
+        # Food Tracking (loads pre-generated plot images from plots/ dir)
+        dcc.Tab(label="Food Tracking", value="Food Tracking", children=[
+            html.Div(children=[
+                html.Img(
+                    src=f'data:image/png;base64,{Path(Path(__file__).resolve().parent.parent / "plots" / "food_daily_calories.b64").read_text() if (Path(__file__).resolve().parent.parent / "plots" / "food_daily_calories.b64").exists() else ""}',
+                    style={'display': 'block', 'width': '90%',
+                           'margin-right': '2.5%', 'margin-left': '2.5%',
+                           'margin-bottom': '3rem'}
+                ) if (Path(__file__).resolve().parent.parent / "plots" / "food_daily_calories.b64").exists() else html.P("Run daily_food_update.py to generate plots.", style={'textAlign': 'center', 'color': '#888'}),
+                html.Img(
+                    src=f'data:image/png;base64,{Path(Path(__file__).resolve().parent.parent / "plots" / "food_daily_macros.b64").read_text() if (Path(__file__).resolve().parent.parent / "plots" / "food_daily_macros.b64").exists() else ""}',
+                    style={'display': 'block', 'width': '90%',
+                           'margin-right': '2.5%', 'margin-left': '2.5%',
+                           'margin-bottom': '3rem'}
+                ) if (Path(__file__).resolve().parent.parent / "plots" / "food_daily_macros.b64").exists() else html.Div(),
+                html.Img(
+                    src=f'data:image/png;base64,{Path(Path(__file__).resolve().parent.parent / "plots" / "food_fat_trend.b64").read_text() if (Path(__file__).resolve().parent.parent / "plots" / "food_fat_trend.b64").exists() else ""}',
+                    style={'display': 'block', 'width': '90%',
+                           'margin-right': '2.5%', 'margin-left': '2.5%',
+                           'margin-bottom': '3rem'}
+                ) if (Path(__file__).resolve().parent.parent / "plots" / "food_fat_trend.b64").exists() else html.Div(),
+                html.Img(
+                    src=f'data:image/png;base64,{Path(Path(__file__).resolve().parent.parent / "plots" / "food_micronutrients.b64").read_text() if (Path(__file__).resolve().parent.parent / "plots" / "food_micronutrients.b64").exists() else ""}',
+                    style={'display': 'block', 'width': '90%',
+                           'margin-right': '2.5%', 'margin-left': '2.5%',
+                           'margin-bottom': '3rem'}
+                ) if (Path(__file__).resolve().parent.parent / "plots" / "food_micronutrients.b64").exists() else html.Div(),
+                html.Img(
+                    src=f'data:image/png;base64,{Path(Path(__file__).resolve().parent.parent / "plots" / "food_symptom_frequency.b64").read_text() if (Path(__file__).resolve().parent.parent / "plots" / "food_symptom_frequency.b64").exists() else ""}',
+                    style={'display': 'block', 'width': '60%',
+                           'margin-right': 'auto', 'margin-left': 'auto',
+                           'margin-bottom': '3rem'}
+                ) if (Path(__file__).resolve().parent.parent / "plots" / "food_symptom_frequency.b64").exists() else html.Div(),
+                html.Img(
+                    src=f'data:image/png;base64,{Path(Path(__file__).resolve().parent.parent / "plots" / "food_symptom_timeline.b64").read_text() if (Path(__file__).resolve().parent.parent / "plots" / "food_symptom_timeline.b64").exists() else ""}',
+                    style={'display': 'block', 'width': '90%',
+                           'margin-right': '2.5%', 'margin-left': '2.5%'}
+                ) if (Path(__file__).resolve().parent.parent / "plots" / "food_symptom_timeline.b64").exists() else html.Div(),
+            ])
         ]),
 
         # Golf Data
