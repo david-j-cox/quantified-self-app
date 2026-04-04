@@ -2837,6 +2837,27 @@ app.layout = html.Div(children=[
             ),
         ]),
 
+        # Golf Data
+        dcc.Tab(label="Golf", value="Golf", children=[
+            html.Img(
+                src=f'data:image/png;base64,{plot_cumulative_rounds_watched()}',
+                style={'display': 'block', 'width': '90%',
+                       'margin-right': '2.5%', 'margin-left': '2.5%',
+                       'margin-bottom': '3rem'}
+            ),
+            html.Img(
+                src=f'data:image/png;base64,{plot_rounds_played_monthly()}',
+                style={'display': 'block', 'width': '60%',
+                       'margin-right': 'auto', 'margin-left': 'auto',
+                       'margin-bottom': '3rem'}
+            ),
+            html.Img(
+                src=f'data:image/png;base64,{plot_golf_scores_handicap()}',
+                style={'display': 'block', 'width': '90%',
+                       'margin-right': '2.5%', 'margin-left': '2.5%'}
+            ),
+        ]),
+
         # Food Tracking (loads pre-generated plot images from plots/ dir)
         dcc.Tab(label="Food Tracking", value="Food Tracking", children=[
             html.Div(children=[
@@ -2876,27 +2897,6 @@ app.layout = html.Div(children=[
                            'margin-right': '2.5%', 'margin-left': '2.5%'}
                 ) if (Path(__file__).resolve().parent.parent / "plots" / "food_symptom_timeline.b64").exists() else html.Div(),
             ])
-        ]),
-
-        # Golf Data
-        dcc.Tab(label="Golf", value="Golf", children=[
-            html.Img(
-                src=f'data:image/png;base64,{plot_cumulative_rounds_watched()}',
-                style={'display': 'block', 'width': '90%',
-                       'margin-right': '2.5%', 'margin-left': '2.5%',
-                       'margin-bottom': '3rem'}
-            ),
-            html.Img(
-                src=f'data:image/png;base64,{plot_rounds_played_monthly()}',
-                style={'display': 'block', 'width': '60%',
-                       'margin-right': 'auto', 'margin-left': 'auto',
-                       'margin-bottom': '3rem'}
-            ),
-            html.Img(
-                src=f'data:image/png;base64,{plot_golf_scores_handicap()}',
-                style={'display': 'block', 'width': '90%',
-                       'margin-right': '2.5%', 'margin-left': '2.5%'}
-            ),
         ]),
 
         # Physical Activity
