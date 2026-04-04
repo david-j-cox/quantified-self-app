@@ -30,6 +30,40 @@ engine = create_engine(DATABASE_URL)
 PLOTS_DIR = Path(__file__).resolve().parent.parent / "plots"
 PLOTS_DIR.mkdir(exist_ok=True)
 
+# ---------------------------------------------------------------------------
+# Shared symptom color map (consistent across frequency + timeline charts)
+# ---------------------------------------------------------------------------
+POSITIVE_TAGS = {'felt_great', 'high_energy', 'good_digestion'}
+
+SYMPTOM_COLORS = {
+    # Digestive (reds/oranges)
+    'bloating': '#dc2626',
+    'nausea': '#ef4444',
+    'diarrhea': '#b91c1c',
+    'urgency': '#f97316',
+    'cramping': '#ea580c',
+    'acid_reflux': '#c2410c',
+    'gas': '#fb923c',
+    'fatty_stool': '#9a3412',
+    # General (amber/purple)
+    'fatigue': '#d97706',
+    'brain_fog': '#7c3aed',
+    'headache': '#a855f7',
+    # Positive (greens)
+    'felt_great': '#16a34a',
+    'high_energy': '#22c55e',
+    'good_digestion': '#4ade80',
+}
+
+
+def _get_symptom_color(tag):
+    """Get a consistent color for a symptom tag."""
+    if tag in SYMPTOM_COLORS:
+        return SYMPTOM_COLORS[tag]
+    if tag in POSITIVE_TAGS:
+        return '#16a34a'
+    return '#6b7280'  # Gray for unknown tags
+
 
 def read_table(table_name):
     try:
@@ -48,6 +82,12 @@ def save_plot(fig, filename):
     plt.close(fig)
     (PLOTS_DIR / filename).write_text(b64)
     return b64
+
+
+def _format_date_axis(ax):
+    """Set x-axis to show one tick per day with clean formatting."""
+    ax.xaxis.set_major_locator(mdates.DayLocator())
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
 
 
 def generate_all():
@@ -97,22 +137,11 @@ def generate_all():
     daily['date'] = pd.to_datetime(daily['date'])
     daily = daily.sort_values('date')
 
-    # 1. Daily calorie intake with rolling average
     _plot_daily_calories(daily)
-
-    # 2. Daily macros stacked bar
     _plot_daily_macros(daily)
-
-    # 3. Fat intake trend (recovery-focused)
     _plot_fat_trend(daily)
-
-    # 4. Micronutrient trends
     _plot_micronutrients(daily)
-
-    # 5. Symptom frequency
     _plot_symptom_frequency(symptom_tags)
-
-    # 6. Symptom severity timeline
     _plot_symptom_timeline(symptom_entries, symptom_tags)
 
     print("  All food tracking plots generated")
@@ -140,7 +169,7 @@ def _plot_daily_calories(daily):
     ax.set_ylabel('Calories (kcal)', fontsize=18, labelpad=10)
     ax.set_title('Daily Calorie Intake', fontsize=22, fontweight='bold', pad=15)
     ax.tick_params(labelsize=14)
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
+    _format_date_axis(ax)
     ax.legend(fontsize=14)
     sns.despine(top=True, right=True)
     fig.autofmt_xdate()
@@ -162,7 +191,7 @@ def _plot_daily_macros(daily):
     ax.set_ylabel('Grams', fontsize=18, labelpad=10)
     ax.set_title('Daily Macronutrient Breakdown', fontsize=22, fontweight='bold', pad=15)
     ax.tick_params(labelsize=14)
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
+    _format_date_axis(ax)
     ax.legend(fontsize=14)
     sns.despine(top=True, right=True)
     fig.autofmt_xdate()
@@ -189,7 +218,7 @@ def _plot_fat_trend(daily):
     ax.set_ylabel('Fat (g)', fontsize=18, labelpad=10)
     ax.set_title('Fat Intake Trend (Recovery Focus)', fontsize=22, fontweight='bold', pad=15)
     ax.tick_params(labelsize=14)
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
+    _format_date_axis(ax)
     ax.legend(fontsize=14)
     sns.despine(top=True, right=True)
     fig.autofmt_xdate()
@@ -212,7 +241,7 @@ def _plot_micronutrients(daily):
         ax.set_title(name, fontsize=16, fontweight='bold')
         ax.set_ylabel(unit, fontsize=12)
         ax.tick_params(labelsize=10)
-        ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
+        _format_date_axis(ax)
         ax.legend(fontsize=10)
         sns.despine(ax=ax, top=True, right=True)
 
@@ -234,8 +263,7 @@ def _plot_symptom_frequency(symptom_tags):
     counts = symptom_tags.groupby('tag').size().sort_values(ascending=True)
 
     fig, ax = plt.subplots(figsize=(12, max(4, len(counts) * 0.5)))
-    colors = ['#16a34a' if t in ('felt_great', 'high_energy', 'good_digestion')
-              else '#dc2626' for t in counts.index]
+    colors = [_get_symptom_color(t) for t in counts.index]
     ax.barh(counts.index.str.replace('_', ' ').str.title(), counts.values, color=colors, alpha=0.85)
     ax.set_xlabel('Count', fontsize=16, labelpad=10)
     ax.set_title('Symptom Frequency', fontsize=22, fontweight='bold', pad=15)
@@ -258,34 +286,26 @@ def _plot_symptom_timeline(symptom_entries, symptom_tags):
                                  suffixes=('', '_entry'))
     merged['logged_at'] = pd.to_datetime(merged['logged_at'])
 
-    # Filter to negative symptoms only
-    positive = {'felt_great', 'high_energy', 'good_digestion'}
-    neg = merged[~merged['tag'].isin(positive)]
-
-    if neg.empty:
-        fig, ax = plt.subplots(figsize=(12, 6))
-        ax.text(0.5, 0.5, 'No negative symptoms logged — great!', ha='center', va='center',
-                fontsize=16, color='#16a34a', transform=ax.transAxes)
-        ax.set_axis_off()
-        save_plot(fig, 'food_symptom_timeline.b64')
-        return
-
     fig, ax = plt.subplots(figsize=(18, 8))
-    tags = neg['tag'].unique()
-    colors = plt.cm.Set2(np.linspace(0, 1, len(tags)))
-    for tag, color in zip(tags, colors):
-        subset = neg[neg['tag'] == tag]
-        ax.scatter(subset['logged_at'], subset['severity'], s=100, alpha=0.7,
-                   label=tag.replace('_', ' ').title(), color=color, edgecolors='white')
+
+    # Plot all symptoms with consistent colors
+    for tag in merged['tag'].unique():
+        subset = merged[merged['tag'] == tag]
+        color = _get_symptom_color(tag)
+        marker = '^' if tag in POSITIVE_TAGS else 'o'
+        ax.scatter(subset['logged_at'], subset['severity'], s=120, alpha=0.8,
+                   label=tag.replace('_', ' ').title(), color=color,
+                   marker=marker, edgecolors='white', linewidth=0.5)
 
     ax.set_xlabel('Date', fontsize=18, labelpad=10)
     ax.set_ylabel('Severity (1-5)', fontsize=18, labelpad=10)
-    ax.set_title('Symptom Severity Over Time', fontsize=22, fontweight='bold', pad=15)
+    ax.set_title('Symptom & Wellness Severity Over Time', fontsize=22, fontweight='bold', pad=15)
     ax.set_yticks([1, 2, 3, 4, 5])
+    ax.set_yticklabels(['1 (mild)', '2', '3', '4', '5 (intense)'])
     ax.set_ylim(0.5, 5.5)
     ax.tick_params(labelsize=14)
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
-    ax.legend(fontsize=12, bbox_to_anchor=(1.02, 1), loc='upper left')
+    _format_date_axis(ax)
+    ax.legend(fontsize=11, bbox_to_anchor=(1.02, 1), loc='upper left')
     sns.despine(top=True, right=True)
     fig.autofmt_xdate()
     plt.tight_layout()
