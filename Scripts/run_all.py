@@ -119,6 +119,16 @@ try:
 except Exception as e:
     print(f"Error pulling GHIN scores: {e}")
 
+# Sync food tracker data
+print("\n\nSyncing food tracker data...")
+try:
+    run_script('sync_food_tracker.py')
+    print("Food tracker data synced")
+except subprocess.CalledProcessError as e:
+    print(f"Error syncing food tracker: {e}")
+except Exception as e:
+    print(f"Error syncing food tracker: {e}")
+
 # Prep the data for unsupervised learning
 print("\n\nPrepping data for unsupervised learning...")
 try:
