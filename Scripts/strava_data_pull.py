@@ -117,9 +117,11 @@ if __name__ == "__main__":
         df['start_date_local'] = pd.to_datetime(df['start_date_local'], errors='coerce')
         df.sort_values('start_date_local', ascending=False, inplace=True)
 
-        # Select only the cols we want to keep
-        df = df[[
-            'start_date_local', 
+        # Select only the cols we want to keep. Some fields (e.g. average_cadence,
+        # elev_low/elev_high) are omitted by the Strava API when no activity in the
+        # batch has that data, so ensure they exist before selecting.
+        expected_cols = [
+            'start_date_local',
             'sport_type',
             'elapsed_time',
             'distance',
@@ -128,8 +130,12 @@ if __name__ == "__main__":
             'total_elevation_gain',
             'elev_low',
             'elev_high',
-            'average_cadence'
-        ]]
+            'average_cadence',
+        ]
+        for col in expected_cols:
+            if col not in df.columns:
+                df[col] = pd.NA
+        df = df[expected_cols]
         df.columns = [
             'activitydate', 
             'activitytype',

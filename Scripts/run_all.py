@@ -138,6 +138,16 @@ except subprocess.CalledProcessError as e:
 except Exception as e:
     print(f"Error generating food plots: {e}")
 
+# Update academic data from CV and manuscript folders
+print("\n\nUpdating academic data from CV and manuscripts...")
+try:
+    run_script('update_academic_data.py')
+    print("Academic data updated")
+except subprocess.CalledProcessError as e:
+    print(f"Error updating academic data: {e}")
+except Exception as e:
+    print(f"Error updating academic data: {e}")
+
 # Prep the data for unsupervised learning
 print("\n\nPrepping data for unsupervised learning...")
 try:
