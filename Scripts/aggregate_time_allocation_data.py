@@ -139,6 +139,10 @@ for filename in os.listdir(folder_path):
         # Append the new data to the new_df DataFrame
         new_df = pd.concat([new_df, new_data], ignore_index=True)
 
+if new_df.empty:
+    print("No new time tracking files to process; skipping append.")
+    exit(0)
+
 # Ensure new_df has unique rows and reset the index
 new_df = new_df.drop_duplicates().sort_values(
     by=['date_column'], ascending=True).reset_index(drop=True)

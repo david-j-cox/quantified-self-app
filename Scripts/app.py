@@ -2160,102 +2160,131 @@ def plot_feature_phate_correlations(df_features, phate_results, n_components):
     return image_base64, corr_df, pval_df
 
 
+_DOMAIN_BUCKETS = [
+    ('sleep',    ['sleep', 'nap', 'bed', 'rem', 'slow_wave', 'asleep', 'wake']),
+    ('recovery', ['recovery', 'hrv', 'rhr', 'resting_heart', 'spo2', 'skin_temp']),
+    ('strain',   ['strain', 'kilojoule', 'calorie', 'max_heart', 'avg_heart']),
+    ('exercise', ['run', 'ride', 'bike', 'walk', 'swim', 'workout', 'strava',
+                  'distance', 'elapsedtime', 'activity', 'step', 'zone_duration']),
+    ('baseball', ['pirate', 'guardian', 'brave', 'baseball', 'mlb', 'in_person']),
+    ('work',     ['publication', 'cv_', 'book']),
+    ('time',     ['day', 'month', 'year', 'dayofyear']),
+]
+
+
+def _bucket_for(feature_name):
+    name = feature_name.lower()
+    for bucket, needles in _DOMAIN_BUCKETS:
+        if any(n in name for n in needles):
+            return bucket
+    return 'other'
+
+
+def _summarize_buckets(feature_names):
+    """Group feature names into domain buckets and return the dominant buckets."""
+    if not feature_names:
+        return []
+    from collections import Counter
+    counts = Counter(_bucket_for(f) for f in feature_names)
+    return [b for b, _ in counts.most_common()]
+
+
 def describe_phate_dimensions(corr_df, pval_df, corr_threshold=0.1, pval_threshold=0.05):
     """Generate interpretive descriptions for each PHATE dimension.
 
-    For each dimension, identifies features with significant correlations above
-    the threshold, sorted by distinctiveness (how much stronger the correlation
-    is with this dimension vs. all others).
-
-    Returns a list of dicts with keys: Dimension, Positively Correlated,
-    Negatively Correlated, Description.
+    For each dimension, keeps only features that are *distinctive* to that
+    dimension (correlate more strongly here than with any other dimension),
+    then builds a short table row describing what a high vs. low score on
+    that axis looks like as a day-type.
     """
-    n_components = len(corr_df.columns)
     descriptions = []
 
-    for j, dim_col in enumerate(corr_df.columns):
+    for dim_col in corr_df.columns:
         dim_corrs = corr_df[dim_col]
         dim_pvals = pval_df[dim_col]
 
-        # Filter by threshold and statistical significance
         sig_mask = (dim_corrs.abs() >= corr_threshold) & (dim_pvals < pval_threshold)
         sig_features = dim_corrs[sig_mask]
 
-        if sig_features.empty:
-            descriptions.append({
-                'Dimension': dim_col,
-                'Positively Correlated': '(none above threshold)',
-                'Negatively Correlated': '(none above threshold)',
-                'Description': 'No significant features at current threshold'
-            })
-            continue
-
-        # Compute distinctiveness: |corr in this dim| - max |corr in other dims|
         other_cols = [c for c in corr_df.columns if c != dim_col]
-        if other_cols:
+        if other_cols and not sig_features.empty:
             max_other = corr_df.loc[sig_features.index, other_cols].abs().max(axis=1)
             distinctiveness = sig_features.abs() - max_other
         else:
             distinctiveness = sig_features.abs()
 
-        # Sort by distinctiveness (most unique to this dimension first)
-        pos_features = sig_features[sig_features > 0].index
-        neg_features = sig_features[sig_features < 0].index
+        distinctive = sig_features[distinctiveness > 0]
+        if distinctive.empty:
+            descriptions.append({
+                'Dimension': dim_col,
+                'High-score days': '(no distinctive features)',
+                'Low-score days': '(no distinctive features)',
+                'Narrative': 'No features load more strongly on this dimension than on the others — axis is not well-separated.'
+            })
+            continue
 
-        pos_sorted = distinctiveness.loc[pos_features].sort_values(ascending=False).index.tolist()
-        neg_sorted = distinctiveness.loc[neg_features].sort_values(ascending=False).index.tolist()
+        ranked = distinctive.reindex(
+            distinctiveness.loc[distinctive.index].sort_values(ascending=False).index
+        )
+        pos = ranked[ranked > 0]
+        neg = ranked[ranked < 0]
 
-        # Format with correlation values, bold the most distinctive ones
-        def fmt_features(feat_list, corrs, distinct):
-            parts = []
-            for f in feat_list:
-                r = corrs[f]
-                d = distinct[f]
-                marker = '*' if d > 0 else ''
-                parts.append(f"{marker}{f} ({r:+.2f})")
-            return ', '.join(parts) if parts else '(none above threshold)'
+        def fmt(series, k=4):
+            return ', '.join(f"{f} ({r:+.2f})" for f, r in series.head(k).items()) or '—'
 
-        pos_str = fmt_features(pos_sorted, sig_features, distinctiveness)
-        neg_str = fmt_features(neg_sorted, sig_features, distinctiveness)
+        pos_str = fmt(pos)
+        neg_str = fmt(neg)
 
-        # Build a concise description contrasting the dimension
-        pos_top = pos_sorted[:3]
-        neg_top = neg_sorted[:3]
-        if pos_top and neg_top:
-            desc = f"More {', '.join(pos_top)} vs. less {', '.join(neg_top)}"
-        elif pos_top:
-            desc = f"Driven by {', '.join(pos_top)}"
+        pos_buckets = _summarize_buckets(pos.index.tolist())
+        neg_buckets = _summarize_buckets(neg.index.tolist())
+
+        def phrase(buckets):
+            if not buckets:
+                return 'no strong theme'
+            if len(buckets) == 1:
+                return f"{buckets[0]}-heavy"
+            return f"{buckets[0]}- and {buckets[1]}-heavy"
+
+        if pos_buckets and neg_buckets:
+            narrative = (f"High end = {phrase(pos_buckets)} days; "
+                         f"low end = {phrase(neg_buckets)} days.")
+        elif pos_buckets:
+            narrative = f"Axis picks out {phrase(pos_buckets)} days (no distinctive negative loadings)."
         else:
-            desc = f"Inversely driven by {', '.join(neg_top)}"
+            narrative = f"Axis picks out the absence of {phrase(neg_buckets)} days."
 
         descriptions.append({
             'Dimension': dim_col,
-            'Positively Correlated': pos_str,
-            'Negatively Correlated': neg_str,
-            'Description': desc
+            'High-score days': pos_str,
+            'Low-score days': neg_str,
+            'Narrative': narrative,
         })
 
     return descriptions
 
 
-def _compute_multivariate_recurrence(df_features, percentile=10):
+def _compute_multivariate_recurrence(df_features, percentile=10, dates=None):
     """Compute multivariate recurrence matrix using pairwise Euclidean distances.
-    Only uses columns with data for at least 50% of rows to avoid structural breaks."""
+    Only uses columns with data for at least 50% of rows, and drops rows where
+    every usable column is zero (no-tracking days) so they don't create a
+    spurious block of recurrences."""
     from scipy.spatial.distance import pdist, squareform
-    # Drop columns where >50% of values are zero (likely missing/unavailable features)
     nonzero_frac = (df_features != 0).mean()
     usable_cols = nonzero_frac[nonzero_frac >= 0.5].index
-    data = df_features[usable_cols].values
+    usable = df_features[usable_cols]
+    tracked_mask = (usable != 0).any(axis=1).values
+    data = usable.values[tracked_mask]
+    kept_dates = dates.reset_index(drop=True)[tracked_mask] if dates is not None else None
     dist_matrix = squareform(pdist(data, metric='euclidean'))
     threshold = np.percentile(dist_matrix[dist_matrix > 0], percentile)
     recurrence_matrix = (dist_matrix <= threshold).astype(int)
     np.fill_diagonal(recurrence_matrix, 0)
-    return recurrence_matrix
+    return recurrence_matrix, kept_dates
 
 
 def plot_recurrence(df_features, dates=None):
     """Generate a multivariate recurrence plot from the full feature space."""
-    rp_matrix = _compute_multivariate_recurrence(df_features)
+    rp_matrix, kept_dates = _compute_multivariate_recurrence(df_features, dates=dates)
 
     n = rp_matrix.shape[0]
     fig, ax = plt.subplots(figsize=(12, 12))
@@ -2266,8 +2295,8 @@ def plot_recurrence(df_features, dates=None):
     # Use actual dates for tick labels if provided
     tick_step = max(1, n // 10)
     tick_positions = list(range(0, n, tick_step))
-    if dates is not None:
-        date_labels = [pd.to_datetime(dates.iloc[t]).strftime('%-m/%d/%Y') for t in tick_positions]
+    if kept_dates is not None:
+        date_labels = [pd.to_datetime(kept_dates.iloc[t]).strftime('%-m/%d/%Y') for t in tick_positions]
     else:
         date_labels = [f'Day {t+1}' for t in tick_positions]
     ax.set_xticks(tick_positions)
@@ -2287,7 +2316,7 @@ def plot_recurrence(df_features, dates=None):
 
 def compute_rqa_metrics(df_features):
     """Compute RQA metrics from the multivariate recurrence matrix."""
-    rp_matrix = _compute_multivariate_recurrence(df_features)
+    rp_matrix, _ = _compute_multivariate_recurrence(df_features)
     n = rp_matrix.shape[0]
     total_possible = n * (n - 1)  # excluding diagonal
 
@@ -2698,6 +2727,13 @@ if not model_df.empty:
         df_scaled[df_numeric.columns], phate_results, n_components
     )
 
+    unmatched_cols = [c for c in df_numeric.columns if _bucket_for(c) == 'other']
+    if unmatched_cols:
+        print(f"[PHATE bucketing] {len(unmatched_cols)} columns fell into 'other' — "
+              f"add keywords to _DOMAIN_BUCKETS to classify them:")
+        for c in unmatched_cols:
+            print(f"  - {c}")
+
     # PHATE dimension descriptions
     phate_dimension_descriptions = describe_phate_dimensions(phate_corr_df, phate_pval_df)
 
@@ -2778,15 +2814,15 @@ app.layout = html.Div(children=[
                     style={'display': 'block', 'width': '80%', 'margin': '0 auto', 'margin-bottom': '2rem'}
                 ),
                 html.H3("PHATE Dimension Descriptions", style={'textAlign': 'center'}),
-                html.P("Features marked with * are most distinctive to that dimension (stronger correlation here than in any other dimension).",
+                html.P("Only features that load more strongly on a given dimension than on any other (i.e., distinctive to it) are shown.",
                        style={'textAlign': 'center', 'fontSize': 14, 'color': 'gray', 'marginBottom': '1rem'}),
                 dash_table.DataTable(
                     data=phate_dimension_descriptions,
                     columns=[
                         {'name': 'Dimension', 'id': 'Dimension'},
-                        {'name': 'Positively Correlated', 'id': 'Positively Correlated'},
-                        {'name': 'Negatively Correlated', 'id': 'Negatively Correlated'},
-                        {'name': 'Description', 'id': 'Description'},
+                        {'name': 'High-score days', 'id': 'High-score days'},
+                        {'name': 'Low-score days', 'id': 'Low-score days'},
+                        {'name': 'Narrative', 'id': 'Narrative'},
                     ],
                     style_table={'width': '90%', 'margin': '0 auto', 'marginBottom': '6rem'},
                     style_cell={'textAlign': 'left', 'fontSize': 14, 'padding': '10px',
@@ -2794,7 +2830,7 @@ app.layout = html.Div(children=[
                     style_header={'fontWeight': 'bold', 'fontSize': 16, 'textAlign': 'center'},
                     style_data_conditional=[
                         {'if': {'column_id': 'Dimension'}, 'fontWeight': 'bold', 'textAlign': 'center', 'width': '80px'},
-                        {'if': {'column_id': 'Description'}, 'fontStyle': 'italic'},
+                        {'if': {'column_id': 'Narrative'}, 'fontStyle': 'italic'},
                     ],
                 ) if phate_dimension_descriptions else html.P("No dimension descriptions available."),
                 html.H3("Recurrence Plot", style={'textAlign': 'center'}),
