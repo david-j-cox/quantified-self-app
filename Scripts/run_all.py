@@ -158,6 +158,32 @@ except subprocess.CalledProcessError as e:
 except Exception as e:
     print(f"An unexpected error occurred prepping data for unsupervised learning: {e}")
 
+# Launch Agent health check + auto-heal.  Re-bootstraps any davidjcox.*
+# agent whose log mtime exceeds 3x its expected cadence.  Pushes Ntfy on
+# any healing action so the user knows what was fixed without needing to
+# check logs.
+print("\n\nChecking Launch Agent health...")
+try:
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).parent))
+    from agent_health import check_all, format_summary, auto_heal
+    from ntfy import push as _ntfy_push
+    _checks = check_all()
+    print(format_summary(_checks))
+    _stale = [c for c in _checks if c["stale"]]
+    if _stale:
+        _msgs = auto_heal(_checks)
+        print("\nauto-heal:")
+        for m in _msgs:
+            print(f"  {m}")
+        _ntfy_push(
+            "\n".join(_msgs),
+            title=f"Healed {len(_stale)} stale Launch Agent(s)",
+            priority="default",
+        )
+except Exception as e:
+    print(f"Error during Launch Agent health check: {e}")
+
 # Run the dashboard script
 print("\n\nRunning dashboard creation...")
 run_script('app.py')

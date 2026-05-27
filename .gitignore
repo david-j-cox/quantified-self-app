@@ -34,6 +34,12 @@ wheels/
 # Logs
 logs/
 
+# Generated plot artifacts
+plots/*.b64
+
+# Runtime state sidecars
+Scripts/.academic_last_prompted.json
+
 # Jupyter Notebook
 .ipynb_checkpoints
 .virtual_documents/

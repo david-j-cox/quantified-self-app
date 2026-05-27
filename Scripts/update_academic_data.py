@@ -32,10 +32,8 @@ DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NA
 engine = create_engine(DATABASE_URL)
 
 CV_PATH = Path("/Users/davidjcox/Dropbox/Curriculum Vitae/2026/David J. Cox CV.docx")
-PROJECTS_ROOT = Path("/Users/davidjcox/Dropbox/Projects")
-UNDER_REVIEW_DIR = PROJECTS_ROOT / "Manuscripts Under Review"
-PUBLISHED_DIR = PROJECTS_ROOT / "Manuscripts With Decisions" / "Published"
-REJECTED_DIR = PROJECTS_ROOT / "Manuscripts With Decisions" / "Rejected"
+ARTICLES_DIR = Path("/Users/davidjcox/Dropbox/Articles/My Articles")
+BOOKS_DIR = Path("/Users/davidjcox/Dropbox/Articles/My Books")
 
 # Sidecar for once-per-season prompts (peer_reviewer is once-per-run).
 STATE_FILE = Path(__file__).parent / ".academic_last_prompted.json"
@@ -262,210 +260,83 @@ def popular_media_totals(sections: dict) -> dict[str, int]:
 
 
 # ---------------------------------------------------------------------------
-# Manuscript scanning
+# Article / book scanning
 # ---------------------------------------------------------------------------
 def normalize_title(raw: str) -> str:
-    """Lowercase, strip punctuation/whitespace for title matching."""
-    return re.sub(r"[^\w\s]", "", raw).strip().lower()
+    """Lowercase, strip punctuation, collapse whitespace for title matching."""
+    cleaned = re.sub(r"[^\w\s]", " ", raw)
+    return re.sub(r"\s+", " ", cleaned).strip().lower()
 
 
-def find_main_docx(folder: Path) -> Path | None:
-    """Pick the likely manuscript .docx inside a manuscript folder.
+# Filename pattern: '(YYYY) Title, Authors.pdf'.  Year is optional so we can
+# also process files that lack the prefix.
+_ARTICLE_PATTERN = re.compile(r"^\s*(?:\((\d{4})\)\s*)?(.+?)\.pdf$", re.IGNORECASE)
 
-    Preference order:
-      1. 'Manuscript.docx'
-      2. 'Main Manuscript*.docx' (prefers 'With Title' over 'No Title')
-      3. file name matching folder name (ignoring parenthetical prefixes)
-      4. any .docx that is NOT cover letter / title page / figures / tables
-         / appendix / preprint / response
-      5. one level of recursion into subfolders, same rules
+
+def parse_article_filename(name: str) -> tuple[int | None, str]:
+    """Pull (year, title-without-author-tail) from a 'My Articles' filename.
+
+    Filenames look like:
+      '(2017) Application of the matching law to pitch selection..., Cox et al..pdf'
+    Title is everything after the year, with the trailing ', Author...'
+    chunk stripped so the title alone is used for dedup and CV lookup.
     """
-    def search(dir_: Path) -> Path | None:
-        docxs = [
-            p for p in dir_.glob("*.docx")
-            if not p.name.startswith("~$") and p.stat().st_size > 0
-        ]
-        if not docxs:
-            return None
+    m = _ARTICLE_PATTERN.match(name)
+    if not m:
+        return None, name
+    year = int(m.group(1)) if m.group(1) else None
+    title_with_authors = m.group(2).strip()
 
-        for p in docxs:
-            if p.stem.lower() == "manuscript":
-                return p
-
-        main_manuscripts = [p for p in docxs if p.stem.lower().startswith("main manuscript")]
-        if main_manuscripts:
-            with_title = [p for p in main_manuscripts if "with title" in p.stem.lower()]
-            if with_title:
-                return with_title[0]
-            return main_manuscripts[0]
-
-        folder_norm = normalize_title(dir_.name)
-        for p in docxs:
-            if normalize_title(p.stem) == folder_norm:
-                return p
-
-        excluded = (
-            "cover letter", "title page", "figures", "tables", "appendix",
-            "preprint", "response", "revision notes", "reply",
-        )
-        candidates = [p for p in docxs if not any(x in p.stem.lower() for x in excluded)]
-        if len(candidates) == 1:
-            return candidates[0]
-        if len(candidates) > 1:
-            candidates.sort(key=lambda p: p.stat().st_mtime, reverse=True)
-            return candidates[0]
-        return None
-
-    hit = search(folder)
-    if hit:
-        return hit
-    for sub in folder.iterdir():
-        if sub.is_dir() and not sub.name.startswith("."):
-            hit = search(sub)
-            if hit:
-                return hit
-    return None
+    # Strip trailing author chunk: split on the last ', ' and drop it if the
+    # tail looks like an author list (contains a known marker).  Otherwise
+    # keep the whole title.
+    if ", " in title_with_authors:
+        head, _, tail = title_with_authors.rpartition(", ")
+        tail_low = tail.lower()
+        if (
+            "et al" in tail_low
+            or "&" in tail
+            or re.search(r"\b[A-Z][a-zA-Z\-]+$", tail)
+        ):
+            title_with_authors = head
+    return year, title_with_authors.strip()
 
 
-def docx_word_count(path: Path) -> int:
-    doc = Document(str(path))
-    total = 0
-    for p in doc.paragraphs:
-        total += len(p.text.split())
-    for tbl in doc.tables:
-        for row in tbl.rows:
-            for cell in row.cells:
-                for p in cell.paragraphs:
-                    total += len(p.text.split())
-    return total
+def parse_book_folder_name(name: str) -> tuple[int | None, str]:
+    """Pull (year, title) from a 'My Books' folder name.  Year may be absent."""
+    m = re.match(r"^\s*(?:\((\d{4})\)\s*)?(.+?)\s*$", name)
+    if not m:
+        return None, name
+    year = int(m.group(1)) if m.group(1) else None
+    title = m.group(2).strip()
+    if ", " in title:
+        head, _, tail = title.rpartition(", ")
+        if "et al" in tail.lower() or "&" in tail:
+            title = head
+    return year, title
 
 
-def docx_page_count(path: Path) -> int | None:
-    """Pull pages from core/app properties.  Often absent until Word saves."""
-    doc = Document(str(path))
-    try:
-        props = doc.core_properties
-        if hasattr(props, "pages") and props.pages:
-            return int(props.pages)
-    except Exception:
-        pass
-    try:
-        app_props = doc.part.package.part_related_by.get("app")
-    except Exception:
-        app_props = None
-    return None
-
-
-def infer_journal_from_cv_in_review(title: str) -> str | None:
-    """If the CV's 'In Review' subsection lists this manuscript, try to
-    pull the journal name from the citation line."""
-    sections = load_cv_sections()
-    pub_lines = sections.get("PUBLICATIONS", [])
-    in_review_chunk = []
-    capture = False
-    for line in pub_lines:
-        if "In Review" in line and "In-Preparation" not in line:
-            capture = True
-            continue
-        if capture and "In-Preparation" in line:
-            break
-        if capture:
-            in_review_chunk.append(line)
-
-    title_norm = normalize_title(title)
-    for line in in_review_chunk:
-        if title_norm in normalize_title(line):
-            parts = re.split(r"\.\s+", line)
-            if parts:
-                last = parts[-1].strip().rstrip(".")
-                if 5 <= len(last) <= 80:
-                    return last
-    return None
+_journals_cache: set[str] | None = None
 
 
 def known_journals() -> set[str]:
-    df = pd.read_sql("SELECT DISTINCT journal FROM publication_stats", engine)
-    return {normalize_title(j) for j in df["journal"].dropna().tolist()}
+    """Cached set of normalized journal names already in publication_stats."""
+    global _journals_cache
+    if _journals_cache is None:
+        df = pd.read_sql("SELECT DISTINCT journal FROM publication_stats", engine)
+        _journals_cache = {normalize_title(j) for j in df["journal"].dropna().tolist()}
+    return _journals_cache
 
 
-# ---------------------------------------------------------------------------
-# Tracking table
-# ---------------------------------------------------------------------------
-def ensure_tracking_table() -> None:
-    with engine.begin() as conn:
-        conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS academic_manuscript_tracking (
-                title_normalized TEXT PRIMARY KEY,
-                title TEXT,
-                status TEXT,
-                folder_path TEXT,
-                first_seen DATE,
-                last_updated DATE
-            )
-        """))
-
-
-def tracking_get(title_norm: str) -> dict | None:
-    with engine.connect() as conn:
-        row = conn.execute(
-            text("SELECT * FROM academic_manuscript_tracking WHERE title_normalized = :t"),
-            {"t": title_norm},
-        ).fetchone()
-    return dict(row._mapping) if row else None
-
-
-def tracking_upsert(title_norm: str, title: str, status: str, folder_path: str) -> None:
-    today = date.today()
-    existing = tracking_get(title_norm)
-    with engine.begin() as conn:
-        if existing:
-            conn.execute(text("""
-                UPDATE academic_manuscript_tracking
-                SET status = :s, folder_path = :f, last_updated = :d, title = :t
-                WHERE title_normalized = :n
-            """), {"s": status, "f": folder_path, "d": today, "t": title, "n": title_norm})
-        else:
-            conn.execute(text("""
-                INSERT INTO academic_manuscript_tracking
-                    (title_normalized, title, status, folder_path, first_seen, last_updated)
-                VALUES (:n, :t, :s, :f, :d, :d)
-            """), {"n": title_norm, "t": title, "s": status, "f": folder_path, "d": today})
+def remember_journal(journal: str) -> None:
+    """Add a freshly-inserted journal so subsequent rows in this run know it."""
+    if journal:
+        known_journals().add(normalize_title(journal))
 
 
 # ---------------------------------------------------------------------------
 # publication_stats read/write
 # ---------------------------------------------------------------------------
-def publication_row_by_title(title: str) -> dict | None:
-    title_norm = normalize_title(title)
-    with engine.connect() as conn:
-        rows = conn.execute(
-            text("SELECT ctid, * FROM publication_stats WHERE title IS NOT NULL")
-        ).fetchall()
-    for r in rows:
-        d = dict(r._mapping)
-        if normalize_title(d.get("title") or "") == title_norm:
-            return d
-    return None
-
-
-def ask_article_type() -> dict:
-    print("  article type?")
-    print("    1) theoretical")
-    print("    2) empirical")
-    print("    3) commentary / reply")
-    print("    4) book content")
-    while True:
-        c = prompt("  choice (1-4)", "2")
-        if c in {"1", "2", "3", "4"}:
-            break
-    return {
-        "theoretical_articles": 1 if c == "1" else 0,
-        "empirical_articles": 1 if c == "2" else 0,
-        "commentary_replies": 1 if c == "3" else 0,
-        "book_content": 1 if c == "4" else 0,
-    }
-
-
 def insert_publication_row(row: dict) -> None:
     cols = ", ".join(row.keys())
     placeholders = ", ".join(f":{k}" for k in row.keys())
@@ -473,121 +344,205 @@ def insert_publication_row(row: dict) -> None:
         conn.execute(text(f"INSERT INTO publication_stats ({cols}) VALUES ({placeholders})"), row)
 
 
-def update_publication_row(title: str, updates: dict) -> None:
-    set_clause = ", ".join(f"{k} = :{k}" for k in updates.keys())
-    params = dict(updates)
-    params["title"] = title
-    with engine.begin() as conn:
-        conn.execute(
-            text(f"UPDATE publication_stats SET {set_clause} WHERE title = :title"),
-            params,
-        )
-
-
 # ---------------------------------------------------------------------------
-# Manuscript processing
+# Article / book processing — DOI-keyed since 2026-05
+#
+# Articles are matched to existing publication_stats rows by DOI.  When a
+# DOI is found in the PDF and already attached to a row, the file is
+# silently skipped.  When the DOI is new, Crossref provides title / journal
+# / year / authors and a single Y/n prompt confirms insertion.  When DOI
+# extraction fails entirely, the file is reported and skipped (not auto-
+# inserted) — drop a manual row in publication_stats or run the backfill
+# script for those.
 # ---------------------------------------------------------------------------
-def process_manuscript(folder: Path, status: str, journal_hint: str | None) -> None:
-    title = folder.name
-    title_norm = normalize_title(title)
-    tracked = tracking_get(title_norm)
-    existing_row = publication_row_by_title(title)
+from doi_extract import extract_doi  # noqa: E402
+from crossref_lookup import lookup_doi_with_retry  # noqa: E402
 
-    if tracked and tracked["status"] == status and existing_row:
-        return
 
-    main_doc = find_main_docx(folder)
-    if main_doc is None:
-        print(f"\n[{status}] {title}")
-        print("  ⚠ could not locate main .docx — skipping")
-        return
+def load_db_doi_set() -> set[str]:
+    """All DOIs already attached to publication_stats rows."""
+    with engine.connect() as conn:
+        rows = conn.execute(
+            text("SELECT DISTINCT doi FROM publication_stats WHERE doi IS NOT NULL")
+        ).fetchall()
+    return {r[0].lower() for r in rows}
 
-    print(f"\n[{status}] {title}")
-    print(f"  main doc: {main_doc.name}")
 
-    try:
-        words = docx_word_count(main_doc)
-        pages = docx_page_count(main_doc)
-    except Exception as e:
-        print(f"  ⚠ could not read {main_doc.name} ({e}) — skipping")
-        return
-    if pages is None:
-        print(f"  words: {words}, pages not in metadata")
-        if prompt_yes_no(f"  use estimate ({words // 250} pages from words/250)?", True):
-            pages = max(1, words // 250)
-        else:
-            pages = prompt_int("  enter actual page count")
-    else:
-        print(f"  words: {words}, pages: {pages}")
+def load_db_titles() -> set[str]:
+    """Normalized titles in publication_stats — used for book-folder dedup
+    as a fallback when no ISBN match is found."""
+    with engine.connect() as conn:
+        rows = conn.execute(
+            text("SELECT title FROM publication_stats WHERE title IS NOT NULL")
+        ).fetchall()
+    return {normalize_title(r[0]) for r in rows}
 
-    journal = journal_hint
-    if not journal:
-        inferred = infer_journal_from_cv_in_review(title)
-        if inferred:
-            if prompt_yes_no(f"  journal '{inferred}' — correct?", True):
-                journal = inferred
-    if not journal:
-        journal = prompt("  journal name")
 
+def load_db_isbns() -> set[str]:
+    """All ISBNs already attached to publication_stats rows (digits only)."""
+    with engine.connect() as conn:
+        rows = conn.execute(
+            text("SELECT DISTINCT isbn FROM publication_stats WHERE isbn IS NOT NULL")
+        ).fetchall()
+    out: set[str] = set()
+    for r in rows:
+        digits = "".join(c for c in r[0] if c.isdigit())
+        if digits:
+            out.add(digits)
+    return out
+
+
+def isbn_in_folder_name(name: str) -> str | None:
+    """If an ISBN-13 (978...) appears in the folder name, return digits-only.
+    Most My Books/ folder names won't have this, but it's free to check."""
+    digits = "".join(c if c.isdigit() else " " for c in name).split()
+    for run in digits:
+        if len(run) == 13 and run.startswith("978"):
+            return run
+    return None
+
+
+def role_from_crossref_type(t: str | None) -> str:
+    return {
+        "journal-article": "article",
+        "book-chapter": "chapter",
+        "book": "author",
+        "monograph": "author",
+        "edited-book": "editor",
+        "posted-content": "preprint",
+        "report": "report",
+    }.get(t or "", "article")
+
+
+def article_type_from_crossref(t: str | None) -> dict:
+    """Default category flags inferred from Crossref's work type."""
+    if t == "book-chapter":
+        return {"theoretical_articles": 0, "empirical_articles": 0,
+                "commentary_replies": 0, "book_content": 1}
+    return {"theoretical_articles": 0, "empirical_articles": 1,
+            "commentary_replies": 0, "book_content": 0}
+
+
+def insert_from_crossref(crossref: dict, doi: str) -> None:
+    """Build and INSERT a publication_stats row from Crossref metadata."""
     journals = known_journals()
-    new_journal_auto = normalize_title(journal) not in journals
-    print(f"  '{journal}' {'NEW to catalog' if new_journal_auto else 'already in catalog'}")
-    if prompt_yes_no(f"  mark as new journal?", new_journal_auto):
-        new_journal_val = "Yes"
-        number_journals = 1
-    else:
-        new_journal_val = "No"
-        number_journals = 0
-
-    if existing_row:
-        updates = {
-            "number_words": words,
-            "number_pages": pages,
-            "journal": journal,
-            "new_journal": new_journal_val,
-            "number_journals": number_journals,
-        }
-        if status == "published":
-            if prompt_yes_no(
-                f"  update year from {existing_row.get('year')} to {CURRENT_YEAR}?",
-                False,
-            ):
-                updates["year"] = CURRENT_YEAR
-        update_publication_row(title, updates)
-        print(f"  ↻ updated publication_stats row")
-    else:
-        row = {
-            "year": CURRENT_YEAR,
-            "number_words": words,
-            "number_pages": pages,
-            "number_journals": number_journals,
-            "title": title,
-            "journal": journal,
-            "new_journal": new_journal_val,
-        }
-        row.update(ask_article_type())
-        insert_publication_row(row)
-        print(f"  + inserted publication_stats row")
-
-    tracking_upsert(title_norm, title, status, str(folder))
+    is_new_journal = (
+        bool(crossref.get("journal"))
+        and normalize_title(crossref["journal"]) not in journals
+    )
+    row = {
+        "year": crossref.get("year"),
+        "number_words": 0,
+        "number_pages": 0,
+        "number_journals": 1 if is_new_journal else 0,
+        "title": crossref.get("title"),
+        "journal": crossref.get("journal"),
+        "new_journal": "Yes" if is_new_journal else "No",
+        "authors": crossref.get("authors"),
+        "doi": doi,
+        "role": role_from_crossref_type(crossref.get("type")),
+    }
+    row.update(article_type_from_crossref(crossref.get("type")))
+    insert_publication_row(row)
+    if crossref.get("journal"):
+        remember_journal(crossref["journal"])
 
 
-def scan_under_review() -> None:
-    if not UNDER_REVIEW_DIR.exists():
-        print(f"warning: {UNDER_REVIEW_DIR} not found")
-        return
-    for folder in sorted(p for p in UNDER_REVIEW_DIR.iterdir() if p.is_dir()):
-        process_manuscript(folder, "under_review", None)
+def process_article_pdf(pdf_path: Path, doi_set: set[str]) -> str:
+    """Returns one of: 'skipped' (already known) / 'inserted' / 'no-doi'
+    / 'declined' / 'crossref-miss'."""
+    doi, src = extract_doi(pdf_path, allow_ocr=True)
+    if not doi:
+        # No DOI — flag once at end-of-run; don't insert anything.
+        return "no-doi"
+    if doi in doi_set:
+        return "skipped"
+
+    crossref = lookup_doi_with_retry(doi)
+    if not crossref:
+        print(f"\n[NEW article] {pdf_path.name}")
+        print(f"  DOI: {doi} ({src})")
+        print(f"  Crossref returned nothing — skipping (try the backfill script)")
+        return "crossref-miss"
+
+    print(f"\n[NEW article] {pdf_path.name}")
+    print(f"  DOI: {doi} ({src})")
+    print(f"    title:    {crossref.get('title')}")
+    print(f"    journal:  {crossref.get('journal')}")
+    print(f"    year:     {crossref.get('year')}")
+    print(f"    authors:  {crossref.get('authors')}")
+    print(f"    type:     {crossref.get('type')}")
+    if not prompt_yes_no("  insert as new publication_stats row?", True):
+        return "declined"
+
+    insert_from_crossref(crossref, doi)
+    doi_set.add(doi)
+    print("  + inserted publication_stats row")
+    return "inserted"
 
 
-def scan_published() -> None:
-    if not PUBLISHED_DIR.exists():
-        print(f"warning: {PUBLISHED_DIR} not found")
-        return
-    for journal_folder in sorted(p for p in PUBLISHED_DIR.iterdir() if p.is_dir()):
-        journal_name = journal_folder.name
-        for manuscript_folder in sorted(p for p in journal_folder.iterdir() if p.is_dir()):
-            process_manuscript(manuscript_folder, "published", journal_name)
+def process_book_folder(folder: Path, db_titles: set[str],
+                        db_isbns: set[str]) -> str:
+    """Match book folder to existing rows by ISBN (preferred) or title.
+    Folders that match neither are reported but NOT inserted to avoid
+    duplicates — ISBN entry needs a human anyway."""
+    _, title = parse_book_folder_name(folder.name)
+    if not title:
+        return "skipped"
+    folder_isbn = isbn_in_folder_name(folder.name)
+    if folder_isbn and folder_isbn in db_isbns:
+        return "skipped"
+    if normalize_title(title) in db_titles:
+        return "skipped"
+    return "no-match"
+
+
+def scan_articles(doi_set: set[str]) -> dict[str, int]:
+    counts = {"skipped": 0, "inserted": 0, "no-doi": 0,
+              "declined": 0, "crossref-miss": 0}
+    if not ARTICLES_DIR.exists():
+        print(f"warning: {ARTICLES_DIR} not found")
+        return counts
+    pdfs = sorted(p for p in ARTICLES_DIR.glob("*.pdf"))
+    no_doi_files: list[str] = []
+    for pdf in pdfs:
+        result = process_article_pdf(pdf, doi_set)
+        counts[result] += 1
+        if result == "no-doi":
+            no_doi_files.append(pdf.name)
+    print(f"  scanned {len(pdfs)} article PDFs: "
+          f"{counts['skipped']} known, {counts['inserted']} inserted, "
+          f"{counts['no-doi']} no-DOI, {counts['declined']} declined, "
+          f"{counts['crossref-miss']} crossref-miss")
+    if no_doi_files:
+        print("  PDFs without an extractable DOI (manual entry needed):")
+        for f in no_doi_files:
+            print(f"    {f}")
+    return counts
+
+
+def scan_books(db_titles: set[str], db_isbns: set[str]) -> dict[str, int]:
+    counts = {"skipped": 0, "no-match": 0}
+    if not BOOKS_DIR.exists():
+        print(f"warning: {BOOKS_DIR} not found")
+        return counts
+    folders = sorted(
+        p for p in BOOKS_DIR.iterdir()
+        if p.is_dir() and not p.name.startswith(".") and p.name.lower() != "icon"
+    )
+    unmatched: list[str] = []
+    for f in folders:
+        result = process_book_folder(f, db_titles, db_isbns)
+        counts[result] += 1
+        if result == "no-match":
+            unmatched.append(f.name)
+    print(f"  scanned {len(folders)} book folders: "
+          f"{counts['skipped']} known, {counts['no-match']} not yet in DB")
+    if unmatched:
+        print("  Book folders not in DB (add via backfill or manual entry):")
+        for n in unmatched:
+            print(f"    {n}")
+    return counts
 
 
 # ---------------------------------------------------------------------------
@@ -697,7 +652,6 @@ def main() -> int:
         return 1
 
     print(f"=== academic data update — {date.today()} ===")
-    ensure_tracking_table()
 
     state = load_state()
 
@@ -719,10 +673,16 @@ def main() -> int:
     print(f"\npopular media delta since last run: {media_delta}")
     state["popular_media_totals"] = media_totals
 
-    print("\nscanning Manuscripts Under Review...")
-    scan_under_review()
-    print("\nscanning Manuscripts With Decisions / Published...")
-    scan_published()
+    doi_set = load_db_doi_set()
+    db_titles = load_db_titles()
+    db_isbns = load_db_isbns()
+    print(f"\npublication_stats: {len(db_titles)} rows, "
+          f"{len(doi_set)} with DOIs, {len(db_isbns)} with ISBNs")
+
+    print("\nscanning Articles/My Articles...")
+    scan_articles(doi_set)
+    print("\nscanning Articles/My Books...")
+    scan_books(db_titles, db_isbns)
 
     deltas = seasonal_prompts(state)
     update_cv_additions(cv_counts, deltas, media_delta)
