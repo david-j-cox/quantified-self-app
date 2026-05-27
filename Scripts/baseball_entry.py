@@ -12,6 +12,8 @@ import requests
 from dotenv import load_dotenv
 from flask import Flask, request
 from sqlalchemy import create_engine, text
+from sqlalchemy.dialects.postgresql import insert as pg_insert
+from sqlalchemy import MetaData, Table
 
 # ---------------------------------------------------------------------------
 # Config
@@ -26,8 +28,13 @@ DB_PORT = os.getenv("DB_PORT")
 
 DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 engine = create_engine(DATABASE_URL)
+_baseball_table = Table("baseball_watched_long", MetaData(), autoload_with=engine)
 
 PORT = 8052
+
+# Re-entry guards for /submit and /no-games
+_submit_lock = threading.Lock()
+_submitted = False
 
 # Allow date override via --date YYYY-MM-DD for backfilling missed days
 _date_override = None
@@ -252,7 +259,11 @@ def index():
         <div class="card">
           <h2>MLB Games &mdash; {date_str}</h2>
           <p class="msg">No games were played on this date.</p>
-          <form method="post" action="/no-games">
+          <form method="post" action="/no-games" onsubmit="
+            if (this.dataset.submitted) return false;
+            this.dataset.submitted = '1';
+            for (const b of this.querySelectorAll('button')) {{ b.disabled = true; }}
+          ">
             <button class="btn btn-secondary" type="submit">Close</button>
           </form>
         </div>"""
@@ -279,7 +290,11 @@ def index():
     <div class="card">
       <h2>MLB Games &mdash; {date_str}</h2>
       {warning}
-      <form method="post" action="/submit">
+      <form method="post" action="/submit" onsubmit="
+        if (this.dataset.submitted) return false;
+        this.dataset.submitted = '1';
+        for (const b of this.querySelectorAll('button')) {{ b.disabled = true; }}
+      ">
         {rows}
         <hr style="margin:16px 0">
         <button class="btn btn-primary" type="submit">Submit</button>
@@ -294,6 +309,13 @@ def index():
 
 @app.route("/submit", methods=["POST"])
 def submit():
+    global _submitted
+    with _submit_lock:
+        if _submitted:
+            recent = recent_entries_html()
+            return page("MLB Games", f'<div class="card"><p class="msg">Already submitted. You can close this tab.</p>{recent}</div>')
+        _submitted = True
+
     games = app.config.get("GAMES", [])
     selected = request.form.getlist("game")
 
@@ -318,7 +340,13 @@ def submit():
             "in_person": in_person,
         })
 
-    pd.DataFrame(rows).to_sql("baseball_watched_long", engine, if_exists="append", index=False)
+    # ON CONFLICT DO NOTHING — relies on unique index (date, box_score)
+    with engine.begin() as conn:
+        conn.execute(
+            pg_insert(_baseball_table)
+            .values(rows)
+            .on_conflict_do_nothing(index_elements=["date", "box_score"])
+        )
 
     count = len(rows)
     recent = recent_entries_html()
@@ -330,6 +358,13 @@ def submit():
 
 @app.route("/no-games", methods=["POST"])
 def no_games():
+    global _submitted
+    with _submit_lock:
+        if _submitted:
+            recent = recent_entries_html()
+            return page("MLB Games", f'<div class="card"><p class="msg">Already submitted. You can close this tab.</p>{recent}</div>')
+        _submitted = True
+
     recent = recent_entries_html()
     body = f'<div class="card"><p class="msg">No entries recorded. You can close this tab.</p>{recent}</div>'
     mark_ran_today()

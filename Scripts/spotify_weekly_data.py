@@ -243,7 +243,10 @@ def convert_spotify_to_extended_format(items):
         track = item['track']
         played_at = item['played_at']
         
-        # Convert to Extended Streaming History format
+        # The API doesn't return actual play time. Use Spotify's 30-second
+        # play-count threshold as a conservative estimate; Extended Streaming
+        # History exports will overwrite these with true ms_played later.
+        API_MS_PLAYED_ESTIMATE = 30_000
         converted_item = {
             'ts': played_at,
             'date': pd.to_datetime(played_at).date().isoformat(),
@@ -251,9 +254,9 @@ def convert_spotify_to_extended_format(items):
             'master_metadata_track_name': track['name'],
             'master_metadata_album_artist_name': track['artists'][0]['name'] if track['artists'] else None,
             'master_metadata_album_album_name': track['album']['name'],
-            'ms_played': track.get('duration_ms', 0),  # Full duration - API doesn't provide actual play time
-            'seconds_played': track.get('duration_ms', 0) / 1000 if track.get('duration_ms') else 0,
-            'minutes_played': track.get('duration_ms', 0) / 60000 if track.get('duration_ms') else 0,
+            'ms_played': API_MS_PLAYED_ESTIMATE,
+            'seconds_played': API_MS_PLAYED_ESTIMATE / 1000,
+            'minutes_played': API_MS_PLAYED_ESTIMATE / 60000,
             'platform': 'api',  # Mark as API source
             'conn_country': None,  # Not available in API
             'spotify_track_uri': track['uri'],
