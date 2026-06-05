@@ -25,6 +25,10 @@ raw_data_path = '../Data/raw_data.csv'  # Path to the raw_data.csv file
 script_dir = os.path.dirname(os.path.abspath(__file__))
 archive_path = os.path.join(script_dir, '..', 'Archive')
 
+# Ensure the working directories exist (fresh checkouts may not have them)
+os.makedirs(folder_path, exist_ok=True)
+os.makedirs(archive_path, exist_ok=True)
+
 # Download new files from Dropbox shared folder
 DROPBOX_URL = os.getenv("DROPBOX_TIME_TRACKING_URL")
 if DROPBOX_URL:
