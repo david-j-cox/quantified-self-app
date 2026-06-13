@@ -152,9 +152,13 @@ new_df = new_df.drop_duplicates().sort_values(
     by=['date_column'], ascending=True).reset_index(drop=True)
 
 # Add new data to the existing raw_data.csv data
-all_data['date_column'] = pd.to_datetime(all_data['date_column'])
-all_data = pd.concat([all_data, new_df]).drop_duplicates(
-    subset='date_column', keep='first').reset_index(drop=True)
+if all_data.empty:
+    # Fresh checkout: raw_data.csv didn't exist, so start from the new files
+    all_data = new_df.copy()
+else:
+    all_data['date_column'] = pd.to_datetime(all_data['date_column'])
+    all_data = pd.concat([all_data, new_df]).drop_duplicates(
+        subset='date_column', keep='first').reset_index(drop=True)
 
 # Sort by date
 all_data['date_column'] = pd.to_datetime(all_data['date_column'])
