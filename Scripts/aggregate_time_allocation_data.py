@@ -21,7 +21,6 @@ DB_URL = os.getenv("DB_URL")
 
 # Paths
 folder_path = '../Data/Time Tracking/'  # Folder with the data files
-raw_data_path = '../Data/raw_data.csv'  # Path to the raw_data.csv file
 script_dir = os.path.dirname(os.path.abspath(__file__))
 archive_path = os.path.join(script_dir, '..', 'Archive')
 
@@ -65,12 +64,6 @@ if DROPBOX_URL:
         print("Continuing with local files...")
 else:
     print("Warning: DROPBOX_TIME_TRACKING_URL not set in .env, skipping Dropbox download.")
-
-# Read existing data from raw_data.csv
-if os.path.exists(raw_data_path):
-    all_data = pd.read_csv(raw_data_path)
-else:
-    all_data = pd.DataFrame()
 
 # Data processing
 new_df = pd.DataFrame()
@@ -150,25 +143,6 @@ if new_df.empty:
 # Ensure new_df has unique rows and reset the index
 new_df = new_df.drop_duplicates().sort_values(
     by=['date_column'], ascending=True).reset_index(drop=True)
-
-# Add new data to the existing raw_data.csv data
-if all_data.empty:
-    # Fresh checkout: raw_data.csv didn't exist, so start from the new files
-    all_data = new_df.copy()
-else:
-    all_data['date_column'] = pd.to_datetime(all_data['date_column'])
-    all_data = pd.concat([all_data, new_df]).drop_duplicates(
-        subset='date_column', keep='first').reset_index(drop=True)
-
-# Sort by date
-all_data['date_column'] = pd.to_datetime(all_data['date_column'])
-all_data = all_data.sort_values(
-    by=['date_column'], ascending=True).reset_index(drop=True)
-
-# Save the updated data back to raw_data.csv
-all_data = all_data.drop_duplicates(subset=['date_column'], keep='last')
-all_data.to_csv(raw_data_path, index=False)
-print("Data has been successfully appended to the raw_data.csv file.")
 
 # Database connection details
 TABLE_NAME = 'raw_data'
