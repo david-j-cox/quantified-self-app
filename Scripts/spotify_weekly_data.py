@@ -31,6 +31,16 @@ from dotenv import load_dotenv
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+
+class ReauthRequiredError(Exception):
+    """Raised when Spotify's refresh token is expired or revoked (invalid_grant).
+
+    Starting 2026-07-20 Spotify expires refresh tokens after six months. This is
+    not retryable: the stored token must be discarded and the user must re-run
+    the interactive `setup` flow to obtain a new one.
+    """
+
+
 class SpotifyAPI:
     def __init__(self, client_id, client_secret, redirect_uri="https://open.spotify.com/user/cox.david.j"):
         self.client_id = client_id
@@ -104,6 +114,19 @@ class SpotifyAPI:
             logger.info("Successfully refreshed access token")
             return True
         else:
+            # Spotify returns 400 {"error": "invalid_grant"} when the refresh
+            # token is expired or revoked. Do NOT retry a failed refresh -
+            # signal distinctly so the caller can discard the token and prompt
+            # re-authorization.
+            error_code = ""
+            try:
+                error_code = (response.json() or {}).get("error", "")
+            except ValueError:
+                pass
+            if error_code == "invalid_grant":
+                raise ReauthRequiredError(
+                    "Spotify refresh token expired or revoked (invalid_grant)"
+                )
             logger.error(f"Failed to refresh token: {response.text}")
             return False
     
@@ -285,9 +308,11 @@ def append_to_csv(new_data, csv_file):
         logger.info("No new data to append")
         return
     
-    # Convert new data to DataFrame
+    # Convert new data to DataFrame. Spotify returns mixed ISO-8601 forms
+    # (some with fractional seconds, some without), so parse with format='mixed'
+    # to avoid the strptime crash that silently broke runs since 2025-10-24.
     new_df = pd.DataFrame(new_data)
-    new_df['ts'] = pd.to_datetime(new_df['ts'])
+    new_df['ts'] = pd.to_datetime(new_df['ts'], format='mixed')
     
     if os.path.exists(csv_file):
         # Read existing data
@@ -358,6 +383,35 @@ def load_credentials(config_file):
     except Exception as e:
         logger.error(f"Error loading config: {e}")
         return None
+
+def discard_tokens(config_file):
+    """Null out stored tokens so a dead credential is not reused on the next run.
+
+    Preserves client_id/secret/redirect_uri; the user re-runs `setup` to
+    reconnect. Implements Spotify's "discard the stored token first" guidance.
+    """
+    try:
+        with open(config_file, 'r') as f:
+            config = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return
+    for key in ('refresh_token', 'access_token', 'token_expires_at'):
+        config[key] = None
+    with open(config_file, 'w') as f:
+        json.dump(config, f, indent=2)
+    logger.info("Discarded stored Spotify tokens; reauthorization required.")
+
+
+def _notify(message, title=None, priority=None, tags=None):
+    """Best-effort Ntfy push. Never raises - a missed alert must not crash the
+    run. Mirrors the lazy-import pattern used in run_all.py."""
+    try:
+        sys.path.insert(0, str(Path(__file__).parent))
+        from ntfy import push
+        push(message, title=title, priority=priority, tags=tags)
+    except Exception as e:
+        logger.error(f"Ntfy push failed: {e}")
+
 
 def setup_spotify_auth():
     """Interactive setup for Spotify API authentication."""
@@ -486,7 +540,7 @@ def fetch_incremental_data(data_dir, config_file):
     # Show summary
     if converted_items:
         df = pd.DataFrame(converted_items)
-        df['ts'] = pd.to_datetime(df['ts'])
+        df['ts'] = pd.to_datetime(df['ts'], format='mixed')
         logger.info("=== INCREMENTAL UPDATE SUMMARY ===")
         logger.info(f"New data range: {df['ts'].min()} to {df['ts'].max()}")
         logger.info(f"New tracks fetched: {len(df)}")
@@ -508,7 +562,7 @@ def main():
     data_dir = project_root / "Data"
     config_file = project_root / "Scripts" / "spotify_config.json"
     
-    logger.info("Starting Spotify incremental data collection (4-hour automated run)...")
+    logger.info("Starting Spotify incremental data collection (hourly automated run)...")
     
     if len(sys.argv) > 1 and sys.argv[1] == 'setup':
         logger.info("Running setup mode...")
@@ -520,8 +574,21 @@ def main():
             logger.error("Setup failed")
         return
     
-    success = fetch_incremental_data(data_dir, config_file)
-    
+    try:
+        success = fetch_incremental_data(data_dir, config_file)
+    except ReauthRequiredError as e:
+        logger.error(f"Spotify reauthorization required: {e}")
+        discard_tokens(config_file)
+        _notify(
+            "Spotify refresh token expired or revoked. Run:\n"
+            "  python Scripts/spotify_weekly_data.py setup\n"
+            "to reconnect.",
+            title="Spotify reauth needed",
+            priority="high",
+            tags=["warning"],
+        )
+        sys.exit(1)
+
     if success:
         logger.info("Incremental data collection completed successfully!")
     else:
