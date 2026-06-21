@@ -85,9 +85,10 @@ def save_plot(fig, filename):
 
 
 def _format_date_axis(ax):
-    """Set x-axis to show one tick per day with clean formatting."""
-    ax.xaxis.set_major_locator(mdates.DayLocator())
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
+    """Set x-axis to a readable number of date ticks regardless of range."""
+    locator = mdates.AutoDateLocator(minticks=4, maxticks=10)
+    ax.xaxis.set_major_locator(locator)
+    ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(locator, show_offset=False))
 
 
 def generate_all():

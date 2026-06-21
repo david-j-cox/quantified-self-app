@@ -10,6 +10,8 @@ from IPython.display import display, HTML
 import pandas as pd
 import numpy as np
 
+from clustering_features import clustering_numeric_frame, write_clustering_csv
+
 # System
 import base64
 from io import BytesIO
@@ -1013,10 +1015,12 @@ def plot_run_mins_mile_month():
 
     # Plotting
     fig, ax = plt.subplots(figsize=(20, 8))
+    n_years = plot_df['Year'].nunique()
     sns.boxplot(
         x=plot_df['Month'],
         y=plot_df['Min per Mile'],
         hue=plot_df['Year'],
+        palette=sns.color_palette('husl', n_colors=n_years),
         showfliers=False,
     )
     plt.xlabel("Month", fontsize=26, labelpad=12)
@@ -1025,7 +1029,8 @@ def plot_run_mins_mile_month():
     plt.yticks(fontsize=16)
     plt.ylim(6, 10)
     sns.despine(top=True, right=True)
-    plt.legend(frameon=False, loc="best", fontsize=12)
+    plt.legend(frameon=False, loc="upper left", fontsize=11, title="Year",
+               ncol=3, columnspacing=1.0, handletextpad=0.4)
 
     # Save the plot to a bytes buffer
     plt.tight_layout()
@@ -2650,6 +2655,14 @@ def plot_golf_scores_handicap():
     ax1.tick_params(axis='x', labelsize=12)
     ax1.tick_params(axis='y', labelsize=12, colors='black')
 
+    # Thin out and angle date ticks so they don't overlap
+    ax1.xaxis.set_major_locator(mdates.AutoDateLocator(minticks=4, maxticks=8))
+    ax1.xaxis.set_major_formatter(
+        mdates.ConciseDateFormatter(ax1.xaxis.get_major_locator(), show_offset=False))
+    for label in ax1.get_xticklabels():
+        label.set_rotation(45)
+        label.set_ha('right')
+
     # Handicap index on secondary y-axis
     ax2 = ax1.twinx()
     valid_hc = plot_df.dropna(subset=['handicap'])
@@ -2681,24 +2694,12 @@ app = Dash(__name__)
 
 # After loading model_df, generate the clustering plot statically
 if not model_df.empty:
-    # Prep the data - use only numeric columns and exclude derived/redundant columns
-    exclude_columns = ['date_column', 'Year', 'Month_Num', 'Day', 'DayOfYear', 'nap', 'total',
-                       'ovr_pirates', 'ovr_guardians', 'ovr_other', 'cycle_id']
-    # Exclude Whoop metadata/timing columns but keep score_ columns (sleep, recovery, strain, HR, HRV)
-    exclude_columns += [col for col in model_df.columns if col.startswith('updated_at_')]
-    exclude_columns += [col for col in model_df.columns if col.endswith('_minutes_into_day')]
-    # Exclude duplicated zone duration columns (keep zone_duration_, drop zone_durations_)
-    exclude_columns += [col for col in model_df.columns if 'zone_durations_' in col]
-    # Exclude no-data and percent_recorded metadata
-    exclude_columns += [col for col in model_df.columns if 'no_data' in col or 'percent_recorded' in col]
-    numeric_columns = model_df.select_dtypes(include=['float64', 'int64']).columns
-    df_numeric = model_df[numeric_columns].drop(columns=exclude_columns, errors='ignore')
-    df_numeric = df_numeric.loc[:, (df_numeric != 0).any(axis=0)]
-    df_numeric = df_numeric.loc[:, df_numeric.notna().any(axis=0)]
-    df_numeric = df_numeric.fillna(0)
-    save_df = df_numeric.copy()
-    save_df['date_column'] = model_df['date_column']
-    save_df.to_csv(os.path.join(os.path.dirname(__file__), '..', 'Data', 'df_numeric_for_clustering.csv'))
+    # Project to the clustering matrix and persist it (shared with the daily
+    # refresh in unsupervised_ml_data_prep.py -- see clustering_features.py).
+    df_numeric = clustering_numeric_frame(model_df)
+    write_clustering_csv(
+        model_df,
+        os.path.join(os.path.dirname(__file__), '..', 'Data', 'df_numeric_for_clustering.csv'))
     scaler = MinMaxScaler()
     df_scaled = pd.DataFrame(scaler.fit_transform(df_numeric), columns=df_numeric.columns)
 

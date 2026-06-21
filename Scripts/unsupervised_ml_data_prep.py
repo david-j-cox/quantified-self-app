@@ -212,15 +212,32 @@ all_data = all_data.sort_values(by=['Year', 'DayOfYear'])
 model_df = all_data.copy()
 model_df['date_column'] = model_df['date_column'].astype(str)
 
+# Food, running pace, and golf differential: reuse the daily aggregations from
+# the digest module so there is a single source of truth for how each domain is
+# rolled up to a per-day value. Each returns a date-indexed frame; we move the
+# date back to a column so it slots into the same merge pattern below. Guarded
+# so an empty/unavailable source simply adds nothing.
+import daily_digest
+
+_extra_daily = {
+    'food': daily_digest._food_daily(engine),
+    'run_pace': daily_digest._running_daily(engine),
+    'golf': daily_digest._golf_daily(engine),
+}
+
 # Define date columns for different dataframes
 date_cols = {
-    'baseball': ('date', baseball), 
+    'baseball': ('date', baseball),
     'cycle_collection': ('created_at', cycle_collection),
     'recoveries': ('created_at', recoveries),
     'sleep_collection': ('created_at', sleep_collection),
     'workouts': ('created_at', workouts),
     'phys_act': ('date', wide_phys_act)
 }
+
+for _name, _frame in _extra_daily.items():
+    if _frame is not None and not _frame.empty:
+        date_cols[_name] = ('date', _frame.reset_index())
 
 # Process each dataframe: convert to datetime, remove time, and set index
 cleaned_dfs = pd.DataFrame()
@@ -280,3 +297,12 @@ model_df = model_df.drop_duplicates(subset=['date_column'], keep="first").reset_
 # Push to Database
 model_df.to_sql('modeling_ready_data', engine, if_exists='replace', index=False)
 model_df.to_csv('../Data/modeling_data.csv', index=False)
+
+# Also write the numeric clustering projection here so it can be refreshed on a
+# schedule without launching the (blocking) Dash app. Uses the same shared
+# projection app.py applies (clustering_features.write_clustering_csv). The
+# daily digest (daily_digest.py) reads this file.
+from clustering_features import write_clustering_csv
+write_clustering_csv(
+    model_df,
+    os.path.join(os.path.dirname(__file__), '..', 'Data', 'df_numeric_for_clustering.csv'))

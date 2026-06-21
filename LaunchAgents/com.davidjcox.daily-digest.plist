@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.davidjcox.daily-digest</string>
+
+    <!-- Headless morning refresh: pulls all sources, rebuilds the clustering
+         data + CSV, then builds and pushes the daily digest via Ntfy (run_all.py
+         in --no-dashboard mode skips the blocking Dash app). WorkingDirectory is
+         Scripts/ because run_all.py invokes sibling scripts by bare name and uses
+         ../Data relative paths. The CLAUDE_CODE_OAUTH_TOKEN is read from .env by
+         daily_digest.py (load_dotenv), so no secret lives in this plist. -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/davidjcox/Documents/SideProjects/quantified-self-app/venv/bin/python3.12</string>
+        <string>/Users/davidjcox/Documents/SideProjects/quantified-self-app/Scripts/run_all.py</string>
+        <string>--no-dashboard</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/davidjcox/Documents/SideProjects/quantified-self-app/Scripts</string>
+
+    <!-- Fire daily at 6:00 AM (after the 5:00 AM data-entry jobs). If the Mac was
+         asleep at 6:00, launchd runs the job as soon as it next wakes. -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>6</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <!-- Also run at load: StartCalendarInterval does not catch up a missed run if
+         the Mac was fully powered OFF at 6:00 (only after sleep). Safe to re-run;
+         the digest is read-only apart from the push. -->
+    <key>RunAtLoad</key>
+    <true/>
+
+    <!-- Logs under ~/Library/Logs (NOT ~/Documents, which is TCC-protected and
+         silently blocks launchd from opening files there). -->
+    <key>StandardOutPath</key>
+    <string>/Users/davidjcox/Library/Logs/daily-digest/daily_digest.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/davidjcox/Library/Logs/daily-digest/daily_digest.err.log</string>
+
+    <key>ProcessType</key>
+    <string>Interactive</string>
+</dict>
+</plist>
