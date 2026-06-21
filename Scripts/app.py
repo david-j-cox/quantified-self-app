@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 
 from clustering_features import clustering_numeric_frame, write_clustering_csv
+from regime_clustering import build_recent_regimes
 
 # System
 import base64
@@ -2746,6 +2747,9 @@ if not model_df.empty:
     # Drop columns with more than 40% missing data
     missing_fraction = df_numeric.isnull().mean()
     df_numeric = df_numeric.loc[:, missing_fraction <= 0.4]
+
+    # Tier 2: labeled day-regimes over the recent multi-domain dense window.
+    recent_regimes = build_recent_regimes(model_df)
 else:
     clustering_image_base64 = generate_placeholder_image("No clustering data available.")
     pca_feature_importance_images = []
@@ -2755,6 +2759,54 @@ else:
     recurrence_plot_base64 = generate_placeholder_image("No recurrence plot available.")
     rqa_metrics = {}
     rqa_interpretation = []
+    recent_regimes = {'ok': False, 'reason': 'no modeling data available'}
+
+
+# Build the Recent Regimes (Tier 2) tab content from the regime artifacts.
+if recent_regimes.get('ok'):
+    _rr = recent_regimes
+    _t = _rr['transitions']
+    _regime_summary = (
+        f"Recent dense window {_rr['window_start']} to {_rr['window_end']}: "
+        f"{_t['n_days']} days grouped into {_rr['k']} regimes "
+        f"(silhouette {_rr['silhouette']}), with {_t['n_transitions']} transitions. "
+        f"Currently {_t['current_regime']} for {_t['current_run_days']} day(s). "
+        f"Built on {_rr['n_features']} multi-domain features (food included; "
+        f"running and golf enter as honest ran/golfed flags)."
+    )
+    regime_tab_children = [html.Div(children=[
+        html.H3("Recent Day-Regimes", style={'textAlign': 'center'}),
+        html.P(_regime_summary,
+               style={'textAlign': 'center', 'fontSize': 14, 'color': 'gray',
+                      'width': '80%', 'margin': '0 auto', 'marginBottom': '2rem'}),
+        html.Img(src=f'data:image/png;base64,{_rr["timeline_b64"]}',
+                 style={'display': 'block', 'width': '92%', 'margin': '0 auto',
+                        'margin-bottom': '3rem'}),
+        html.Img(src=f'data:image/png;base64,{_rr["embedding_b64"]}',
+                 style={'display': 'block', 'width': '55%', 'margin': '0 auto',
+                        'margin-bottom': '3rem'}),
+        html.H3("Regime Profiles", style={'textAlign': 'center'}),
+        html.P("How each regime's days sit relative to a typical window day.",
+               style={'textAlign': 'center', 'fontSize': 14, 'color': 'gray',
+                      'marginBottom': '1rem'}),
+        dash_table.DataTable(
+            data=_rr['profiles'].to_dict('records'),
+            columns=[{'name': c, 'id': c} for c in _rr['profiles'].columns],
+            style_table={'width': '90%', 'margin': '0 auto', 'marginBottom': '4rem'},
+            style_cell={'textAlign': 'left', 'fontSize': 14, 'padding': '10px',
+                        'whiteSpace': 'normal', 'maxWidth': '320px'},
+            style_header={'fontWeight': 'bold', 'fontSize': 16, 'textAlign': 'center'},
+            style_data_conditional=[
+                {'if': {'column_id': 'Regime'}, 'fontWeight': 'bold',
+                 'textAlign': 'center'}],
+        ),
+    ], style={'textAlign': 'center'})]
+else:
+    regime_tab_children = [html.Div(children=[
+        html.H3("Recent Day-Regimes", style={'textAlign': 'center'}),
+        html.P(f"Not available yet: {recent_regimes.get('reason', 'unknown')}.",
+               style={'textAlign': 'center', 'color': 'gray', 'marginTop': '2rem'}),
+    ], style={'textAlign': 'center'})]
 
 app.layout = html.Div(children=[
     dcc.Tabs(id='tabs', value='OVR Data', children=[
@@ -2856,6 +2908,9 @@ app.layout = html.Div(children=[
                 ], style={'width': '70%', 'margin': '0 auto', 'marginBottom': '6rem'}),
             ], style={'textAlign': 'center'})
         ]),
+
+        dcc.Tab(label='Recent Regimes', value='Recent Regimes',
+                children=regime_tab_children),
 
         # Baseball Data
         dcc.Tab(label="Baseball Watched", children=[
