@@ -74,11 +74,30 @@ def _list_loaded_agents() -> set[str]:
     return loaded
 
 
-def _read_plist(path: Path) -> dict:
+def _read_plist(path: Path) -> dict | None:
+    """Parse a plist, returning its dict or None if it can't be read.
+
+    launchd tolerates malformed XML (e.g. a literal '--' inside a comment,
+    which is illegal XML but loads fine); Python's strict plistlib does not.
+    On a parse failure we fall back to `plutil`, which is as lenient as
+    launchd, so a cosmetic plist defect can't blind the health check and
+    trigger a false-stale eviction.  Returns None (not {}) on total failure
+    so callers can distinguish "unreadable" from "read, but empty".
+    """
     try:
         return plistlib.loads(path.read_bytes()) or {}
     except Exception:
-        return {}
+        pass
+    try:
+        out = subprocess.run(
+            ["plutil", "-convert", "xml1", "-o", "-", str(path)],
+            capture_output=True, timeout=15,
+        )
+        if out.returncode == 0 and out.stdout:
+            return plistlib.loads(out.stdout) or {}
+    except (subprocess.TimeoutExpired, FileNotFoundError, Exception):
+        pass
+    return None
 
 
 def _latest_log_mtime(plist: dict) -> float | None:
@@ -107,6 +126,18 @@ def check_all() -> list[dict]:
     out = []
     for plist_path in sorted(LAUNCH_AGENTS_DIR.glob(f"{AGENT_PREFIX}*.plist")):
         plist = _read_plist(plist_path)
+        if plist is None:
+            # Unreadable plist: never flag stale (a false-stale would trigger
+            # a bootout/bootstrap and could evict a healthy, running agent).
+            out.append({
+                "label": plist_path.stem,
+                "plist_path": str(plist_path),
+                "loaded": plist_path.stem in loaded,
+                "last_seen_minutes": None,
+                "cadence_minutes": None,
+                "stale": False,
+            })
+            continue
         label = plist.get("Label") or plist_path.stem
         mtime = _latest_log_mtime(plist)
         cadence = EXPECTED_CADENCE.get(label, 86400)
@@ -168,7 +199,7 @@ def rebootstrap(plist_path: str) -> tuple[bool, str]:
     p = Path(plist_path)
     if not p.exists():
         return False, f"plist not found: {plist_path}"
-    label = _read_plist(p).get("Label", p.stem)
+    label = (_read_plist(p) or {}).get("Label", p.stem)
     domain = f"gui/{_gui_uid()}"
     # bootout: harmless if not loaded (returns non-zero, we ignore).
     subprocess.run(
