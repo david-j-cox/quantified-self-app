@@ -10,6 +10,9 @@ from IPython.display import display, HTML
 import pandas as pd
 import numpy as np
 
+from clustering_features import clustering_numeric_frame, write_clustering_csv
+from regime_clustering import build_recent_regimes
+
 # System
 import base64
 from io import BytesIO
@@ -1013,10 +1016,12 @@ def plot_run_mins_mile_month():
 
     # Plotting
     fig, ax = plt.subplots(figsize=(20, 8))
+    n_years = plot_df['Year'].nunique()
     sns.boxplot(
         x=plot_df['Month'],
         y=plot_df['Min per Mile'],
         hue=plot_df['Year'],
+        palette=sns.color_palette('husl', n_colors=n_years),
         showfliers=False,
     )
     plt.xlabel("Month", fontsize=26, labelpad=12)
@@ -1025,7 +1030,8 @@ def plot_run_mins_mile_month():
     plt.yticks(fontsize=16)
     plt.ylim(6, 10)
     sns.despine(top=True, right=True)
-    plt.legend(frameon=False, loc="best", fontsize=12)
+    plt.legend(frameon=False, loc="upper left", fontsize=11, title="Year",
+               ncol=3, columnspacing=1.0, handletextpad=0.4)
 
     # Save the plot to a bytes buffer
     plt.tight_layout()
@@ -2650,6 +2656,14 @@ def plot_golf_scores_handicap():
     ax1.tick_params(axis='x', labelsize=12)
     ax1.tick_params(axis='y', labelsize=12, colors='black')
 
+    # Thin out and angle date ticks so they don't overlap
+    ax1.xaxis.set_major_locator(mdates.AutoDateLocator(minticks=4, maxticks=8))
+    ax1.xaxis.set_major_formatter(
+        mdates.ConciseDateFormatter(ax1.xaxis.get_major_locator(), show_offset=False))
+    for label in ax1.get_xticklabels():
+        label.set_rotation(45)
+        label.set_ha('right')
+
     # Handicap index on secondary y-axis
     ax2 = ax1.twinx()
     valid_hc = plot_df.dropna(subset=['handicap'])
@@ -2681,24 +2695,12 @@ app = Dash(__name__)
 
 # After loading model_df, generate the clustering plot statically
 if not model_df.empty:
-    # Prep the data - use only numeric columns and exclude derived/redundant columns
-    exclude_columns = ['date_column', 'Year', 'Month_Num', 'Day', 'DayOfYear', 'nap', 'total',
-                       'ovr_pirates', 'ovr_guardians', 'ovr_other', 'cycle_id']
-    # Exclude Whoop metadata/timing columns but keep score_ columns (sleep, recovery, strain, HR, HRV)
-    exclude_columns += [col for col in model_df.columns if col.startswith('updated_at_')]
-    exclude_columns += [col for col in model_df.columns if col.endswith('_minutes_into_day')]
-    # Exclude duplicated zone duration columns (keep zone_duration_, drop zone_durations_)
-    exclude_columns += [col for col in model_df.columns if 'zone_durations_' in col]
-    # Exclude no-data and percent_recorded metadata
-    exclude_columns += [col for col in model_df.columns if 'no_data' in col or 'percent_recorded' in col]
-    numeric_columns = model_df.select_dtypes(include=['float64', 'int64']).columns
-    df_numeric = model_df[numeric_columns].drop(columns=exclude_columns, errors='ignore')
-    df_numeric = df_numeric.loc[:, (df_numeric != 0).any(axis=0)]
-    df_numeric = df_numeric.loc[:, df_numeric.notna().any(axis=0)]
-    df_numeric = df_numeric.fillna(0)
-    save_df = df_numeric.copy()
-    save_df['date_column'] = model_df['date_column']
-    save_df.to_csv(os.path.join(os.path.dirname(__file__), '..', 'Data', 'df_numeric_for_clustering.csv'))
+    # Project to the clustering matrix and persist it (shared with the daily
+    # refresh in unsupervised_ml_data_prep.py -- see clustering_features.py).
+    df_numeric = clustering_numeric_frame(model_df)
+    write_clustering_csv(
+        model_df,
+        os.path.join(os.path.dirname(__file__), '..', 'Data', 'df_numeric_for_clustering.csv'))
     scaler = MinMaxScaler()
     df_scaled = pd.DataFrame(scaler.fit_transform(df_numeric), columns=df_numeric.columns)
 
@@ -2745,6 +2747,9 @@ if not model_df.empty:
     # Drop columns with more than 40% missing data
     missing_fraction = df_numeric.isnull().mean()
     df_numeric = df_numeric.loc[:, missing_fraction <= 0.4]
+
+    # Tier 2: labeled day-regimes over the recent multi-domain dense window.
+    recent_regimes = build_recent_regimes(model_df)
 else:
     clustering_image_base64 = generate_placeholder_image("No clustering data available.")
     pca_feature_importance_images = []
@@ -2754,6 +2759,54 @@ else:
     recurrence_plot_base64 = generate_placeholder_image("No recurrence plot available.")
     rqa_metrics = {}
     rqa_interpretation = []
+    recent_regimes = {'ok': False, 'reason': 'no modeling data available'}
+
+
+# Build the Recent Regimes (Tier 2) tab content from the regime artifacts.
+if recent_regimes.get('ok'):
+    _rr = recent_regimes
+    _t = _rr['transitions']
+    _regime_summary = (
+        f"Recent dense window {_rr['window_start']} to {_rr['window_end']}: "
+        f"{_t['n_days']} days grouped into {_rr['k']} regimes "
+        f"(silhouette {_rr['silhouette']}), with {_t['n_transitions']} transitions. "
+        f"Currently {_t['current_regime']} for {_t['current_run_days']} day(s). "
+        f"Built on {_rr['n_features']} multi-domain features (food included; "
+        f"running and golf enter as honest ran/golfed flags)."
+    )
+    regime_tab_children = [html.Div(children=[
+        html.H3("Recent Day-Regimes", style={'textAlign': 'center'}),
+        html.P(_regime_summary,
+               style={'textAlign': 'center', 'fontSize': 14, 'color': 'gray',
+                      'width': '80%', 'margin': '0 auto', 'marginBottom': '2rem'}),
+        html.Img(src=f'data:image/png;base64,{_rr["timeline_b64"]}',
+                 style={'display': 'block', 'width': '92%', 'margin': '0 auto',
+                        'margin-bottom': '3rem'}),
+        html.Img(src=f'data:image/png;base64,{_rr["embedding_b64"]}',
+                 style={'display': 'block', 'width': '55%', 'margin': '0 auto',
+                        'margin-bottom': '3rem'}),
+        html.H3("Regime Profiles", style={'textAlign': 'center'}),
+        html.P("How each regime's days sit relative to a typical window day.",
+               style={'textAlign': 'center', 'fontSize': 14, 'color': 'gray',
+                      'marginBottom': '1rem'}),
+        dash_table.DataTable(
+            data=_rr['profiles'].to_dict('records'),
+            columns=[{'name': c, 'id': c} for c in _rr['profiles'].columns],
+            style_table={'width': '90%', 'margin': '0 auto', 'marginBottom': '4rem'},
+            style_cell={'textAlign': 'left', 'fontSize': 14, 'padding': '10px',
+                        'whiteSpace': 'normal', 'maxWidth': '320px'},
+            style_header={'fontWeight': 'bold', 'fontSize': 16, 'textAlign': 'center'},
+            style_data_conditional=[
+                {'if': {'column_id': 'Regime'}, 'fontWeight': 'bold',
+                 'textAlign': 'center'}],
+        ),
+    ], style={'textAlign': 'center'})]
+else:
+    regime_tab_children = [html.Div(children=[
+        html.H3("Recent Day-Regimes", style={'textAlign': 'center'}),
+        html.P(f"Not available yet: {recent_regimes.get('reason', 'unknown')}.",
+               style={'textAlign': 'center', 'color': 'gray', 'marginTop': '2rem'}),
+    ], style={'textAlign': 'center'})]
 
 app.layout = html.Div(children=[
     dcc.Tabs(id='tabs', value='OVR Data', children=[
@@ -2855,6 +2908,9 @@ app.layout = html.Div(children=[
                 ], style={'width': '70%', 'margin': '0 auto', 'marginBottom': '6rem'}),
             ], style={'textAlign': 'center'})
         ]),
+
+        dcc.Tab(label='Recent Regimes', value='Recent Regimes',
+                children=regime_tab_children),
 
         # Baseball Data
         dcc.Tab(label="Baseball Watched", children=[

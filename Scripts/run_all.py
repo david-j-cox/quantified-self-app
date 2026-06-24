@@ -7,6 +7,11 @@ import re
 import os
 from pathlib import Path
 
+# Headless/scheduled mode: skip the blocking Dash dashboard and the interactive
+# Whoop browser-OAuth fallback, and finish by pushing the daily digest. Used by
+# the morning LaunchAgent (run_all.py --no-dashboard).
+HEADLESS = '--no-dashboard' in sys.argv or '--headless' in sys.argv
+
 def run_script(script_path):
     """Function to run a script."""
     subprocess.run([sys.executable, script_path], check=True)
@@ -31,6 +36,12 @@ def get_fresh_whoop_token():
         print("Silent refresh timed out, falling back to browser flow...")
     except Exception as e:
         print(f"Silent refresh error: {e}, falling back to browser flow...")
+
+    # In a headless/scheduled run we cannot complete a browser OAuth flow, so
+    # skip it rather than hang. Whoop is simply not refreshed this run.
+    if HEADLESS:
+        print("Headless run: skipping browser OAuth fallback for Whoop.")
+        return None
 
     # Step 2: Fall back to full browser OAuth flow
     try:
@@ -138,15 +149,19 @@ except subprocess.CalledProcessError as e:
 except Exception as e:
     print(f"Error generating food plots: {e}")
 
-# Update academic data from CV and manuscript folders
-print("\n\nUpdating academic data from CV and manuscripts...")
-try:
-    run_script('update_academic_data.py')
-    print("Academic data updated")
-except subprocess.CalledProcessError as e:
-    print(f"Error updating academic data: {e}")
-except Exception as e:
-    print(f"Error updating academic data: {e}")
+# Update academic data from CV and manuscript folders. This script prompts for
+# interactive input, so it cannot run in a headless/scheduled context.
+if HEADLESS:
+    print("\n\nHeadless run: skipping interactive academic data update.")
+else:
+    print("\n\nUpdating academic data from CV and manuscripts...")
+    try:
+        run_script('update_academic_data.py')
+        print("Academic data updated")
+    except subprocess.CalledProcessError as e:
+        print(f"Error updating academic data: {e}")
+    except Exception as e:
+        print(f"Error updating academic data: {e}")
 
 # Prep the data for unsupervised learning
 print("\n\nPrepping data for unsupervised learning...")
@@ -184,6 +199,19 @@ try:
 except Exception as e:
     print(f"Error during Launch Agent health check: {e}")
 
-# Run the dashboard script
-print("\n\nRunning dashboard creation...")
-run_script('app.py')
+if HEADLESS:
+    # Cron/LaunchAgent path: the clustering data + CSV were just refreshed by
+    # unsupervised_ml_data_prep.py above, so build and push the daily digest
+    # instead of launching the blocking Dash dashboard.
+    print("\n\nBuilding and pushing the daily digest...")
+    try:
+        subprocess.run([sys.executable, 'daily_digest.py', '--push'], check=True)
+        print("Daily digest pushed")
+    except subprocess.CalledProcessError as e:
+        print(f"Error running daily digest: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred building the daily digest: {e}")
+else:
+    # Run the dashboard script
+    print("\n\nRunning dashboard creation...")
+    run_script('app.py')
