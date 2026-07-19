@@ -60,7 +60,7 @@ def read_table(table_name):
     return pd.read_sql_query(query, con=engine)
 
 # Read in the raw data from the database
-baseball = read_table('baseball_watched')
+baseball = read_table('baseball_watched_long')
 books = read_table('books_read')
 cv_adds = read_table('cv_additions')
 pubs = read_table('publication_stats')
@@ -76,39 +76,15 @@ workouts = read_table('whoop_workouts')
 phys_act = read_table('strava_activities')
 phys_act = phys_act[['activitydate', 'activitytype', 'elapsedtime', 'distance']]
 
-# Keep only numeric baseball cols
-baseball = baseball[
-    [col for col in baseball.columns if "tv" not in col and "in_person" not in col and "ovr" not in col and "season" not in col]
-]
-baseball = baseball.sort_values(by='date', ascending=True).reset_index(drop=True)
-
-# Convert cumulative counts to binary indicators (1 if increased, 0 otherwise)
-def convert_cumulative_to_binary(df, columns_to_convert):
-    """
-    Convert cumulative columns to binary indicators showing when values increase.
-    
-    Parameters:
-        df (pd.DataFrame): Input DataFrame
-        columns_to_convert (list): List of column names to convert
-    
-    Returns:
-        pd.DataFrame: DataFrame with binary columns
-    """
-    df = df.copy()
-    
-    for col in columns_to_convert:
-        if col in df.columns:
-            # Create binary column: 1 if value increased from previous row, 0 otherwise
-            df[f'{col}'] = (df[col] > df[col].shift(1)).astype(int)
-            # First row will be NaN, set to 0
-            df[f'{col}'] = df[f'{col}'].fillna(0)
-    
-    return df
-
-# Convert the cumulative columns to binary
-columns_to_convert = ['total', 'pirates', 'guardians', 'other']
-baseball = convert_cumulative_to_binary(baseball, columns_to_convert)
-baseball['total'] = baseball[['pirates', 'guardians', 'other']].sum(axis=1)
+# Aggregate the long per-game table to one row per day, summing each team's
+# watched-proportion. baseball_watched_long is the maintained source of truth
+# (one row per game, fractional innings-watched); the legacy wide baseball_watched
+# table it replaced was stale, and its cumulative columns had needed a binary hack.
+team_cols = ['pirates', 'guardians', 'braves', 'other']
+baseball['date'] = pd.to_datetime(baseball['date']).dt.normalize()
+baseball = baseball.groupby('date', as_index=False)[team_cols].sum()
+baseball['total'] = baseball[team_cols].sum(axis=1)
+baseball = baseball.sort_values('date').reset_index(drop=True)
 
 # Cleanup Whoop data
 def convert_to_minutes(df, datetime_cols):
